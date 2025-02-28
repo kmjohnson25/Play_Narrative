@@ -1,0 +1,53 @@
+---
+title: "DXT-c_pret"
+author: "Kristen Johnson"
+date: "2025-02-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Load necessary libraries
+library(readxl)   # For reading Excel files
+library(dplyr)    # For binding and data manipulation
+library(lubridate)  # For handling datetime columns (if needed)
+```
+
+Read in the P3_H8 CSV file
+```{r}
+
+p3_h8 <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P3_H8_cwpu.csv")
+
+```
+
+Add the c_pret column
+```{r}
+p3_h8 <- p3_h8 %>%
+  mutate(c_pret = ifelse(grepl("p", Child.DXT, ignore.case = TRUE), 1, 0)) 
+
+```
+
+Write a new .csv for P3_H8
+```{r, echo=FALSE}
+write.csv(p3_h8, "/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P3_H8_ALL.csv", row.names = FALSE)
+```
+
+Read in the P2_H8 CSV file
+```{r}
+p2_h8 <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P2_H8_cwpu.csv")
+```
+
+Add the c_pret column
+```{r}
+p2_h8 <- p2_h8 %>%
+  mutate(c_pret = ifelse(grepl("p", Child.DXT, ignore.case = TRUE), 1, 0)) 
+```
+
+write a new .csv for P2_H8
+```{r}
+write.csv(p2_h8, "/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P2_H8_ALL.csv", row.names = FALSE)
+```
+

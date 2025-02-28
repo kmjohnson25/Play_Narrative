@@ -1,0 +1,83 @@
+---
+title: "P3_H8_pp_cform"
+author: "Kristen Johnson"
+date: "2025-02-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+```{r}
+P3_H8_ALL <- read_csv('/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P3_H8_ALL.csv')
+```
+
+```{r}
+
+# Filter for rows where c_pret is 1, then count occurrences of c_form
+PP_gest_overlap <- P3_H8_ALL %>%
+  filter(c_pret == 1 & !is.na(c_form)) %>%  # Only keep rows where col1 is 5 and c_utt has any value
+  count(c_form)  # Count occurrences of c_form
+
+# View the result
+print(PP_gest_overlap)
+
+```
+
+```{r}
+library(dplyr)
+
+# Generate summary statistics for the count column 'n'
+PP_gest_overlap %>%
+  summarise(
+    mean_count = mean(n, na.rm = TRUE),
+    median_count = median(n, na.rm = TRUE),
+    sd_count = sd(n, na.rm = TRUE),
+    min_count = min(n, na.rm = TRUE),
+    max_count = max(n, na.rm = TRUE),
+    total_count = sum(n, na.rm = TRUE),
+    num_unique_forms = n()
+  )
+
+```
+
+```{r}
+library(ggplot2)
+
+# Makes a histogram to visualize how frequently different counts of gesture/pretend play overlap appear.
+ggplot(PP_gest_overlap, aes(x = n)) +
+  geom_histogram(binwidth = 1, fill = "steelblue", color = "black") +
+  labs(title = "Distribution of Gesture During Play Counts",
+       x = "Count of Gesture During Play",
+       y = "Frequency") +
+  theme_minimal()
+
+```
+
+```{r}
+
+# A boxplot shows the median, quartiles, and potential outliers.
+ggplot(PP_gest_overlap, aes(y = n)) +
+  geom_boxplot(fill = "lightblue", color = "black") +
+  labs(title = "Boxplot of Gesture During Play Counts",
+       y = "Gesture During Play") +
+  theme_minimal()
+
+```
+
+```{r}
+
+# If you want to see the count of each c_form, use a bar chart.
+ggplot(PP_gest_overlap, aes(x = reorder(c_form, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "darkorange", color = "black") +
+  labs(title = "Counts of Gesture During Play Occurrences",
+       x = "gesture",
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels if needed
+
+```
+
+

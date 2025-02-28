@@ -1,0 +1,195 @@
+---
+title: "Summary Stats"
+author: "Kristen Johnson"
+date: "2025-02-23"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load necessary libraries
+library(readxl)   # For reading Excel files
+library(dplyr)    # For binding and data manipulation
+library(stringr) # For string functions
+library(lubridate)  # For handling datetime columns (if needed)
+```
+
+
+```{r, echo=FALSE}
+# Read in data
+csv_all <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P3_H8_ALL.csv")
+```
+## Summary Statistics for P2_H8
+
+### ALL Gestures by Participant ID
+```{r, echo=FALSE}
+
+# Count the number of times individual participants made any gesture
+gesture_count <- csv_all %>%
+  group_by(participant_id) %>% # Groups data by participant ID
+  summarise(gesture_all = sum(!is.na(c_form))) # Counts number of non NA values
+
+print(gesture_count)
+```
+
+### Total number of gestures among all observations of all participants:
+```{r, echo=FALSE}
+# Sum of all instances of gesture as counted in the non NA values in the above data frame
+total_gestures <- sum(gesture_count$gesture_all)
+
+print(total_gestures)
+
+```
+
+
+
+### Mean and Standard deviation of ALL gestures 
+```{r, echo=FALSE}
+# get summary statistics of the count_non_na column of the above dataset
+gesture_summary <- gesture_count %>% 
+  summarise(
+    mean_gesture = mean(gesture_all),
+    sd_gesture = sd(gesture_all)
+  )
+
+print(gesture_summary)
+
+```
+
+
+### A Data Frame of only iconic gestures. Summary Stats to follow.
+```{r, echo=FALSE}
+# Load necessary libraries
+#library(dplyr)   # For data manipulation
+#library(stringr) # For string functions
+
+# Create a new data frame that includes rows where 'iconic' appears anywhere in c_form
+iconic_df <- csv_all %>%
+  filter(str_detect(str_to_lower(c_form), "iconic"))
+
+# View the first few rows of the new data frame
+head(iconic_df)
+```
+
+### Number of iconic gestures per participant ID 
+```{r, echo=FALSE}
+# Count occurrences of 'iconic' for each participant_id
+iconic_counts <- iconic_df %>%
+  group_by(participant_id) %>%
+  summarise(iconic_count = sum(str_detect(str_to_lower(c_form), "iconic"), na.rm = TRUE), .groups = "drop")
+
+# Print results
+print(iconic_counts)
+```
+### Total number of iconic gestures across all participants:
+```{r, echo=FALSE}
+# The sum of all instances of iconic gestures in the above column
+all_iconic <- sum(iconic_counts$iconic_count)
+
+print(all_iconic)
+```
+
+
+
+### Summary statistics of iconic gestures across participants
+```{r, echo=FALSE}
+# Calculate mean and standard deviation of 'iconic' counts across participants
+iconic_summary <- iconic_counts %>%
+  summarise(
+    mean_iconic = mean(iconic_count, na.rm = TRUE),
+    sd_iconic = sd(iconic_count, na.rm = TRUE)
+  )
+
+# Print results
+print(iconic_summary)
+```
+### Instances of Pretend Play by Participant ID:
+```{r, echo=FALSE}
+# Count the number of times individual participants engaged in pretend play
+pp_count <- csv_all %>%
+  group_by(participant_id) %>%  # Groups data by participant ID
+  summarise(
+    count_p_combined = sum(c_pret, na.rm = TRUE) # for the c_pret column name
+    #count_p_combined = sum(C_Pret, na.rm = TRUE) # for the C_Pret column name
+    #count_p_combined = sum(str_detect(str_to_lower(`Child DXT`), "p"), na.rm = TRUE) 
+    # In at least one dataset there are two Child DXT columns thanks to one file not capitalizing it. if this is the case, comment out the above line and remove the comment hash in front of the code below
+    #count_p_combined = sum(str_detect(str_to_lower(`Child DXT`), "p"), na.rm = TRUE) + sum(str_detect(str_to_lower(`CHILD DXT`), "p"), na.rm = TRUE)  
+  )
+
+print(pp_count)
+```
+
+### Total number of instances of pretend play:
+```{r, echo=FALSE}
+# Sum the coun_p_combined column from above
+all_pp <- sum(pp_count$count_p_combined)
+
+print(all_pp)
+```
+
+### Descriptive statistics of all instances of pretend play:
+```{r, echo=FALSE}
+# calculate the summary statistics of count_p_combined
+pp_summary <- pp_count %>%
+  summarise(
+    mean_pp = mean(count_p_combined, na.rm = TRUE),
+    sd_pp = sd(count_p_combined, na.rm = TRUE)
+  )
+
+# Print results
+print(pp_summary)
+```
+
+### Average words per utterance by Participant ID
+```{r, echo=FALSE}
+# finding the average words per utterance per participant
+avg_words_per_utt <- csv_all %>%
+  group_by(participant_id) %>%
+  summarise(
+    total_words = sum(C_wpu[C_wpu > 0], na.rm = TRUE),  # Sum of non-zero word counts
+    total_utts = sum(C_wpu > 0, na.rm = TRUE),  # Count of non-zero utterances
+    avg_c_wpu = ifelse(total_utts > 0, total_words / total_utts, NA)  # Calculate mean, avoid divide by zero
+  )
+
+print(avg_words_per_utt)
+
+```
+
+### Adding in Standar Deviation to the above table
+```{r, echo=FALSE}
+# finding the standard deviation for words per utterance per participant
+avg_words_per_utt <- csv_all %>%
+  group_by(participant_id) %>%
+  summarise(
+    total_words = sum(C_wpu[C_wpu > 0], na.rm = TRUE),  # Sum of non-zero word counts
+    total_utts = sum(C_wpu > 0, na.rm = TRUE),  # Count of non-zero utterances
+    avg_c_wpu = ifelse(total_utts > 0, total_words / total_utts, NA),  # Mean words per utterance
+    sd_c_wpu = ifelse(total_utts > 1, sd(C_wpu[C_wpu > 0], na.rm = TRUE), NA)  # Standard deviation
+  )
+
+print(avg_words_per_utt)
+
+```
+
+### Mean of Means in Above table
+```{r, echo=FALSE}
+# calculate the summary statistics of count_p_combined
+c_wpu_summary <- avg_words_per_utt %>%
+  summarise(
+    c_total_words = sum(total_words, na.rm = TRUE),
+    mean_c_wpu = mean(avg_c_wpu, na.rm = TRUE),
+    sd_c_wpu = sd(avg_c_wpu, na.rm = TRUE)
+  )
+
+# Print results
+print(c_wpu_summary)
+```
+### Mean of Avg Words per Utternace by total number of words over total number of utternaces
+```{r, echo=FALSE}
+
+tw_o_tu <- sum(avg_words_per_utt$total_words)/sum(avg_words_per_utt$total_utts)
+print(tw_o_tu)
+```
+
+### count of instances when gesture and pretend play occur simulatneously
+

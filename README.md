@@ -1,4 +1,1 @@
-# Play_Narrative
-Final Project for Data to Manuscript in R
-butts.
-SO MANY BUTTS.
+I have added a number of folders and data files that have to do with apaquarto and data wrangling. I have also added Middy as acollaborator.
