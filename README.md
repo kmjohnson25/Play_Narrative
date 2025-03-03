@@ -1,1 +1,2 @@
-I have added a number of folders and data files that have to do with apaquarto and data wrangling. I have also added Middy as acollaborator.
+2/27: I have added a number of folders and data files that have to do with apaquarto and data wrangling. I have also added Middy as a collaborator
+3/1: The qmd has an almost completed YAML, some placeholder text (as the study deign and hypotheses are going to change) as well as a preliminary references. citr is also now connected to the MAPS_Thesis.bib, which contains all my Zotero references for this project.

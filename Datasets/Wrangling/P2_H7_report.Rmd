@@ -1,0 +1,305 @@
+---
+title: "P2_H7_report"
+author: "Kristen Johnson"
+date: "2025-02-25"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(stringr)
+library(knitr)
+
+```
+
+# Typically Developing Children during Home Visit 7
+### N= 20; Age in months: M = 38
+```{r, echo=FALSE}
+#library(dplyr)
+
+# Create a data frame for demographics
+#demographics <- tibble(
+  #Characteristic = c("N (Total)", "Age (years)", "Gender", "Household Income", 
+                     #"Race/Ethnicity", "Parental Education (years)"),
+  #Description = c(
+   # "20",
+    #"M = 5.50, SD = 0.17",
+    #"11 girls, 9 boys",
+    #"Range: < $15K to > $100K; M = $60,875, SD = $32,830",
+    #"2 African-American, 1 Latino, 13 Caucasian, 3 Mixed-Race",
+    #"M = 16.1, SD = 1.77, Range = 12 to 18"
+  #)
+#)
+
+#options(knitr.kable.NA = '') # Ensures missing values are empty
+
+# Print as a table using kable
+#kable(demographics, caption = "Demographic Characteristics of TD Children")
+
+```
+
+## Import and Clean Dataset
+```{r, echo=FALSE}
+
+P2_H7_ALL <- read.csv('/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P2_H7_ALL.csv')
+
+# makes all c_form entries lower case
+P2_H7_ALL$c_form <- tolower(P2_H7_ALL$c_form)
+
+#list of all unique entries in c_form
+unique(P2_H7_ALL$c_form)
+
+# makes all column names lower case
+colnames(P2_H7_ALL) <- tolower(colnames(P2_H7_ALL))
+
+#list of column names
+#colnames(P2_H7_ALL)
+
+```
+
+## Child Gesture and Pretend Play overlap:
+```{r, echo=FALSE}
+
+# Filter for rows where c_pret is 1, then count occurrences of c-form
+PP_gest_overlap <- P2_H7_ALL %>%
+  filter(c_pret == 1 & !is.na(c_form)) # Only keep rows where c_pret is 1 and c_form has any value
+
+# View the result
+#print(PP_gest_overlap)
+
+```
+
+## Child Gesture Pretend Play overlap by individual:
+```{r, echo=FALSE}
+
+# Generate summary statistics for the count column 'n'
+cooccurance1 <- PP_gest_overlap %>%
+  group_by(participant_id) %>%
+  summarise(
+    PP_gest_overlap_individual = n()
+  )
+
+print(cooccurance1)
+```
+
+## Child Utterance and Pretend Play overlap:
+```{r, echo=FALSE}
+
+# Filter for rows where c_pret is 1, then count occurrences of c_utt
+PP_utts_overlap <- P2_H7_ALL %>%
+  filter(c_pret == 1 & !is.na(c_utts)) # Only keep rows where c_pret is 1 and c_utt has any value
+
+# View the result
+# print(PP_utts_overlap)
+
+```
+
+## Child Utterance and Pretend Play overlap by individual:
+```{r, echo=FALSE}
+
+cooccurance2 <- PP_utts_overlap %>%
+  group_by(participant_id) %>%
+  summarise(
+    PP_utts_overlap_individual = n()
+  )
+ 
+print(cooccurance2)
+```
+
+## Merged PP_Gesture and PP_Utterance subsets
+```{r, echo=FALSE}
+PP_utts_gest_overlap <- full_join(cooccurance1, cooccurance2, by = "participant_id")
+
+#print(PP_utts_gest_overlap)
+```
+
+## Representational (Iconic or Metaphoric or Demo) Gesture and Pretend Play overlap:
+```{r, echo=FALSE}
+# Filter for rows where c_pret is 1, then count occurrences of c-form
+PP_gest_rep_overlap <- P2_H7_ALL %>%
+  filter(c_pret == 1 & 
+         str_detect(c_form,"iconic|iconic+shake|beat-iconic-nod|iconic~|iconic-point|iconic-iconic|point~.iconic|iconic - iconic|iconic-iconic-cont palm|palm-iconic|iconic-iconic-iconic|point~-iconic|iconic ~|point-iconic|point-iconic-point|metaphoric|demo"))
+
+# View the result
+#print(PP_gest_rep_overlap)
+```
+
+## Representational (Iconic or Metaphoric or Demo) Gesture and Pretend Play overlap by individual:
+```{r, echo=FALSE}
+
+# Generate summary statistics for the count column 'n'
+cooccurance4 <- PP_gest_rep_overlap %>%
+  group_by(participant_id) %>%
+  summarise(
+    PP_gest_rep_overlap_individual = n()
+  )
+
+print(cooccurance4)
+
+```
+
+## Iconic Gesture and Pretend Play overlap:
+```{r, error+TRUE, echo=FALSE}
+# Filter for rows where c_pret is 1, then count occurrences of c-form
+PP_gest_icon_overlap <- P2_H7_ALL %>%
+  filter(c_pret == 1 & 
+         str_detect(c_form,"iconic|iconic+shake|beat-iconic-nod|iconic~|iconic-point|iconic-iconic|point~.iconic|iconic - iconic|iconic-iconic-cont palm|palm-iconic|iconic-iconic-iconic|point~-iconic|iconic ~|point-iconic|point-iconic-point")) # be sure to adjust specific words for each new dataset
+
+# View the result
+#print(PP_gest_icon_overlap)
+```
+
+## Iconic Gesture and Pretend Play overlap by individual:
+```{r, echo=FALSE}
+
+# Generate summary statistics for the count column 'n'
+cooccurance3 <- PP_gest_icon_overlap %>%
+  group_by(participant_id) %>%
+  summarise(
+    PP_gest_icon_overlap_individual = n()
+  )
+
+print(cooccurance3)
+```
+
+## Table of ALL Gesture, Utterance, and Representative Gesture:
+```{r, echo=FALSE}
+PP_utts_gest_rep_overlap <- full_join(PP_utts_gest_overlap, cooccurance4, by = "participant_id")
+
+print(PP_utts_gest_rep_overlap)
+```
+
+## Reshaped ALL Gesture, Utterance, and Representative Gesture Data for Plotting
+```{r, echo=FALSE}
+
+# Convert wide format to long format
+long_data_rep <- PP_utts_gest_rep_overlap %>%
+  pivot_longer(
+    cols = -participant_id, # Convert all except participant_id
+    names_to = "Category", 
+    values_to = "Count"
+  )
+
+# Rename categories for better visualization
+long_data_rep$Category <- recode(long_data_rep$Category, 
+                             PP_gest_overlap_individual = "All Gestures",
+                             PP_utts_overlap_individual = "Utterances",
+                             PP_gest_rep_overlap_individual = "Representational Gestures")
+
+#print(long_data_rep) # Check the long format structure
+```
+
+## Bar graph of All Gesture, Utterance, and Iconic Gesture data:
+```{r, echo=FALSE}
+ggplot(long_data_rep, aes(x = factor(participant_id), y = Count, fill = Category)) +
+  geom_bar(stat = "identity", position = "dodge") + 
+  labs(
+    title = " Utterances, Gestures, and Representational Gestures during Pretend Play per Participant",
+    x = "Participant ID",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +  # Rotate x-axis labels
+  scale_fill_manual(values = c("All Gestures" = "steelblue", 
+                               "Utterances" = "tomato", 
+                               "Representational Gestures" = "#FFC107"))  # Customize colors
+```
+
+## Table of ALL Gesture, Utterance, and Iconic Gesture:
+```{r, echo=FALSE}
+
+PP_utts_gest_icon_overlap <- full_join(PP_utts_gest_overlap, cooccurance3, by = "participant_id")
+
+print(PP_utts_gest_icon_overlap)
+
+```
+
+## Reshaped ALL Gesture, Utterance, and Iconic Gesture data for plotting  
+```{r, echo=FALSE}
+
+# Convert wide format to long format
+long_data_icon <- PP_utts_gest_icon_overlap %>%
+  pivot_longer(
+    cols = -participant_id, # Convert all except participant_id
+    names_to = "Category", 
+    values_to = "Count"
+  )
+
+# Rename categories for better visualization
+long_data_icon$Category <- recode(long_data_icon$Category, 
+                             PP_gest_overlap_individual = "All Gestures",
+                             PP_utts_overlap_individual = "Utterances",
+                             PP_gest_icon_overlap_individual = "Iconic Gestures")
+
+#print(long_data_icon) # Check the long format structure
+```
+
+## Bar graph of ALL Gesture, Utterance, and Iconic Gesture data:
+```{r, echo=FALSE}
+ggplot(long_data_icon, aes(x = factor(participant_id), y = Count, fill = Category)) +
+  geom_bar(stat = "identity", position = "dodge") + 
+  labs(
+    title = " Utterances, Gestures, and Iconic Gestures during Pretend Play per Participant",
+    x = "Participant ID",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +  # Rotate x-axis labels
+  scale_fill_manual(values = c("All Gestures" = "steelblue", 
+                               "Utterances" = "tomato", 
+                               "Iconic Gestures" = "seagreen"))  # Customize colors
+
+```
+
+## Bar graph of All Gestures and Iconic Gestures data
+```{r, echo=FALSE}
+
+# Filter out Utterances and keep only Gestures and Iconic Gestures
+long_data_icon_filtered <- long_data_icon %>%
+  filter(Category %in% c("All Gestures", "Iconic Gestures"))
+
+# Create the grouped bar chart
+ggplot(long_data_icon_filtered, aes(x = factor(participant_id), y = Count, fill = Category)) +
+  geom_bar(stat = "identity", position = "dodge") + 
+  labs(
+    title = "ALL Gestures compared to Iconic Gestures per Participant",
+    x = "Participant ID",
+    y = "Count",
+    fill = "Category"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +  
+  scale_fill_manual(values = c("All Gestures" = "steelblue", 
+                               "Iconic Gestures" = "seagreen"))  # Customize colors
+
+```
+
+## Bar graph of All Gestures and Representational Gestures data
+```{r, echo=FALSE}
+
+# Filter out Utterances and keep only Gestures and Representational Gestures
+long_data_rep_filtered <- long_data_rep %>%
+  filter(Category %in% c("All Gestures", "Representational Gestures"))
+
+# Create the grouped bar chart
+ggplot(long_data_rep_filtered, aes(x = factor(participant_id), y = Count, fill = Category)) +
+  geom_bar(stat = "identity", position = "dodge") + 
+  labs(
+    title = "ALL Gestures compared to Representational Gestures per Participant",
+    x = "Participant ID",
+    y = "Count",
+    fill = "Category"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +  
+  scale_fill_manual(values = c("All Gestures" = "steelblue", 
+                               "Representational Gestures" = "#FFC107"))  # Customize colors
+
+```
+
