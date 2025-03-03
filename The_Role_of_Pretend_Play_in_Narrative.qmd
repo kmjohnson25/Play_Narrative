@@ -19,7 +19,7 @@ author-note:
   disclosures:
     conflict of interest: The author has no conflict of interest to declare.
   related-report: "This article is based on archival data from the Language Development Project at The University of Chicago. The data has been used in previous studies by authors such as Ece Demir-Lira and Susan Goldin-Meadow."
-bibliography: MAPSS_Thesis.bib # create a bib file in the root directory of project 
+bibliography: Play_Narrative.bib # create a bib file in the root directory of project 
 format: 
   #apaquarto-docx: default
   apaquarto-html: default # remember to include all options at end
