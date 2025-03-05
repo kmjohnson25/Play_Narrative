@@ -1,0 +1,74 @@
+---
+title: "Interrater-Reliability"
+author: "Kristen Johnson"
+date: "2025-03-04"
+output: html_document
+---
+
+```{r setup, echo=FALSE,include=FALSE}
+# Load necessary libraries
+library(readxl)   # For reading Excel files
+library(dplyr)    # For binding and data manipulation
+library(lubridate)  # For handling datetime columns (if needed)
+library(tidyverse)  # to manipulate strings and a lot more
+
+```
+
+```{r}
+
+# read in the two coded transcripts
+## be sure to change initials for each coder
+JB_codes<- read_excel('/Users/kristenjohnson/KristenWorkingDirectory/Play_Narrative/Interrater Reliability/Coded_P3_H10/P3.46.10_COMPLETE_JB_02.26.25.xls')
+
+KJ_codes <- read_excel('/Users/kristenjohnson/KristenWorkingDirectory/Play_Narrative/Interrater Reliability/Coded_P3_H10/P3.46.10_COMPLETE_KJ_3.1.25.xls')
+
+```
+
+```{r}
+
+# get column names (to make sure c_pret is labelled righ way)
+colnames(JB_codes)  # Returns column names as a character vector
+colnames(KJ_codes)
+
+# extract c_pret columns to get pretend play codes from each coder's transcript
+## be sure to change initials for each coder
+JB_codes <- JB_codes %>%
+  select(c_pret_JB)
+
+KJ_codes <- KJ_codes %>%
+  select(c_pret_KJ)
+
+```
+
+```{r}
+
+# combine datasets into one
+coded_combined <- cbind(JB_codes, KJ_codes)
+
+```
+
+```{r}
+# create new columns for "both" and "either"
+## don't forget to change column names according to coder
+coded_combined <- coded_combined %>%
+  mutate(
+    both_ones = ifelse(c_pret_JB == 1 & c_pret_KJ == 1, 1, 0),
+    either_one = ifelse(c_pret_JB == 1 | c_pret_KJ == 1, 1, 0)
+  )
+```
+
+
+```{r}
+# change any NA value in both and either columns to 0
+coded_combined[, c("both_ones", "either_one")] <- lapply(coded_combined[, c("both_ones", "either_one")], function(x) replace(x, is.na(x), 0))  # Multiple columns
+```
+
+
+```{r}
+# generate interrater reliability score
+IRR_score <- sum(coded_combined$both_ones)/sum(coded_combined$either_one)
+
+print(IRR_score)
+
+```
+
