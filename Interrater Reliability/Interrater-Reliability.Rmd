@@ -1,8 +1,10 @@
 ---
-title: "Interrater-Reliability"
+title: "Interrater-Reliability_P3.46.10"
 author: "Kristen Johnson"
 date: "2025-03-04"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, echo=FALSE,include=FALSE}
@@ -24,7 +26,7 @@ KJ_codes <- read_excel('/Users/kristenjohnson/KristenWorkingDirectory/Play_Narra
 
 ```
 
-```{r}
+```{r, include=FALSE}
 
 # get column names (to make sure c_pret is labelled righ way)
 colnames(JB_codes)  # Returns column names as a character vector
