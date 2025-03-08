@@ -18,19 +18,27 @@ This folder contains all the apaquarto extension stuff. It needs to stay in the 
 
 ## Datasets
 This folder contains two subfolders: 
-* **CSVs_of_Combined_Data** 
-    - contains the raw data used for my study 
-* **Wrangling**
-    - contains Rmds with code used to clean and wrangle said data
+* **Narrative**
+    - contains two subfolders on narrative measures during literacy visits:
+      - **CSVs_of_Combined_Data_N** 
+        - contains the raw data used for my study
+      - **Wrangling_N**
+        - contains Rmds with code used to clean and wrangle said data
+* **Pretend Play**
+    - contains two subfolders on pretend play during home visits
+      - **CSVs_of_Combined_Data_PP** 
+        - contains the raw data used for my study 
+    - **Wrangling_PP**
+        - contains Rmds with code used to clean and wrangle said data
 
 ## Interrater Reliability
 This folder contains 3 subfolders and an Rmd
 * **Coded_P3_H7**: 
-    - transcripts from P3 (BI group) from Home Visit 7 that have been recently coded for pretend play (in addition to previsouly coded gestures and utterances)
+    - contains the transcripts from P3 (BI group) from Home Visit 7 that have been recently coded for pretend play (in addition to previously coded gestures and utterances)
 * **Coded_P3_H10**:
-    - transcripts from P3 (BI group) from Home Visit 10 that been recently coded for pretend play (in addition to previsouly coded gestures and utterances)
+    - contains the transcripts from P3 (BI group) from Home Visit 10 that been recently coded for pretend play (in addition to previously coded gestures and utterances)
 * **IRR scores**:
-    - interrater reliability scores for individual transcripts from both P3_H7 and P3_H10
+    - contains the interrater reliability scores for individual transcripts from both P3_H7 and P3_H10
 * **Interrater-Relability.Rmd**:
     - code for calculating IRR scores
     

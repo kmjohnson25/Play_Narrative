@@ -1,6 +1,6 @@
 ---
 title: "The Role of Pretend Play in Narrative Development: Comparing Gestural and Symbolic Pathways in Children With and Without Early Unilateral Brain Injury"
-shorttitle: "Pretend Play and Narrative"
+shorttitle: "Pretend Play and Narrative Development"
 author: 
   - name: Kristen M. Johnson
     corresponding: true
@@ -13,7 +13,7 @@ author:
         city: Chicago
         region: IL
         postal-code: 60637
-abstract: "This study investigates the differential relationships between gesture use during pretend play and subsequent narrative development in children with and without early unilateral brain injury. We compare how representational versus non-representational gestures produced during naturalistic play at 59 months predict narrative structure complexity at ages 5-6 years across these populations. Drawing from a longitudinal sample of 20 typically developing children and 11 children with pre- or perinatal brain lesions, we analyze spontaneous parent-child interactions and structured narrative tasks to delineate potential compensatory pathways in language development. Whereas previous research has primarily focused on gesture as a unified construct, we distinguish between different gestural categories to identify specific mechanisms that may support complex language development. Our theoretical framework proposes that representational gestures during pretend play may provide a crucial scaffold for the development of narrative abilities, potentially serving as an alternative route to narrative competence for children with neurological vulnerabilities. By examining populations where typically unified developmental processes may become uncoupled, this research contributes to our understanding of how gestural abilities support complex language development and identifies potential intervention approaches that leverage children's natural compensatory strategies. The findings have implications for both theoretical models of the relationship between play, gesture, and narrative development, and practical approaches to supporting children with developmental vulnerabilities."
+abstract: "This study investigates the differential relationships between gesture use during pretend play and subsequent narrative development in children with and without early unilateral brain injury. We compare how representational versus non-representational gestures produced during naturalistic play at three different time points (38, 42, and 50 months) predict narrative structure complexity of de novo stories created at ages 5-6 years across the two populations. Drawing from a longitudinal sample of 20 typically developing children and 11 children with pre- or perinatal brain lesions, we analyze spontaneous parent-child interactions and structured narrative tasks to delineate potential compensatory pathways in language development. Whereas previous research has primarily focused on gesture as a unified construct, we distinguish between different gestural categories to identify specific mechanisms that may support complex language development. Our theoretical framework proposes that representational gestures during pretend play may provide a crucial scaffold for the development of narrative abilities, potentially serving as an alternative route to narrative competence for children with neurological vulnerabilities. By examining populations where typically unified developmental processes may become uncoupled, this research contributes to our understanding of how gestural abilities support complex language development and identifies potential intervention approaches that leverage children's natural compensatory strategies. The findings have implications for both theoretical models of the relationship between play, gesture, and narrative development, and practical approaches to supporting children with developmental vulnerabilities."
 keywords: [pretend play, narrative, brain injury, typically developing, children, 3-6 years,representational gesture]
 author-note:
   disclosures:
@@ -63,8 +63,30 @@ Our research examines two key questions:
 Based on previous research, I hypothesized that the relationship between pretend play gestures and later narrative skill would differ between populations in theoretically meaningful ways. For children with brain injuries, I predicted character viewpoint gesture would play a particularly crucial role in supporting the development of complex narrative skills, potentially serving as a key compensatory mechanism for narrative development in this population. This prediction was supported by evidence that gesture can serve both diagnostic and facilitative functions in language development [@goldin-meadowGestureWindowCommunicative2015].
 
 # Method
+## Participants
+
+## Measures
+### Gesture Coding
+
+### Stein Story Stem Task
+
+### Stein Story Scoring
+
+## Procedures
+
+### Plan of Analysis
+* Narrative ~ group + gest_utt_pp + utt_pp_hr + lg_score + group:fest_utt_pp + (1/subject)
+  - for (1) ALL gest_pp, (2) Representational gest_pp, and maaaaybe (3) Iconic gest_pp
+  
+* AND/OR.... 
+  1.classify children into those who use 1+ iconic/representational gesture and those who don't, and then use that as a binary (yes/no) predictor in your analysis rather than a numeric one (0–infinity)
+
+  2. consider whether it would be useful to use all gesture instead (e.g., you can look at whether iconic gesture frequency and all gesture frequency are correlated, to reason about what you could learn indirectly about iconic gesture from measuring all gestures)
 
 # Results
+## Gesture and Language in Pretend Play
+
+## Pretend Play Behaviors as Predictors of Narrative Development
 
 # Discussion
 
