@@ -26,6 +26,7 @@ This folder contains 3 subfolders and an Rmd
 ## Manuscript 
 This folder contains everything directly related to the final manuscript for Play_Narrative Study. So far, that entails:
 * **The Role of Pretend Play in Narrative Development.Qmd**: 
+    - Qmd for the final manuscript of my thesis
 
 ## Play_Narrative.bib
 This library is an export of my Zotero library entitled MAPSS_Thesis, which contains all of the literature I might want to cite in my manuscript.
