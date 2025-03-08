@@ -1,7 +1,18 @@
 # Play_Narrative
-This is the main repo for my the study and resulting manuscript that I am conducting for my MAPSS thesis on narrative and play.
+This is the main repo for the study (and resulting manuscript) that I am conducting for my MAPSS thesis on children's language and gesture during pretend play and narrative development.
+There are a number of terms and abbreviations used in file names as well comments/notes within Rmds and the manuscript itself that I want to clearly define:
+* **P3**: refers to Project 3, the study conducted as part of the SGM Lab's Language Development Project on children with brain injuries.
+    - this same population is also sometimes referred to as BI (brain injury), UBI (unilateral brain injury), PL (pre and perinatal lesions) in the literature
+* **P2**: refers to Project 2, the study conducted as part of the SGM Lab's Language Development Project on typically developing children.
+    - this same population is also sometimes referred to as TD (typically developing)
+* **H7**: refers to Home Visit 7, the 7th (out of 12) time that researchers visited and recorded children's naturalistic speech and gesture in their homes.
+    - children were about 38 months old at this visit
+* **H8**: refers to Home Visit 8, the 8th (out of 12) time that researchers visited and recorded children's naturalistic speech and gesture in their homes.
+    - children were about 42 months old at this visit
+* **H10**: refers to Home Visit 10, the 10th (out of 12) time that researchers visited and recorded children's naturalistic speech and gesture in their homes.
+    - children were about 50 months old at this visit
 
-
+# Repo Contents
 ## _extensions
 This folder contains all the apaquarto extension stuff. It needs to stay in the top level of my repo so that document rendering doesn't get messed up.
 
