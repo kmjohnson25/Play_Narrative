@@ -16,7 +16,7 @@ There are a number of terms and abbreviations used in file names as well comment
 ## _extensions
 This folder contains all the apaquarto extension stuff. It needs to stay in the top level of my repo so that document rendering doesn't get messed up.
 
-## Datasets
+## PN_Datasets
 This folder contains two subfolders: 
 * **Narrative**
     - contains two subfolders on narrative measures during literacy visits:
@@ -31,7 +31,7 @@ This folder contains two subfolders:
     - **Wrangling_PP**
         - contains Rmds with code used to clean and wrangle said data
 
-## Interrater Reliability
+## PN_Interrater Reliability
 This folder contains 3 subfolders and an Rmd
 * **Coded_P3_H7**: 
     - contains the transcripts from P3 (BI group) from Home Visit 7 that have been recently coded for pretend play (in addition to previously coded gestures and utterances)
@@ -42,13 +42,20 @@ This folder contains 3 subfolders and an Rmd
 * **Interrater-Relability.Rmd**:
     - code for calculating IRR scores
     
-## Manuscript 
+## PN_Manuscript 
 This folder contains everything directly related to the final manuscript for Play_Narrative Study. So far, that entails:
-* **The Role of Pretend Play in Narrative Development.Qmd**: 
-    - Qmd for the final manuscript of my thesis
+* **Renders**: 
+    - subfolder with all the renders from previous drafts of the manuscript
 
 ## Play_Narrative.bib
 This library is an export of my Zotero library entitled MAPSS_Thesis, which contains all of the literature I might want to cite in my manuscript.
 
-## Qmd stuff
-This folder contains all the extras that come with a newly created Qmd. None of it is related to my actual project.
+## Extras
+This folder contains two subfolders:
+* **Qmd stuff**:
+    - contains all the extras that come with a newly created Qmd and some apaquarto examples. None of it is related to my actual project.
+* **The_Role_of_Pretend_Play_in_Narrative_files**:
+    - files generated from working on Qmd, none of which are necessary for final manuscript
+
+## The_Role_of_Pretend_Play_in_Narrative.Qmd: 
+    - Qmd for the final manuscript of my thesis
