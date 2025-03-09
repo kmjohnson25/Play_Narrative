@@ -23,7 +23,7 @@ bibliography: Play_Narrative.bib # create a bib file in the root directory of pr
 format: 
   #apaquarto-docx: default
   apaquarto-html: default # remember to include all options at end
-  #apaquarto-pdf: default
+  apaquarto-pdf: default
 floatsintext: true
 mask: false
 documentmode: man
@@ -34,6 +34,10 @@ donotrepeattitle: true
 ```{r}
 #| label: SETUP
 #| echo: false
+
+# load necessary packages
+library(tidyverse) #includes dyplyr, readr, forcats, stringr, ggplot2, tibble, lubridate, tidyr, purrr
+
 
 
 ```
@@ -64,6 +68,66 @@ Based on previous research, I hypothesized that the relationship between pretend
 
 # Method
 ## Participants
+See Table 1 for information on the neurological profiles of children with pre- or perinantal brain injury.
+
+
+```{r}
+#| label: tbl_P3-neurological-data
+#| echo: FALSE
+
+# Load necessary libraries
+library(dplyr)
+library(flextable)
+
+# Read in the CSV file
+P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
+
+# Remove the two columns (update names as needed)
+P3_neurological_data_filtered <- P3_neurological_data %>%
+  select(-Age_at_visit, -Sex) %>%  # Exclude unwanted columns
+  rename("Areas affected" = Areas_affected)  # Rename column before making table
+
+# Create APA-formatted flextable
+flextable(P3_neurological_data_filtered) %>%
+  set_caption("Neurological Profiles of Children with Pre- or Perinatal Brain Injury") %>%
+  add_footer_lines("Note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.") %>%
+  autofit()
+
+```
+
+
+```{r}
+#| label: tbl_P3-neurological-data
+#| echo: FALSE
+
+# read in the csv with P3 neurological data
+P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
+
+# Remove the two columns (replace "Column1" and "Column2" with actual column names)
+P3_neurological_data_filtered <- P3_neurological_data %>%
+  select(-Age_at_visit, -Sex)  # Exclude unwanted columns
+
+# create apa formatted table
+flextable(P3_neurological_data_filtered) %>%
+  rename("Areas affected" = Areas_affected) %>% # rename column to get rid of underscore
+  set_caption("Neurological Profiles of Children with Pre- or Perinatal Brain Injury") %>%
+  add_footer_lines("Note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.") %>%
+  autofit()
+```
+
+
+```{r}
+#| label: tbl_P3-neurological-profiles
+#| echo: FALSE
+#| tbl-cap: Neurological Profiles of Children with Pre- or Perinatal Brain Injury
+#| ft.align: left
+#| apa-note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.
+P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
+flextable(P3_neurological_data) %>%
+  theme_apa() 
+  
+```
+
 
 ## Measures
 ### Gesture Coding

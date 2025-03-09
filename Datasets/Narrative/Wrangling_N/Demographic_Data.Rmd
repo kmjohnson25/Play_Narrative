@@ -103,3 +103,13 @@ flextable(neurological_data) %>%
   autofit()
 ```
 
+APA-style table for Quarto document
+```{r, echo=FALSE}
+# Create an APA-style table with a caption
+kable(neurological_data, booktabs = TRUE, digits = 2,
+      caption = "Neurological Information about Children with Pre- or Perinatal Brain Injury") %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  footnote(general = "Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication."
+           ) 
+```
+
