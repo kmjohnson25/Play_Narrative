@@ -1,0 +1,171 @@
+---
+title: "The Role of Pretend Play in Narrative Development: Comparing Gestural and Symbolic Pathways in Children With and Without Early Unilateral Brain Injury"
+shorttitle: "Pretend Play and Narrative Development"
+author: 
+  - name: Kristen M. Johnson
+    corresponding: true
+    orcid: 0009-0008-3757-5795
+    email: kmjohnson25@uchicago.edu
+    affiliations: 
+      - name: University of Chicago
+        department: Department of Psychology
+        address: 5848 S University Ave
+        city: Chicago
+        region: IL
+        postal-code: 60637
+abstract: "This study investigates the differential relationships between gesture use during pretend play and subsequent narrative development in children with and without early unilateral brain injury. We compare how representational versus non-representational gestures produced during naturalistic play at three different time points (38, 42, and 50 months) predict narrative structure complexity of de novo stories created at ages 5-6 years across the two populations. Drawing from a longitudinal sample of 20 typically developing children and 11 children with pre- or perinatal brain lesions, we analyze spontaneous parent-child interactions and structured narrative tasks to delineate potential compensatory pathways in language development. Whereas previous research has primarily focused on gesture as a unified construct, we distinguish between different gestural categories to identify specific mechanisms that may support complex language development. Our theoretical framework proposes that representational gestures during pretend play may provide a crucial scaffold for the development of narrative abilities, potentially serving as an alternative route to narrative competence for children with neurological vulnerabilities. By examining populations where typically unified developmental processes may become uncoupled, this research contributes to our understanding of how gestural abilities support complex language development and identifies potential intervention approaches that leverage children's natural compensatory strategies. The findings have implications for both theoretical models of the relationship between play, gesture, and narrative development, and practical approaches to supporting children with developmental vulnerabilities."
+keywords: [pretend play, narrative, brain injury, typically developing, children, 3-6 years,representational gesture]
+author-note:
+  disclosures:
+    conflict of interest: The author has no conflict of interest to declare.
+  related-report: "This article is based on archival data from the Language Development Project at The University of Chicago. The data has been used in previous studies by authors such as Ece Demir-Lira and Susan Goldin-Meadow."
+bibliography: Play_Narrative.bib # create a bib file in the root directory of project 
+format: 
+  #apaquarto-docx: default
+  apaquarto-html: default # remember to include all options at end
+  apaquarto-pdf: default
+floatsintext: true
+mask: false
+documentmode: man
+fontsize: 12pt
+donotrepeattitle: true
+---
+
+```{r}
+#| label: SETUP
+#| echo: false
+#| include: false
+
+# load necessary packages
+library(tidyverse) #includes dyplyr, readr, forcats, stringr, ggplot2, tibble, lubridate, tidyr, purrr
+library(flextable) # includes functions for tabular reporting
+library(knitr)
+library(kableExtra)
+
+```
+
+The relationship between play and child development has been extensively studied, with research documenting significant associations between play experiences and developmental outcomes. However, the specific mechanisms through which play supports development remain incompletely understood, particularly regarding how biological and environmental factors may moderate these relationships. 
+
+Of the numerous types of play, pretend play—in which children operate simultaneously in real and imagined contexts—emerges as particularly significant for cognitive, linguistic and social development [@laiImpactPlayChild2018; @nicolopoulouNarrativePerformancePeer2014]. Recent theoretical and empirical work suggests that pretend play may serve crucial functions in developing abstract thinking, narrative abilities, and emotion regulation [@gleasonPretendPlayAbstraction2023; @lillardWhyChildrenPretend2017]. Pretend play involves multiple cognitive demands, including symbolic transformation, perspective-taking, and narrative construction. Each of these components may contribute differently to development, yet researchers have typically examined play as a unified construct rather than exploring its constituent elements [@lillardImpactPretendPlay2013; @lillardWhyChildrenPretend2017].
+
+The role of gesture in early language development provides unique insight into how different representational abilities might support complex language skills. Children typically begin using meaningful gestures between 9 and 12 months, before they produce words, and these early gestures predict subsequent language milestones [@goldin-meadowActionAbstractionGesture2015; @iversonGesturePavesWay2005]. For instance, children's use of gesture-plus-word combinations (e.g., pointing to a cup while saying "drink") reliably predicts when they will begin producing two-word utterances. Additionally, recent research demonstrates that children's use of iconic gestures at age 5 predicts their ability to produce well-structured narratives in subsequent years [@demirTaleTwoHands2015]. This predictive relationship suggests that gesture may serve as a transitional device in language development, allowing children to practice expressing complex ideas through one modality before they can do so in another [@iversonGesturePavesWay2005; @soWhenSpeechAmbiguous2010].
+
+Children with early unilateral brain injuries present a particularly informative case for understanding how gesture and play support development: while these children demonstrate remarkable plasticity in basic language functions, they show specific vulnerabilities in complex linguistic and cognitive tasks like narrative production [@demirNarrativeProcessingTypically2014; @demirNarrativeSkillChildren2010; @demirVocabularySyntaxNarrative2015]. These children produce narratives that are quantitatively and qualitatively different from those of typically developing peers, characterized by shorter length, less diverse vocabulary, and reduced structural complexity [@demirNarrativeSkillChildren2010]. However, it remains unclear whether these differences reflect specific deficits in narrative construction, broader challenges in symbolic thinking, or difficulties integrating multiple cognitive processes.
+
+Research on gesture and narrative development provides insight into potential mechanisms. When viewing stories presented with co-speech gestures by a narrator, children with brain injuries show enhanced narrative retelling abilities compared to stories presented without gesture [@demirNarrativeProcessingTypically2014]. Similarly, these children show stronger benefits from gestural support in developing narrative skills compared to typically developing peers [@demirVocabularySyntaxNarrative2015]). These findings suggest that gestural supports may differentially impact developmental mechanisms across populations.
+
+This differential impact becomes particularly relevant when considering different types of gestures. While previous research has focused primarily on iconic gestures that depict actions, objects, or spatial relationships, less attention has been paid to the broad category of representational gestures which includes iconic gestures as well as metaphoric gestures that depict abstract concepts and demonstrative gestures that show how actions are performed [@cooperriderWhenGestureBecomes2017; @hostetterWhenGesturesCommunicate2011]. Children with brain injuries often show particular sensitivity to gestures in narrative contexts, and the presence of gestures can significantly enhance their narrative performance [@demirNarrativeProcessingTypically2014]. Distinguishing between representational gestures (iconic, metaphoric, and demonstrative gestures that depict content) and non-representational gestures (such as beat gestures that emphasize rhythm of speech, or conventional gestures like thumbs up) may provide new insights into the specific gestural mechanisms that support narrative development.
+
+# Current Study
+The complex relationship between gesture, play and narrative development is difficult to disentangle when studying typically developing children alone, as these processes often develop in tandem. However, examining populations where these pathways may become uncoupled provides unique insight into how gestural processes support complex language development. Children with early unilateral brain injuries present such an opportunity - their selective pattern of preserved basic language skills but impaired complex narrative abilities allows us to examine how different types of gesture might support narrative development.
+Pretend play provides an ideal context for this investigation, as it naturally elicits character viewpoint gesture through its decontextualized nature. Research has established that pretend play incorporates both narrative and gestural elements in ways that appear to scaffold the development of abstract thinking and symbolic representation [@gleasonPretendPlayAbstraction2023]. The quality of pretend play, particularly children's ability to engage in elaborate sequences and object substitutions, predicts later semantic and narrative abilities [@stagnittiQualityPreschoolChildrens2015].
+
+Our research examines two key questions:
+
+1. How do different types of gesture (representational vs. non-representational) manifest during pretend play in children with and without brain injury?
+
+2. How do these early gestural patterns predict later narrative development?
+
+Based on previous research, I hypothesized that the relationship between pretend play gestures and later narrative skill would differ between populations in theoretically meaningful ways. For children with brain injuries, I predicted character viewpoint gesture would play a particularly crucial role in supporting the development of complex narrative skills, potentially serving as a key compensatory mechanism for narrative development in this population. This prediction was supported by evidence that gesture can serve both diagnostic and facilitative functions in language development [@goldin-meadowGestureWindowCommunicative2015].
+
+# Method
+## Participants
+Participants are 20 typically developing (TD) children (11 girls, 9 boys) and 11 children with pre- or perinatal unilateral brain injury (PL) (8 girls, 3 boys) who were part of a larger longitudinal study of language development in the greater Chicago area. All families were monolingual English-speaking. The TD children were recruited through advertisements and direct mailings to targeted zip codes, with the sample selected to represent the socioeconomic diversity of the major Midwestern city in which the study took place. Children with PL were recruited through pediatric neurologists and parent support groups in the same metropolitan area. The TD children (65% White, 10% Black, 5% Hispanic, and 15% mixed race) were approximately 38 months at the first time of assessment and 5 years old at the second time of assessment. Children with PL (100% White) were approximately 38 months and 6 years old at the respective assessment times. See Table 1 for information on the neurological profiles of children with pre- or perinantal brain injury.
+
+
+```{r}
+#| label: tbl_P3-neurological-data
+#| echo: FALSE
+
+# Read in the CSV file
+P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
+
+# Remove the two columns (update names as needed)
+P3_neurological_data_filtered <- P3_neurological_data %>%
+  select(-Age_at_visit, -Sex) %>%  # Exclude unwanted columns
+  rename("Areas affected" = Areas_affected)  # Rename column before making table
+
+# Create APA-formatted flextable
+flextable(P3_neurological_data_filtered) %>%
+  set_caption("Neurological Profiles of Children with Pre- or Perinatal Brain Injury") %>%
+  add_footer_lines("Note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.") %>%
+  autofit()
+
+```
+
+chicken_data %>%
+  kable("latex", caption = "Chicken Data: Egg Size and Weight by Breed", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped", "hold_position"),
+                font_size = 12, 
+                full_width = FALSE) %>%
+  column_spec(1, bold = TRUE)  # Bold the first column (Breed) for emphasis
+
+```{r}
+##| label: tbl_P3-neurological-data
+##| echo: FALSE
+
+# read in the csv with P3 neurological data
+#P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
+
+# Remove the two columns (replace "Column1" and "Column2" with actual column names)
+#P3_neurological_data_filtered <- P3_neurological_data %>%
+ # select(-Age_at_visit, -Sex)  # Exclude unwanted columns
+
+# create apa formatted table
+#flextable(P3_neurological_data_filtered) %>%
+ # rename("Areas affected" = Areas_affected) %>% # rename column to get rid of underscore
+ # set_caption("Neurological Profiles of Children with Pre- or Perinatal Brain Injury") %>%
+ # add_footer_lines("Note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.") %>%
+ # autofit()
+```
+
+
+```{r}
+##| label: tbl_P3-neurological-profiles
+##| echo: FALSE
+##| tbl-cap: Neurological Profiles of Children with Pre- or Perinatal Brain Injury
+##| ft.align: left
+##| apa-note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.
+#P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
+#flextable(P3_neurological_data) %>%
+#  theme_apa() 
+  
+```
+
+## Procedure
+Children were visited in their homes every 4 months between 14-58 months of age. At each visit, researchers video recorded 90-minute sessions of spontaneous parent-child interactions during typical daily activities. The current analyses focus on two key timepoints: age 59 months for analysis of spontaneous pretend play episodes during parent-child interaction, and ages 5-6 years for performance on structured narrative tasks. All interactions were video recorded, transcribed, and coded with high interrater reliability for gesture classification (88%, κ = .76).
+Children's gestures during both pretend play and narrative tasks were coded into two main categories: representational gestures (including iconic gestures that depict physical properties, metaphoric gestures that represent abstract concepts, and demonstration gestures that show how actions are performed) and non-representational gestures (including beat gestures that emphasize rhythm, deictic gestures that point to objects or locations, and conventional gestures that have culturally standardized forms and meanings). This distinction allows us to specifically examine how representational abilities during play support narrative development.
+
+## Measures
+### Gesture Coding
+
+### Stein Story Stem Task & Scoring
+Children's narrative abilities were assessed using the Stein narrative task, which presents children with story stems and asks them to create their own stories. Three stems were used: one about a fox living near a forest, another about a girl living near the ocean, and a third about a boy with many toys. Narrative organization at the global level is assessed using Stein and Glenn’s (1979) model of story complexity, which defines a “good” story as one organized around a protagonist’ goal-directed action. These narratives are built out of four organizing features: 1) an animate protagonist, 2) temporal structure, 3) causal structure and 4) goal-direction action. The presence of each successive feature in this list is contingent upon the presence of earlier features, and stories with more features are considered to be more complex than stories with fewer features
+
+### Plan of Analysis
+
+To understand how pretend play gestures support narrative development in TD children versus children with PL, my analyses proceeded in two phases. the frequency and types of gestures (representational vs. non-representational) during pretend play at 38, 42, and 50 months. Next, I analyzed how early gesture use predicted later narrative skill at around 5-6 years, with particular attention to whether these relationships are moderated by group status.
+
+* Narrative ~ group + gest_utt_pp + utt_pp_hr + lg_score + group:fest_utt_pp + (1/subject)
+  - for (1) ALL gest_pp, (2) Representational gest_pp, and maaaaybe (3) Iconic gest_pp
+  
+* AND/OR.... 
+  1.classify children into those who use 1+ iconic/representational gesture and those who don't, and then use that as a binary (yes/no) predictor in your analysis rather than a numeric one (0–infinity)
+
+  2. consider whether it would be useful to use all gesture instead (e.g., you can look at whether iconic gesture frequency and all gesture frequency are correlated, to reason about what you could learn indirectly about iconic gesture from measuring all gestures)
+
+# Results
+## Gesture and Language in Pretend Play
+
+## Pretend Play Behaviors as Predictors of Narrative Development
+
+# Discussion
+
+This study examined how different types of gesture during pretend play support narrative development in children with and without early unilateral brain injury. By analyzing representational gestures (iconic, metaphoric, and demonstrative) versus non-representational gestures during naturalistic play at age 59 months, and relating these to narrative abilities at ages 5-6 years, I aim to delineate specific developmental pathways that may be more adaptive for children with early brain injury.
+……………..
+I expect to find that children with brain injuries may demonstrate particularly strong use of representational gestures during pretend play, potentially reflecting early emergence of compensatory mechanisms. Such a finding would suggest that these children may naturally adopt strategies that support their narrative development, even before formal narrative skills emerge.
+Of particular interest is whether early representational gesture use predicts better narrative outcomes specifically for children with brain injuries. Previous research shows enhanced benefits of gesture for this population in narrative contexts (Demir et al., 2014), but it remains unclear whether this reflects a compensatory developmental pathway or simply greater reliance on preserved abilities. My longitudinal design allows me to examine whether stronger early representational gesture use predicts better narrative outcomes specifically for children with brain injuries, which would support the compensatory pathway hypothesis.
+These findings will contribute to both theoretical understanding of how gestural abilities support complex language development and practical approaches to supporting children with developmental vulnerabilities. By examining populations where typically unified developmental processes may become uncoupled, we can better understand the mechanisms through which play supports development and potentially identify targeted intervention approaches that leverage children's natural compensatory strategies.
+
+
+# References
