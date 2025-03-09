@@ -39,7 +39,6 @@ donotrepeattitle: true
 library(tidyverse) #includes dyplyr, readr, forcats, stringr, ggplot2, tibble, lubridate, tidyr, purrr
 library(flextable) # includes functions for tabular reporting
 
-
 ```
 
 The relationship between play and child development has been extensively studied, with research documenting significant associations between play experiences and developmental outcomes. However, the specific mechanisms through which play supports development remain incompletely understood, particularly regarding how biological and environmental factors may moderate these relationships. 
@@ -75,10 +74,6 @@ See Table 1 for information on the neurological profiles of children with pre- o
 #| label: tbl_P3-neurological-data
 #| echo: FALSE
 
-# Load necessary libraries
-library(dplyr)
-library(flextable)
-
 # Read in the CSV file
 P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
 
@@ -101,30 +96,30 @@ flextable(P3_neurological_data_filtered) %>%
 #| echo: FALSE
 
 # read in the csv with P3 neurological data
-P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
+#P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
 
 # Remove the two columns (replace "Column1" and "Column2" with actual column names)
-P3_neurological_data_filtered <- P3_neurological_data %>%
-  select(-Age_at_visit, -Sex)  # Exclude unwanted columns
+#P3_neurological_data_filtered <- P3_neurological_data %>%
+ # select(-Age_at_visit, -Sex)  # Exclude unwanted columns
 
 # create apa formatted table
-flextable(P3_neurological_data_filtered) %>%
-  rename("Areas affected" = Areas_affected) %>% # rename column to get rid of underscore
-  set_caption("Neurological Profiles of Children with Pre- or Perinatal Brain Injury") %>%
-  add_footer_lines("Note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.") %>%
-  autofit()
+#flextable(P3_neurological_data_filtered) %>%
+ # rename("Areas affected" = Areas_affected) %>% # rename column to get rid of underscore
+ # set_caption("Neurological Profiles of Children with Pre- or Perinatal Brain Injury") %>%
+ # add_footer_lines("Note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.") %>%
+ # autofit()
 ```
 
 
 ```{r}
 #| label: tbl_P3-neurological-profiles
 #| echo: FALSE
-#| tbl-cap: Neurological Profiles of Children with Pre- or Perinatal Brain Injury
-#| ft.align: left
-#| apa-note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.
-P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
-flextable(P3_neurological_data) %>%
-  theme_apa() 
+##| tbl-cap: Neurological Profiles of Children with Pre- or Perinatal Brain Injury
+##| ft.align: left
+##| apa-note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.
+#P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
+#flextable(P3_neurological_data) %>%
+#  theme_apa() 
   
 ```
 
