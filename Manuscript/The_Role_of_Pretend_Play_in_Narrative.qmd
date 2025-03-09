@@ -37,7 +37,7 @@ donotrepeattitle: true
 
 # load necessary packages
 library(tidyverse) #includes dyplyr, readr, forcats, stringr, ggplot2, tibble, lubridate, tidyr, purrr
-
+library(flextable) # includes functions for tabular reporting
 
 
 ```
