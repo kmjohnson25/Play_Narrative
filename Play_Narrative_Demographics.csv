@@ -1,0 +1,32 @@
+"ChildID","Group","ChildGender","ChildRace","ChildEthnicity","Age07","Grade07","PCG07","MotherEd07","MotherEdYrs07","FatherEd07","FatherEdYrs07","CaregiverEd07","Income07","IncomeGroup07","Age08","Grade08","Age09","Grade09"
+22,2,"F","White","Non-Hispanic",5.691,"KG","Mother","Bachelor's Degree",16,"Bachelor's Degree",16,16,"$75,000 - $99,999",87500,6.855,"1G",7.79,"2G"
+25,2,"M","White","Non-Hispanic",5.653,"KG","Mother","Bachelor's Degree",16,"Some College or Trade School",14,16,"$75,000 - $99,999",87500,6.675,"1G",7.762,"2G"
+28,2,"F","White","Non-Hispanic",5.634,"KG","Mother","Bachelor's Degree",16,"Advanced Degree",18,16,"> $100,000",1e+05,6.645,"1G",7.721,"2G"
+29,2,"F","Two or more races","Non-Hispanic",5.683,"KG","Father","Advanced Degree",18,"Bachelor's Degree",16,16,"> $100,000",1e+05,6.757,"1G",7.746,"2G"
+37,2,"F","White","Non-Hispanic",5.708,"KG","Mother","Bachelor's Degree",16,"Bachelor's Degree",16,16,"$75,000 - $99,999",87500,6.686,"1G",7.648,"2G"
+38,2,"F","White","Non-Hispanic",5.571,"KG","Mother","Advanced Degree",18,"Advanced Degree",18,18,"$75,000 - $99,999",87500,6.661,"1G",7.516,"2G"
+40,2,"F","Two or more races","Non-Hispanic",5.792,"KG","Dual","High School or GED",12,"High School or GED",12,12,"$75,000 - $99,999",87500,6.746,"1G",NA,"no visit"
+42,2,"M","White","Non-Hispanic",5.639,"KG","Dual","Some College or Trade School",14,NA,NA,NA,"$15,000 - $34,999",25000,6.62,"1G",7.669,"2G"
+43,2,"M","White","Non-Hispanic",5.169,"PS","Mother","Bachelor's Degree",16,"Bachelor's Degree",16,16,"$50,000 - $74,999",62500,6.191,"KG",7.227,"1G"
+44,2,"F","Black or African American","Non-Hispanic",5.413,"KG","Mother","Some College or Trade School",14,"Some College or Trade School",14,14,"$35,000 - $49,999",42500,6.478,"no data",7.596,"2G"
+45,2,"F","White","Non-Hispanic",5.486,"KG","Mother","Bachelor's Degree",16,"Advanced Degree",18,16,"> $100,000",1e+05,6.519,"1G",7.536,"2G"
+54,2,"M","White","Non-Hispanic",5.579,"PS","Mother","Advanced Degree",18,"Advanced Degree",18,18,"$35,000 - $49,999",42500,6.541,"KG",7.593,"1G"
+58,2,"M","White","Non-Hispanic",5.372,"PS","Mother","Advanced Degree",18,"Advanced Degree",18,18,"$35,000 - $49,999",42500,6.295,"KG",7.292,"no data"
+61,2,"F","White","Hispanic",5.27,"PS","Mother","High School or GED",12,NA,NA,12,"$15,000 - $34,999",25000,6.309,"KG",7.314,"1G"
+68,2,"F","Black or African American","Non-Hispanic",5.678,"KG","Mother","Some College or Trade School",14,"Some College or Trade School",14,14,"< $15,000",7500,6.437,"no data",7.5,"no data"
+75,2,"M","White","Non-Hispanic",5.254,"PS","Mother","Advanced Degree",18,"Advanced Degree",18,18,"> $100,000",1e+05,6.169,"no data",7.219,"no data"
+84,2,"M","White","Non-Hispanic",5.462,"PS","Mother","Some College or Trade School",14,"Some College or Trade School",14,14,"> $100,000",1e+05,6.399,"KG",7.429,"no data"
+102,2,"M","White","Non-Hispanic",5.557,"no data","Mother","Bachelor's Degree",16,NA,NA,16,"$35,000 - $49,999",42500,6.519,"KG",7.437,"1G"
+103,2,"F","Two or more races","Non-Hispanic",5.249,"PS","Mother","Bachelor's Degree",16,"Advanced Degree",18,16,"$50,000 - $74,999",62500,6.21,"KG",7.221,"no data"
+106,2,"F","Two or more races","Non-Hispanic",5.454,"KG","Mother","Advanced Degree",18,"Bachelor's Degree",16,18,"$50,000 - $74,999",62500,6.587,"no data",7.53,"2G"
+30,3,"F","White","Non-Hispanic",5.53,"KG","Mother","Advanced Degree",18,"Advanced Degree",18,18,"$50,000 - $74,999",62500,6.593,"1G",7.626,"2G"
+35,3,"F","White","Non-Hispanic",6.328,"KG","Mother","Some College or Trade School",14,"Bachelor's Degree",16,14,"$50,000 - $74,999",62500,NA,NA,NA,NA
+46,3,"F","White","Non-Hispanic",5.795,"PS","Other","High School or GED",12,"Some College or Trade School",14,12,"> $100,000",1e+05,NA,NA,NA,NA
+93,3,"M","White","Non-Hispanic",5.653,"PS","Mother","Advanced Degree",18,"Advanced Degree",18,18,"$75,000 - $99,999",87500,6.527,"KG",7.522,"1G"
+94,3,"F","White","Non-Hispanic",6.322,"KG","Mother","Bachelor's Degree",16,"Some College or Trade School",14,16,"$50,000 - $74,999",62500,7.32,NA,8.347,NA
+98,3,"M","White","Non-Hispanic",8.962,"3G",NA,"Bachelor's Degree",16,"Bachelor's Degree",16,16,NA,NA,9.861,"4G",NA,NA
+99,3,"M","White","Non-Hispanic",7.003,"1G","Mother","Bachelor's Degree",16,"Advanced Degree",18,16,"$35,000 - $49,999",42500,8.005,"2G",NA,NA
+117,3,"F","White","Non-Hispanic",5.943,"PS","Mother","High School or GED",12,"Bachelor's Degree",16,12,"$50,000 - $74,999",62500,6.85,"KG",7.792,"1G"
+132,3,"F","White","Non-Hispanic",NA,NA,"Mother","Some College or Trade School",14,"Advanced Degree",18,14,"> $100,000",1e+05,5.65,"KG",6.623,"1G"
+135,3,"F","White","Non-Hispanic",5.131,"PS","Mother","Bachelor's Degree",16,"Bachelor's Degree",16,16,"> $100,000",1e+05,6.109,"KG",7.085,"1G"
+150,3,"F","White","Non-Hispanic",NA,NA,"Dual","Some College or Trade School",14,"High School or GED",12,13,"> $100,000",1e+05,5.246,"PS",6.374,"KG"

@@ -1,0 +1,44 @@
+---
+title: "Narrative _Data_Wrangling"
+author: "Kristen Johnson"
+date: "2025-03-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+library(dplyr)
+```
+
+```{r}
+Narrative_Results_Simple <- read_xlsx("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Simple.xlsx")
+```
+
+
+```{r}
+Play_Narrative_Demographics <- read_xlsx("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Play_Narrative_Demographics.xlsx")
+
+
+# Function to calculate percentages
+calculate_percentage <- function(data, variable) {
+  data %>%
+    count(!!sym(variable)) %>%
+    mutate(Percentage = round(n / sum(n) * 100, 1))
+}
+
+# Filter data for Group 2 and Group 3
+demographics_group2 <- Play_Narrative_Demographics %>% filter(Group == 2)
+demographics_group3 <- Play_Narrative_Demographics %>% filter(Group == 3)
+
+# Compute percentages
+gender_group2 <- calculate_percentage(demographics_group2, "ChildGender")
+gender_group3 <- calculate_percentage(demographics_group3, "ChildGender")
+
+race_group2 <- calculate_percentage(demographics_group2, "ChildRace")
+race_group3 <- calculate_percentage(demographics_group3, "ChildRace")
+
+ethnicity_group2 <- calculate_percentage(demographics_group2, "ChildEthnicity")
+ethnicity_group3 <- calculate_percentage(demographics_group3, "ChildEthnicity")
+
+```
+

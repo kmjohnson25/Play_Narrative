@@ -28,6 +28,7 @@ floatsintext: true
 mask: false
 documentmode: man
 fontsize: 12pt
+mainfont: "Times New Roman"
 donotrepeattitle: true
 ---
 
@@ -37,11 +38,12 @@ donotrepeattitle: true
 #| include: false
 
 # load necessary packages
-library(tidyverse) #includes dyplyr, readr, forcats, stringr, ggplot2, tibble, lubridate, tidyr, purrr
+library(tidyverse) # includes dyplyr, readr, forcats, stringr, ggplot2, tibble, lubridate, tidyr, purrr
 library(flextable) # includes functions for tabular reporting
 library(knitr)
 library(kableExtra)
-
+library(readxl)
+library(scales)
 ```
 
 The relationship between play and child development has been extensively studied, with research documenting significant associations between play experiences and developmental outcomes. However, the specific mechanisms through which play supports development remain incompletely understood, particularly regarding how biological and environmental factors may moderate these relationships. 
@@ -69,71 +71,84 @@ Our research examines two key questions:
 Based on previous research, I hypothesized that the relationship between pretend play gestures and later narrative skill would differ between populations in theoretically meaningful ways. For children with brain injuries, I predicted character viewpoint gesture would play a particularly crucial role in supporting the development of complex narrative skills, potentially serving as a key compensatory mechanism for narrative development in this population. This prediction was supported by evidence that gesture can serve both diagnostic and facilitative functions in language development [@goldin-meadowGestureWindowCommunicative2015].
 
 # Method
-## Participants
-Participants are 20 typically developing (TD) children (11 girls, 9 boys) and 11 children with pre- or perinatal unilateral brain injury (PL) (8 girls, 3 boys) who were part of a larger longitudinal study of language development in the greater Chicago area. All families were monolingual English-speaking. The TD children were recruited through advertisements and direct mailings to targeted zip codes, with the sample selected to represent the socioeconomic diversity of the major Midwestern city in which the study took place. Children with PL were recruited through pediatric neurologists and parent support groups in the same metropolitan area. The TD children (65% White, 10% Black, 5% Hispanic, and 15% mixed race) were approximately 38 months at the first time of assessment and 5 years old at the second time of assessment. Children with PL (100% White) were approximately 38 months and 6 years old at the respective assessment times. See Table 1 for information on the neurological profiles of children with pre- or perinantal brain injury.
+```{r}
+#| label: Group_Demographics
+#| echo: false
+#| include: false
 
+Play_Narrative_Demographics <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Play_Narrative_Demographics.csv")
+
+# get the total number of participants in each group and extract # for inline use
+total_group2 <- Play_Narrative_Demographics %>% filter(Group == 2) %>% nrow()
+total_group3 <- Play_Narrative_Demographics %>% filter(Group == 3) %>% nrow()
+
+# Function to calculate percentages
+calculate_percentage <- function(data, variable) {
+  data %>%
+    count(!!sym(variable)) %>%
+    mutate(Percentage = round(n / sum(n) * 100, 1))
+}
+
+# Filter data for Group 2 and Group 3
+demographics_group2 <- Play_Narrative_Demographics %>% filter(Group == 2)
+demographics_group3 <- Play_Narrative_Demographics %>% filter(Group == 3)
+
+# Compute percentages of race, ethnicity for group 2 & group 3 and extract #'s for inline use
+race_group2 <- calculate_percentage(demographics_group2, "ChildRace")
+race_group3 <- calculate_percentage(demographics_group3, "ChildRace")
+
+ethnicity_group2 <- calculate_percentage(demographics_group2, "ChildEthnicity")
+ethnicity_group3 <- calculate_percentage(demographics_group3, "ChildEthnicity")
+
+# Years of education for Group 2
+avg_parent_ed_group2 <- demographics_group2 %>% ## Mean
+  summarize(mean((MotherEdYrs07 + FatherEdYrs07) / 2, na.rm = TRUE)) %>%
+   round(2)
+
+sd_parent_ed_group2 <- demographics_group2 %>% ## Standard Deviation
+  summarize(sd((MotherEdYrs07 + FatherEdYrs07) / 2, na.rm = TRUE)) %>%
+  round(2)
+  
+# Years of education for Group 3
+avg_parent_ed_group3 <- demographics_group3 %>% ## Mean
+  summarize(mean((MotherEdYrs07 + FatherEdYrs07) / 2, na.rm = TRUE)) %>%
+  round(2)
+  
+sd_parent_ed_group3 <- demographics_group3 %>% ## Standard Deviation
+  summarize(sd((MotherEdYrs07 + FatherEdYrs07) / 2, na.rm = TRUE)) %>%
+  round(2)
+
+```
+
+## Participants
+Participants are `r total_group2` typically developing (TD) children (`r sum(demographics_group2$ChildGender == "F")` girls, `r sum(demographics_group2$ChildGender == "M")` boys) and `r total_group3` children with pre- or perinatal unilateral brain injury (PL) (`r sum(demographics_group3$ChildGender == "F")`girls, `r sum(demographics_group3$ChildGender == "M")` boys) who were part of a larger longitudinal study of language development in the greater Chicago area. All families were monolingual English-speaking. Recruitment for TD children involved advertisements and direct mailings to targeted zip codes, with the sample selected to represent the socioeconomic diversity of the major Midwestern city in which the study took place. 
+The TD children (`r race_group2$Percentage[3]`% White, `r race_group2$Percentage[1]`% Black, and `r race_group2$Percentage[2]`% mixed race; `r ethnicity_group2$Percentage[1]`% Hispanic,) were approximately 38 months at the first time of pretend play assessment and approximately 5 years old at the first time of narrative assessment. Parental education for TD children ranged from 12 to 18 years (M=`r avg_parent_ed_group2`; SD= `r sd_parent_ed_group2` and median annual household income was $42,000. 
+Recruitment for children with PL involved pediatric neurologists and parent support groups in the same metropolitan areaas TD children. Children with PL (`r race_group3$Percentage[1]`% White) were approximately 38 months at the first time of pretend play assessment and approximately 6 years old at the first time of narrative assessment. Parental education for TD children ranged from 12 to 18 years (M=`r avg_parent_ed_group3`; SD=`r sd_parent_ed_group3`) and median annual household income was $87,500. See Table ____for information on the neurological profiles of children with pre- or perinantal brain injury.
 
 ```{r}
-#| label: tbl_P3-neurological-data
+#| label: tbl-P3-neurological-data
 #| echo: FALSE
 
 # Read in the CSV file
-P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
+P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
 
 # Remove the two columns (update names as needed)
 P3_neurological_data_filtered <- P3_neurological_data %>%
   select(-Age_at_visit, -Sex) %>%  # Exclude unwanted columns
   rename("Areas affected" = Areas_affected)  # Rename column before making table
 
-# Create APA-formatted flextable
-flextable(P3_neurological_data_filtered) %>%
-  set_caption("Neurological Profiles of Children with Pre- or Perinatal Brain Injury") %>%
-  add_footer_lines("Note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.") %>%
-  autofit()
-
-```
-
-chicken_data %>%
-  kable("latex", caption = "Chicken Data: Egg Size and Weight by Breed", booktabs = TRUE) %>%
-  kable_styling(latex_options = c("striped", "hold_position"),
+# create a table
+P3_neurological_data_filtered %>%
+  kable("latex", caption = "Neurological Profiles of Children with Pre- or Perinatal Brain Injury", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped"),
                 font_size = 12, 
                 full_width = FALSE) %>%
-  column_spec(1, bold = TRUE)  # Bold the first column (Breed) for emphasis
+                footnote(general = "Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts.* Neonatal seizures resolved without medication.")  
 
-```{r}
-##| label: tbl_P3-neurological-data
-##| echo: FALSE
-
-# read in the csv with P3 neurological data
-#P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
-
-# Remove the two columns (replace "Column1" and "Column2" with actual column names)
-#P3_neurological_data_filtered <- P3_neurological_data %>%
- # select(-Age_at_visit, -Sex)  # Exclude unwanted columns
-
-# create apa formatted table
-#flextable(P3_neurological_data_filtered) %>%
- # rename("Areas affected" = Areas_affected) %>% # rename column to get rid of underscore
- # set_caption("Neurological Profiles of Children with Pre- or Perinatal Brain Injury") %>%
- # add_footer_lines("Note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.") %>%
- # autofit()
-```
-
-
-```{r}
-##| label: tbl_P3-neurological-profiles
-##| echo: FALSE
-##| tbl-cap: Neurological Profiles of Children with Pre- or Perinatal Brain Injury
-##| ft.align: left
-##| apa-note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.
-#P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
-#flextable(P3_neurological_data) %>%
-#  theme_apa() 
-  
 ```
 
 ## Procedure
-Children were visited in their homes every 4 months between 14-58 months of age. At each visit, researchers video recorded 90-minute sessions of spontaneous parent-child interactions during typical daily activities. The current analyses focus on two key timepoints: age 59 months for analysis of spontaneous pretend play episodes during parent-child interaction, and ages 5-6 years for performance on structured narrative tasks. All interactions were video recorded, transcribed, and coded with high interrater reliability for gesture classification (88%, κ = .76).
+Children were visited in their homes every 4 months between 14-58 months of age. At each visit, researchers video recorded 90-minute sessions of spontaneous parent-child interactions during typical daily activities. The current analyses focus on two key timepoints: ages 30-50 months for analysis of spontaneous pretend play episodes during parent-child interaction, and ages 5-6 years for performance on structured narrative tasks. All interactions were video recorded, transcribed, and coded with high interrater reliability for gesture classification (88%, κ = .76).
 Children's gestures during both pretend play and narrative tasks were coded into two main categories: representational gestures (including iconic gestures that depict physical properties, metaphoric gestures that represent abstract concepts, and demonstration gestures that show how actions are performed) and non-representational gestures (including beat gestures that emphasize rhythm, deictic gestures that point to objects or locations, and conventional gestures that have culturally standardized forms and meanings). This distinction allows us to specifically examine how representational abilities during play support narrative development.
 
 ## Measures
