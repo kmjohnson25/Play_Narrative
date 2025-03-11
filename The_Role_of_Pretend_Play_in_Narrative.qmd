@@ -117,7 +117,6 @@ avg_parent_ed_group3 <- demographics_group3 %>% ## Mean
 sd_parent_ed_group3 <- demographics_group3 %>% ## Standard Deviation
   summarize(sd((MotherEdYrs07 + FatherEdYrs07) / 2, na.rm = TRUE)) %>%
   round(2)
-
 ```
 
 ## Participants
@@ -128,6 +127,7 @@ Recruitment for children with PL involved pediatric neurologists and parent supp
 ```{r}
 #| label: neuro-data
 #| echo: FALSE
+#| fig.pos: "H"
 
 # Read in the CSV file
 P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
@@ -140,22 +140,44 @@ P3_neurological_data_filtered <- P3_neurological_data %>%
 # create a table
 P3_neurological_data_filtered %>%
   kable("latex", caption = "Neurological Profiles of Children with Pre- or Perinatal Brain Injury", booktabs = TRUE) %>%
-  kable_styling(latex_options = c("striped", "scale_down"),
+  kable_styling(latex_options = c("striped", "scale_down", "hold_position"),
                 font_size = 12, 
                 full_width = FALSE) %>%
                 footnote(general = "See footnote for codes.")
-
 ```
 
 ## Procedure
-Children were visited in their homes every 4 months between 14-58 months of age. At each visit, researchers video recorded 90-minute sessions of spontaneous parent-child interactions during typical daily activities. The current analyses focus on two key timepoints: ages 30-50 months for analysis of spontaneous pretend play episodes during parent-child interaction, and ages 5-6 years for performance on structured narrative tasks. All interactions were video recorded, transcribed, and coded with high interrater reliability for gesture classification (88%, κ = .76).
-Children's gestures during both pretend play and narrative tasks were coded into two main categories: representational gestures (including iconic gestures that depict physical properties, metaphoric gestures that represent abstract concepts, and demonstration gestures that show how actions are performed) and non-representational gestures (including beat gestures that emphasize rhythm, deictic gestures that point to objects or locations, and conventional gestures that have culturally standardized forms and meanings). This distinction allows us to specifically examine how representational abilities during play support narrative development.
+Children were visited in their homes every 4 months between 14-58 months of age. At each home visit, researchers video recorded 90-minute sessions of spontaneous parent-child interactions during typical daily activities. Children were later visited in their schools very year between 5 and 8 years of age. At each school visit, researchers video recorded children performing a series of literary tests. The current analyses focus on two key timepoints: ages 30-50 months for analysis of spontaneous pretend play episodes during parent-child interaction, and ages 5-6 years for performance on structured narrative tasks. All home visit interactions were video recorded, transcribed, and coded with high interrater reliability for language (95% agreement on utterance transcription), gesture (88%, κ = .76), and pretend play (95.6%, κ =  0.73. All school visit interactions were video recorded, transcribed, and coded with substqntial reliability (ICC=0.76) for narrative structure, consistent with agreement scores in similar narrative studies [@jonesEffectsSocialRelationships1996; @mccabeComparisonPersonalFictional2008]. All discrepancies were resolved through discussion.
 
 ## Measures
-### Gesture Coding
+### Pretend Play Coding
+Children's spontaneous parent-child interactions were coded for pretend play using the Coding Manual for Decontextualized Language, developed by @demirVocabularySyntaxNarrative2015, in which pretend play was defined as discourse during episodes of pretend interaction. Episodes could include representing an object as something other than it is; attributing speech, actions, thoughts, or feelings to inanimate objects; assuming a role or alternate persona; and enacting novel scripts or telling an original story.
 
-### Stein Story Stem Task & Scoring
-Children's narrative abilities were assessed using the Stein narrative task, which presents children with story stems and asks them to create their own stories. Three stems were used: one about a fox living near a forest, another about a girl living near the ocean, and a third about a boy with many toys. Narrative organization at the global level is assessed using Stein and Glenn’s (1979) model of story complexity, which defines a “good” story as one organized around a protagonist’ goal-directed action. These narratives are built out of four organizing features: 1) an animate protagonist, 2) temporal structure, 3) causal structure and 4) goal-direction action. The presence of each successive feature in this list is contingent upon the presence of earlier features, and stories with more features are considered to be more complex than stories with fewer features
+### Gesture Coding
+Children's gestures during both pretend play and narrative tasks were coded into two main categories: **representational gestures** (including iconic gestures that depict physical properties, metaphoric gestures that represent abstract concepts, and demonstration gestures that show how actions are performed) and **non-representational gestures** (including beat gestures that emphasize rhythm, deictic gestures that point to objects or locations, and conventional gestures that have culturally standardized forms and meanings). 
+
+### Stein Story Stem Task & Narrative Scoring
+Children's narrative abilities were assessed using the Stein narrative task, which presents children with story stems and asks them to create their own stories. Three stems were used: one about a fox living near a forest, another about a girl living near the ocean, and a third about a boy with many toys. Narrative organization at the global level is assessed using the model of story complexity by @steinn.l.AnalysisStoryComprehension1979, which defines a “good” story as one organized around a protagonist’ goal-directed action. These narratives are built out of four organizing features: 1) an animate protagonist, 2) temporal structure, 3) causal structure and 4) goal-direction action. The presence of each successive feature in this list is contingent upon the presence of earlier features, and stories with more features are considered to be more complex than stories with fewer features. Based on analyses of these features, each child's story was placed into one of the following nine categories: 
+
+* **No structure (NS)** is a narrative that includes only one clause with or without a verb. 
+
+* **Descriptive story (DS)** is a narrative that includes a series of clauses that do not report actions; even if it does report actions, the actions are not constrained by temporality.
+
+* **Action story (AC)** is a narrative that includes actions *with a temporal order* (events follow one another in time), but story events are not causally organized.
+
+* **Reactive story (RS)** is a narrative that includes actions that are causally organized, (events in one clause cause the actions in the following clause).
+
+* **Incomplete goal-based story (IGB)** is a narrative that contains a goal statement, but no attempt or outcome following the goal.
+
+* **Incomplete goal-based with attempt (IGBA)** is a narrative that contains a goal statement, and attempt(s), but not outcome following the goal.
+
+* **Complete goal-based story with one episode implicit goal (GB1-IG)** is a narrative that includes not only temporal and causal structure, but also an *implicitly*-stated goal of the protagonist, *one* series of attempts to achieve the goal, and an outcome of these attempts.
+
+* **Complete goal-based story with one episode explicit goal (GB1-IG)** is a narrative that includes not only temporal and causal structure, but also an *explicitly*-stated goal of the protagonist, *one* series of attempts to achieve the goal, and an outcome of these attempts.
+
+* **Complete goal-based story with multiple episodes implicit goal (GBM-IG)** is a narrative that includes *multiple* goal-attempt-outcome sequences. Multiple episode stories include more than one series of attempts, and frequently include more than one *implicitly*-stated goal. 
+
+* **Complete goal-based story with multiple episodes explicit goal (GBM-EG)** is a narrative includes *multiple* goal-attempt-outcome sequences. At least one of the goals is stated *explicitly*.
 
 ### Plan of Analysis
 
@@ -171,8 +193,14 @@ To understand how pretend play gestures support narrative development in TD chil
 
 # Results
 ## Gesture and Language in Pretend Play
+```{r}
+
+```
 
 ## Pretend Play Behaviors as Predictors of Narrative Development
+```{r}
+
+```
 
 # Discussion
 
