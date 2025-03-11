@@ -1,5 +1,11 @@
 # Play_Narrative
 This is the main repo for the study (and resulting manuscript) that I am conducting for my MAPSS thesis on children's language and gesture during pretend play and narrative development.
+The research study examines two key questions:
+
+1. How do different types of gesture (representational vs. non-representational) manifest during pretend play in children with and without brain injury?
+
+2. How do these early gestural patterns predict later narrative development?
+
 There are a number of terms and abbreviations used in file names as well comments/notes within Rmds and the manuscript itself that I want to clearly define:
 * **P3**: refers to Project 3, the study conducted as part of the SGM Lab's Language Development Project on children with brain injuries.
     - this same population is also sometimes referred to as BI (brain injury), UBI (unilateral brain injury), PL (pre and perinatal lesions) in the literature
