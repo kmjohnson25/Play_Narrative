@@ -34,6 +34,8 @@ This library is an export of my Zotero library entitled MAPSS_Thesis, which cont
 
 ## PN_Datasets
 This folder contains two subfolders: 
+* **Demographics**
+    - contains scripts for wrangling as ell as basic demographic data  for P2 & P3 groups
 * **Narrative**
     - contains two subfolders on narrative measures during literacy visits:
       - **CSVs_of_Combined_Data_N** 

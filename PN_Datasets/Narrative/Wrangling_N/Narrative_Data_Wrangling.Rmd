@@ -1,0 +1,22 @@
+---
+title: "Narrative _Data_Wrangling"
+author: "Kristen Johnson"
+date: "2025-03-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+library(dplyr)
+```
+
+```{r}
+Narrative_Results_Simple <- read_xlsx("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Simple.xlsx")
+```
+
+
+```{r}
+P
+
+```
+

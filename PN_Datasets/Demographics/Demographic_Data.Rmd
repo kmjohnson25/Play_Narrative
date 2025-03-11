@@ -1,5 +1,5 @@
 ---
-title: "Demographic-Data_P3"
+title: "PN_Demographic-Data"
 author: "Kristen Johnson"
 date: "2025-03-08"
 output: html_document
@@ -111,5 +111,31 @@ kable(neurological_data, booktabs = TRUE, digits = 2,
   kable_styling(full_width = FALSE, position = "center") %>%
   footnote(general = "Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication."
            ) 
+```
+
+```{r}
+# read in demogrpahics for both P3 and P2
+Play_Narrative_Demographics <- read_xlsx("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Play_Narrative_Demographics.xlsx")
+
+# Function to calculate percentages
+calculate_percentage <- function(data, variable) {
+  data %>%
+    count(!!sym(variable)) %>%
+    mutate(Percentage = round(n / sum(n) * 100, 1))
+}
+
+# Filter data for Group 2 and Group 3
+demographics_group2 <- Play_Narrative_Demographics %>% filter(Group == 2)
+demographics_group3 <- Play_Narrative_Demographics %>% filter(Group == 3)
+
+# Compute percentages
+gender_group2 <- calculate_percentage(demographics_group2, "ChildGender")
+gender_group3 <- calculate_percentage(demographics_group3, "ChildGender")
+
+race_group2 <- calculate_percentage(demographics_group2, "ChildRace")
+race_group3 <- calculate_percentage(demographics_group3, "ChildRace")
+
+ethnicity_group2 <- calculate_percentage(demographics_group2, "ChildEthnicity")
+ethnicity_group3 <- calculate_percentage(demographics_group3, "ChildEthnicity")
 ```
 
