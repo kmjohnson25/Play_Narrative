@@ -123,10 +123,10 @@ sd_parent_ed_group3 <- demographics_group3 %>% ## Standard Deviation
 ## Participants
 Participants are `r total_group2` typically developing (TD) children (`r sum(demographics_group2$ChildGender == "F")` girls, `r sum(demographics_group2$ChildGender == "M")` boys) and `r total_group3` children with pre- or perinatal unilateral brain injury (PL) (`r sum(demographics_group3$ChildGender == "F")`girls, `r sum(demographics_group3$ChildGender == "M")` boys) who were part of a larger longitudinal study of language development in the greater Chicago area. All families were monolingual English-speaking. Recruitment for TD children involved advertisements and direct mailings to targeted zip codes, with the sample selected to represent the socioeconomic diversity of the major Midwestern city in which the study took place. 
 The TD children (`r race_group2$Percentage[3]`% White, `r race_group2$Percentage[1]`% Black, and `r race_group2$Percentage[2]`% mixed race; `r ethnicity_group2$Percentage[1]`% Hispanic,) were approximately 38 months at the first time of pretend play assessment and approximately 5 years old at the first time of narrative assessment. Parental education for TD children ranged from 12 to 18 years (M=`r avg_parent_ed_group2`; SD= `r sd_parent_ed_group2` and median annual household income was $42,000. 
-Recruitment for children with PL involved pediatric neurologists and parent support groups in the same metropolitan areaas TD children. Children with PL (`r race_group3$Percentage[1]`% White) were approximately 38 months at the first time of pretend play assessment and approximately 6 years old at the first time of narrative assessment. Parental education for TD children ranged from 12 to 18 years (M=`r avg_parent_ed_group3`; SD=`r sd_parent_ed_group3`) and median annual household income was $87,500. See Table ____for information on the neurological profiles of children with pre- or perinantal brain injury.
+Recruitment for children with PL involved pediatric neurologists and parent support groups in the same metropolitan areaas TD children. Children with PL (`r race_group3$Percentage[1]`% White) were approximately 38 months at the first time of pretend play assessment and approximately 6 years old at the first time of narrative assessment. Parental education for TD children ranged from 12 to 18 years (M=`r avg_parent_ed_group3`; SD=`r sd_parent_ed_group3`) and median annual household income was $87,500. See Table 1^[Codes are Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y, history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.] for information on the neurological profiles of children with pre- or perinantal brain injury.
 
 ```{r}
-#| label: tbl-P3-neurological-data
+#| label: neuro-data
 #| echo: FALSE
 
 # Read in the CSV file
@@ -140,10 +140,10 @@ P3_neurological_data_filtered <- P3_neurological_data %>%
 # create a table
 P3_neurological_data_filtered %>%
   kable("latex", caption = "Neurological Profiles of Children with Pre- or Perinatal Brain Injury", booktabs = TRUE) %>%
-  kable_styling(latex_options = c("striped"),
+  kable_styling(latex_options = c("striped", "scale_down"),
                 font_size = 12, 
                 full_width = FALSE) %>%
-                footnote(general = "Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts.* Neonatal seizures resolved without medication.")  
+                footnote(general = "See footnote for codes.")
 
 ```
 
