@@ -5,6 +5,7 @@ date: "2025-03-08"
 output: html_document
 ---
 
+SETUP
 ```{r, echo=FALSE}
 # Install the gt package if not already installed
 install.packages("gt")
@@ -13,17 +14,11 @@ install.packages("flextable")
 # Install and load kableExtra
 install.packages("kableExtra")
 
-
 # load necessary packages
 library(knitr)  ##Load the knitr package for kable
 library(gt) ## Load the gt package
 library(flextable) ##load the flextable package
 library(kableExtra) ##load the kableExtra package
-```
-
-
-```{r, echo=FALSE}
-P3_demographics <- data.frame()
 ```
 
 # P3 Children's Neurological Data for P3 children 
@@ -56,6 +51,11 @@ Note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, sma
 write.csv(P3_neurological_data, "P3_neurological_data.csv", row.names = FALSE)
 ```
 
+```{r}
+neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
+```
+
+#Attempts at tables
 ## Simple Table Using knittr::kable()
 ```{r, echo=FALSE}
 
@@ -103,7 +103,7 @@ flextable(neurological_data) %>%
   autofit()
 ```
 
-APA-style table for Quarto document
+## APA-style table for Quarto document
 ```{r, echo=FALSE}
 # Create an APA-style table with a caption
 kable(neurological_data, booktabs = TRUE, digits = 2,
@@ -111,6 +111,26 @@ kable(neurological_data, booktabs = TRUE, digits = 2,
   kable_styling(full_width = FALSE, position = "center") %>%
   footnote(general = "Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication."
            ) 
+```
+
+
+
+# Demographic Data for Groups P2 & P3
+```{r}
+Play_Narrative_Demographics_xl <- read_xlsx("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Play_Narrative_Demographics.xlsx") %>%
+  mutate_all(~ifelse(is.numeric(.), round(., 2), .))
+
+# Replace "NoData" with NA
+Play_Narrative_Demographics_xl$FatherEdYrs07[Play_Narrative_Demographics_xl$FatherEdYrs07 == "NoData"] <- NA
+
+# Convert to numeric
+Play_Narrative_Demographics_xl$FatherEdYrs07 <- as.numeric(Play_Narrative_Demographics_xl$FatherEdYrs07)
+
+# Convert to numeric
+Play_Narrative_Demographics_xl$MotherEdYrs07 <- as.numeric(Play_Narrative_Demographics_xl$MotherEdYrs07)
+
+# save it to a new file for future use:
+write.csv(Play_Narrative_Demographics, "Play_Narrative_Demographics.csv", row.names = FALSE)
 ```
 
 ```{r}
