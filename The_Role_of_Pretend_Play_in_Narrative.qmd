@@ -30,6 +30,9 @@ documentmode: man
 fontsize: 12pt
 mainfont: "Times New Roman"
 donotrepeattitle: true
+execute: 
+  freeze: auto
+  working-directory: project
 ---
 
 ```{r}
@@ -76,7 +79,7 @@ Based on previous research, I hypothesized that the relationship between pretend
 #| echo: false
 #| include: false
 
-Play_Narrative_Demographics <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Play_Narrative_Demographics.csv")
+Play_Narrative_Demographics <- read.csv("PN_Datasets/Demographics/Play_Narrative_Demographics.csv")
 
 # get the total number of participants in each group and extract # for inline use
 total_group2 <- Play_Narrative_Demographics %>% filter(Group == 2) %>% nrow()
@@ -130,8 +133,8 @@ Recruitment for children with PL involved pediatric neurologists and parent supp
 #| fig.pos: "H"
 
 # Read in the CSV file
-P3_neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
-
+P3_neurological_data <- read.csv("PN_Datasets/Demographics/P3_neurological_data.csv")
+                          
 # Remove the two columns (update names as needed)
 P3_neurological_data_filtered <- P3_neurological_data %>%
   select(-Age_at_visit, -Sex) %>%  # Exclude unwanted columns
@@ -158,27 +161,18 @@ Children's spontaneous parent-child interactions were coded for pretend play usi
 Children's gestures during both pretend play and narrative tasks were coded into two main categories: **representational gestures** (including iconic gestures that depict physical properties, metaphoric gestures that represent abstract concepts, and demonstration gestures that show how actions are performed) and **non-representational gestures** (including beat gestures that emphasize rhythm, deictic gestures that point to objects or locations, and conventional gestures that have culturally standardized forms and meanings). 
 
 ### Stein Story Stem Task & Narrative Scoring
-Children's narrative abilities were assessed using the Stein narrative task, which presents children with story stems and asks them to create their own stories. Three stems were used: one about a fox living near a forest, another about a girl living near the ocean, and a third about a boy with many toys. Narrative organization at the global level is assessed using the model of story complexity by @steinn.l.AnalysisStoryComprehension1979, which defines a “good” story as one organized around a protagonist’ goal-directed action. These narratives are built out of four organizing features: 1) an animate protagonist, 2) temporal structure, 3) causal structure and 4) goal-direction action. The presence of each successive feature in this list is contingent upon the presence of earlier features, and stories with more features are considered to be more complex than stories with fewer features. Based on analyses of these features, each child's story was placed into one of the following nine categories: 
+Children's narrative abilities were assessed using the Stein narrative task, which presents children with story stems and asks them to create their own stories. Three stems were used: one about a fox living near a forest, another about a girl living near the ocean, and a third about a boy with many toys. Narrative organization at the global level is assessed using the model of story complexity by @steinn.l.AnalysisStoryComprehension1979, which defines a “good” story as one organized around a protagonist’ goal-directed action. These narratives are built out of four organizing features: an animate protagonist, temporal structure, causal structure and goal-direction action. The presence of each successive feature in this list is contingent upon the presence of earlier features, and stories with more features are considered to be more complex than stories with fewer features. Based on analyses of these features, each child's story was placed into one of the following ten categories: 
 
-* **No structure (NS)** is a narrative that includes only one clause with or without a verb. 
-
-* **Descriptive story (DS)** is a narrative that includes a series of clauses that do not report actions; even if it does report actions, the actions are not constrained by temporality.
-
-* **Action story (AC)** is a narrative that includes actions *with a temporal order* (events follow one another in time), but story events are not causally organized.
-
-* **Reactive story (RS)** is a narrative that includes actions that are causally organized, (events in one clause cause the actions in the following clause).
-
-* **Incomplete goal-based story (IGB)** is a narrative that contains a goal statement, but no attempt or outcome following the goal.
-
-* **Incomplete goal-based with attempt (IGBA)** is a narrative that contains a goal statement, and attempt(s), but not outcome following the goal.
-
-* **Complete goal-based story with one episode implicit goal (GB1-IG)** is a narrative that includes not only temporal and causal structure, but also an *implicitly*-stated goal of the protagonist, *one* series of attempts to achieve the goal, and an outcome of these attempts.
-
-* **Complete goal-based story with one episode explicit goal (GB1-IG)** is a narrative that includes not only temporal and causal structure, but also an *explicitly*-stated goal of the protagonist, *one* series of attempts to achieve the goal, and an outcome of these attempts.
-
-* **Complete goal-based story with multiple episodes implicit goal (GBM-IG)** is a narrative that includes *multiple* goal-attempt-outcome sequences. Multiple episode stories include more than one series of attempts, and frequently include more than one *implicitly*-stated goal. 
-
-* **Complete goal-based story with multiple episodes explicit goal (GBM-EG)** is a narrative includes *multiple* goal-attempt-outcome sequences. At least one of the goals is stated *explicitly*.
+1. **No structure (NS)** - includes only one clause with or without a verb. 
+2. **Descriptive story (DS)** - includes a series of clauses that do not report actions constrained by temporality.
+3. **Action story (AC)** - includes actions *with a temporal order*, but story events are not causally organized.
+4. **Reactive story (RS)** - includes actions that are causally organized (events in one clause cause the actions in the following clause).
+5. **Incomplete goal-based story (IGB)** - contains a goal statement, but no attempt or outcome following the goal.
+6. **Incomplete goal-based with attempt (IGBA)** - contains a goal statement and attempt(s), but no outcome following the goal.
+7. **Complete goal-based story with one episode implicit goal (GB1-IG)** - includes temporal and causal structure, as well as *implicitly*-stated goal of the protagonist, *one* series of attempts to achieve the goal, and an outcome of these attempts.
+8. **Complete goal-based story with one episode explicit goal (GB1-IG)** - includes temporal and causal structure, as well as  *explicitly*-stated goal of the protagonist, *one* series of attempts to achieve the goal, and an outcome of these attempts.
+9. **Complete goal-based story with multiple episodes implicit goal (GBM-IG)** - includes *multiple* goal-attempt-outcome sequences and frequently more than one *implicitly*-stated goal. 
+10. **Complete goal-based story with multiple episodes explicit goal (GBM-EG)** - includes *multiple* goal-attempt-outcome sequences and frequently more than one *explicitly*-stated goal.
 
 ### Plan of Analysis
 

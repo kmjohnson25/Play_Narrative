@@ -2,21 +2,64 @@
 title: "Narrative _Data_Wrangling"
 author: "Kristen Johnson"
 date: "2025-03-09"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 library(readxl)
 library(dplyr)
+library(stringr)
 ```
 
+
 ```{r}
+# read in the OG excel file
+```
+
+
+
+
+
+
+
+1. No structure (**NS**)- only one clause with or without a verb. 
+2. Descriptive story (**DS**)- a series of clauses that do not report actions constrained by temporality.
+3. Action story (**AC**)-  includes actions *with a temporal order*, but story events are not causally organized.
+4. Reactive story (**RS**)- includes actions that are causally organized.
+5. Incomplete goal-based story (**IGB**)- contains a goal statement, but no attempt or outcome following the goal.
+6. Incomplete goal-based with attempt (**IGBA**)- contains a goal statement, and attempt(s), but not outcome following the goal.
+7. Complete goal-based story with one episode implicit goal (**GB1-IG**)- includes temporal and causal structure, as well as *implicitly*-stated goal of the protagonist, *one* series of attempts to achieve the goal, and an outcome of these attempts.
+8. Complete goal-based story with one episode explicit goal (**GB1-EG**)- includes temporal and causal structure, as well as *explicitly*-stated goal of the protagonist, *one* series of attempts to achieve the goal, and an outcome of these attempts.
+9. Complete goal-based story with multiple episodes implicit goal (**GBM-IG**)- includes *multiple* goal-attempt-outcome sequences and frequently more than one *implicitly*-stated goal. 
+10. Complete goal-based story with multiple episodes explicit goal (**GBM-EG**)- includes *multiple* goal-attempt-outcome sequences. with at least one of the goals stated *explicitly*.
+
+```{r}
+#read in data for narrative outcomes
 Narrative_Results_Simple <- read_xlsx("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Simple.xlsx")
+
+# Define the abbreviation-to-number mapping
+replacements <- c("NS" = 1, "DS" = 2, "AC" = 3, "RS" = 4, "IGB" = 5, "IGBA" = 6, "GB1-IG" = 7, "GB1-EG" = 8, "GBM-IG" = 9, "GBM-EG" = 10)
+
+# Replace abbreviations, handle NA, and convert to numeric
+Narrative_Results_Numeric <- Narrative_Results_Simple %>%
+  mutate(across(everything(), ~ recode(., !!!replacements))) %>%  # Replace abbreviations
+  mutate(across(everything(), ~ replace_na(., 0)))   # Replace NA with "0"
+  
+  
+# write the updated data frame into a csv
+write_csv(Narrative_Results_Numeric, "~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Numeric.csv")
 ```
 
-
 ```{r}
-P
+# determining each participant's overall Narrative Score
+
+
+
+  
+# Print the updated data frame
+write_csv(Narrative_Results_Numeric, "~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Numeric.csv")
 
 ```
 
