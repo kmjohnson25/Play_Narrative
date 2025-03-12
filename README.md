@@ -65,5 +65,8 @@ This folder contains everything directly related to the final manuscript for Pla
 * **Renders**: 
     - subfolder with all the renders from previous drafts of the manuscript
 
+## R_scripts
+This folder contains DRY scripts that I may use for data manipulation and or manuscript creation
+
 ## The_Role_of_Pretend_Play_in_Narrative.Qmd: 
     - Qmd for the final manuscript of my thesis
