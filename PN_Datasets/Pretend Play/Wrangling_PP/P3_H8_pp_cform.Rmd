@@ -10,10 +10,15 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 ```
 
+# NUMBER & DISTIBUTION OF GESTURES W/I PRETEND PLAY INSTANCES FOR P3_H8 KIDDOS
+I needed to see if there were enough gestures within the P3 group (the population less likely to use gestures and/or exhibit instances of pretend play) to justify moving forward with my original study questions.
+
+## read in csv
 ```{r}
 P3_H8_ALL <- read_csv('/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P3_H8_ALL.csv')
 ```
 
+## filter for columns on pretend play (c_pret) and gesture (c_form) & count overlaps
 ```{r}
 
 # Filter for rows where c_pret is 1, then count occurrences of c_form
@@ -26,6 +31,7 @@ print(PP_gest_overlap)
 
 ```
 
+## get summary statistics for the number of overlaps
 ```{r}
 library(dplyr)
 
@@ -43,6 +49,7 @@ PP_gest_overlap %>%
 
 ```
 
+## histogram of average frequency of overlaps per child
 ```{r}
 library(ggplot2)
 
@@ -56,6 +63,7 @@ ggplot(PP_gest_overlap, aes(x = n)) +
 
 ```
 
+## boxplot of overlaps
 ```{r}
 
 # A boxplot shows the median, quartiles, and potential outliers.
@@ -67,6 +75,7 @@ ggplot(PP_gest_overlap, aes(y = n)) +
 
 ```
 
+## glimpse at different types of gesture used
 ```{r}
 
 # If you want to see the count of each c_form, use a bar chart.

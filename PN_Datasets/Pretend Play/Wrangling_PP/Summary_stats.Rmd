@@ -14,12 +14,14 @@ library(stringr) # For string functions
 library(lubridate)  # For handling datetime columns (if needed)
 ```
 
+# SUMMARY STATISTICS FOR GESTURE AND PRETEND PLAY
+I needed to get a clear idea of gesture and pretend play for each group, so I made this markdown and cycled through the different groups (P2 or P3) from different time points (H7, H8, or H10).
 
+## Read in csv (this one will give Summary Statistics for P3_H8)
 ```{r, echo=FALSE}
 # Read in data
 csv_all <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P3_H8_ALL.csv")
 ```
-## Summary Statistics for P2_H8
 
 ### ALL Gestures by Participant ID
 ```{r, echo=FALSE}
@@ -41,8 +43,6 @@ print(total_gestures)
 
 ```
 
-
-
 ### Mean and Standard deviation of ALL gestures 
 ```{r, echo=FALSE}
 # get summary statistics of the count_non_na column of the above dataset
@@ -55,7 +55,6 @@ gesture_summary <- gesture_count %>%
 print(gesture_summary)
 
 ```
-
 
 ### A Data Frame of only iconic gestures. Summary Stats to follow.
 ```{r, echo=FALSE}
@@ -81,6 +80,7 @@ iconic_counts <- iconic_df %>%
 # Print results
 print(iconic_counts)
 ```
+
 ### Total number of iconic gestures across all participants:
 ```{r, echo=FALSE}
 # The sum of all instances of iconic gestures in the above column
@@ -88,8 +88,6 @@ all_iconic <- sum(iconic_counts$iconic_count)
 
 print(all_iconic)
 ```
-
-
 
 ### Summary statistics of iconic gestures across participants
 ```{r, echo=FALSE}
@@ -103,6 +101,7 @@ iconic_summary <- iconic_counts %>%
 # Print results
 print(iconic_summary)
 ```
+
 ### Instances of Pretend Play by Participant ID:
 ```{r, echo=FALSE}
 # Count the number of times individual participants engaged in pretend play
@@ -155,7 +154,7 @@ print(avg_words_per_utt)
 
 ```
 
-### Adding in Standar Deviation to the above table
+### Adding in Standard Deviation to the above table
 ```{r, echo=FALSE}
 # finding the standard deviation for words per utterance per participant
 avg_words_per_utt <- csv_all %>%
@@ -184,12 +183,11 @@ c_wpu_summary <- avg_words_per_utt %>%
 # Print results
 print(c_wpu_summary)
 ```
+
 ### Mean of Avg Words per Utternace by total number of words over total number of utternaces
 ```{r, echo=FALSE}
 
 tw_o_tu <- sum(avg_words_per_utt$total_words)/sum(avg_words_per_utt$total_utts)
 print(tw_o_tu)
 ```
-
-### count of instances when gesture and pretend play occur simulatneously
 

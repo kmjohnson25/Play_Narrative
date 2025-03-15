@@ -6,8 +6,11 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
+
+# FOR TRANSFORMING DXT SPEECH COLUMN DATA TO C_PRET COLUMN DATA
+We don't need all the decontextualized speech codes, just the ones on pretend play. the c_pret column is what is found in other pretend play coding, so I've adopted the same nomenclature.
 
 ```{r}
 # Load necessary libraries
@@ -31,7 +34,7 @@ p3_h8 <- p3_h8 %>%
 ```
 
 Write a new .csv for P3_H8
-```{r, echo=FALSE}
+```{r}
 write.csv(p3_h8, "/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P3_H8_ALL.csv", row.names = FALSE)
 ```
 

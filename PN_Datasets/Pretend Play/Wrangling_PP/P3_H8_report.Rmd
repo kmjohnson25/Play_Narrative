@@ -20,29 +20,6 @@ library(knitr)
 
 # Children with Brain Injuries during Home Visit 8
 ### N= 10; Age in months: M = 42
-```{r, echo=FALSE}
-#library(dplyr)
-
-# Create a data frame for demographics
-#demographics <- tibble(
-  #Characteristic = c("N (Total)", "Age (years)", "Gender", "Household Income", 
-                     #"Race/Ethnicity", "Parental Education (years)"),
-  #Description = c(
-   # "20",
-    #"M = 5.50, SD = 0.17",
-    #"11 girls, 9 boys",
-    #"Range: < $15K to > $100K; M = $60,875, SD = $32,830",
-    #"2 African-American, 1 Latino, 13 Caucasian, 3 Mixed-Race",
-    #"M = 16.1, SD = 1.77, Range = 12 to 18"
-  #)
-#)
-
-#options(knitr.kable.NA = '') # Ensures missing values are empty
-
-# Print as a table using kable
-#kable(demographics, caption = "Demographic Characteristics of TD Children")
-
-```
 
 ## Import and Clean Dataset
 ```{r, echo=FALSE}

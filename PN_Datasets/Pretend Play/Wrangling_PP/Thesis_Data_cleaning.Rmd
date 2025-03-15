@@ -12,28 +12,34 @@ library(lubridate)  # For handling datetime columns (if needed)
 library(tidyverse)  # to manipulate strings and a lot more
 ```
 
+# COLLECTION OF CODE CHUNKS FOR CLEANING DATA SPECIFIC TO MAPSS THESIS STUDY
+I compiled a number of code chunks that I used while cleaning the original raw data (coded transciptions of participants). It's unlikely I would need these again so I refrained from making eahc into its own r. script. That said, I might use them again for this or a related study and so I wanted them organized all together.
 
+## Setup steps
 ```{r}
 # Set the directory path where your .xlsx files are located
-
 directory_path <- '/Users/kristenjohnson/Desktop/University_of_Chicago/Thesis/Data/decontextualized/08/P2_H8'
 
 file.exists(directory_path)
 
-
 # List all .xlsx files in the directory (full paths) and exclude temporary files that start with '~$'
 file_list <- list.files(directory_path, pattern = "\\.xls.*$", full.names = TRUE)
+
 # If the file type is a .tsv, comment out the above code and delete the comment hash below
 #file_list <- list.files(directory_path, pattern = "\\.tsv$", full.names = TRUE)
-file_list <- file_list[ !grepl("^~\\$", basename(file_list)) ]
+
+# grab names of files to create participant ID column
+file_list <- file_list[ !grepl("^~\\$", basename(file_list)) ] 
 
 print(file_list)
 ```
-Combining function
+
+## Combining function
 ```{r}
 #library(readxl)  # Ensure package is loaded
 #library(dplyr)
 
+# load in individual transcripts & combine into one giant file for each data group (P2_H7, P2_H8, P2_H10, P3_H7, P3_H8, P3_H10)
 load_and_bind_files <- function(files) {
   if (length(files) == 0) {
     stop("No files found. Check your directory path and file extensions.")
@@ -61,33 +67,26 @@ load_and_bind_files <- function(files) {
       print(paste("Skipping unsupported file:", file))
       return(NULL)
     }
-
     if (is.null(data)) {
       print(paste("Skipping file due to read error:", file))
       return(NULL)
     }
-
     print(paste("Rows read from", file, ":", nrow(data)))
     
-    # The following code reads the filename and creates and populates a column names Participant ID with the ID of each participant based on the filename
+# The following code reads the filename and creates and populates a column names Participant ID with the ID of each participant based on the filename
+    
     # Get the filename (without the path)
     file_name <- basename(file)
-    # Use a regular expression to extract participant ID and session number
-    # The regex pattern looks for one or more digits, a period, then one or more digits.
-    # For example, in "022.10_Final.xlsx":
-    #   - ([0-9]+) matches "022"
-    #   - \\. matches the period
-    #   - ([0-9]+) matches "10"
-    pattern <- "^([0-9]+)\\.([0-9]+)"
-    matches <- regexec(pattern, file_name)
-    extracted <- regmatches(file_name, matches)
     
-    if (length(extracted) > 0 && length(extracted[[1]]) >= 3) {
-      # extracted[[1]][1] is the entire match,
-      # extracted[[1]][2] is the participant ID,
-      # extracted[[1]][3] is the session number.
-      participant_id <- as.numeric(extracted[[1]][2])
-      session <- as.numeric(extracted[[1]][3])
+ # Use a regular expression to extract participant ID and session number
+    # The regex pattern looks for one or more digits, a period, then one or more digits
+    #   (ex: in "022.10_Final.xlsx":  ([0-9]+) matches "022" ,  \\. matches the period ,  ([0-9]+) matches "10"
+    pattern <- "^([0-9]+)\\.([0-9]+)"
+    matches <- regexec(pattern, file_name) 
+    extracted <- regmatches(file_name, matches)
+    if (length(extracted) > 0 && length(extracted[[1]]) >= 3) { # extracted[[1]][1] is the entire match,
+      participant_id <- as.numeric(extracted[[1]][2]) # extracted[[1]][2] is the participant ID,
+      session <- as.numeric(extracted[[1]][3]) # extracted[[1]][3] is the session number.
     } else {
       # If the filename does not match the expected format, assign NA
       participant_id <- NA
@@ -112,7 +111,7 @@ load_and_bind_files <- function(files) {
     if ("line" %in% colnames(data)) {
         data$line <- as.character(data$line)
     }
-    # Ensure 'p_word_num is a cahracter to prevent type mismatch
+    # Ensure 'p_word_num is a character to prevent type mismatch
     if ('p_word_num' %in% colnames(data)) {
         data$p_word_num <- as.character(data$p_word_num)
     }
@@ -170,11 +169,9 @@ load_and_bind_files <- function(files) {
   combined_data <- bind_rows(all_data)
   return(combined_data)
 }
-
 ```
 
-
-Run the combining function:
+## Run the combining function:
 ```{r}
 # Run the function to load, process, and combine the data from all files
 combined_dataset <- load_and_bind_files(file_list)
@@ -183,7 +180,7 @@ combined_dataset <- load_and_bind_files(file_list)
 head(combined_dataset)
 ```
 
-How we create a column that calculates words per utterance for each row with an utterance:
+## Create a column that calculates words per utterance for each row with an utterance:
 ```{r}
 # Adding words per utterance column to dataset
 combined_dataset <- combined_dataset %>%
@@ -193,16 +190,13 @@ combined_dataset <- combined_dataset %>%
                                  ))
 ```
 
-
-
+## Save combined_data as CSV to specified location:
 ```{r}
-# Save combined_data as CSV to specified location
 # change the group_timepoint_item being coded
 write.csv(combined_dataset, "/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P2_H8_cwpu.csv", row.names = FALSE)
-
 ```
 
-How do get descriptive statistics for ALL Gestures:
+## Get descriptive statistics for ALL Gestures:
 ```{r}
 # Load necessary libraries
 library(dplyr)   # For data manipulation
@@ -215,18 +209,16 @@ gesture_count <- combined_dataset %>%
 
 print(gesture_count)
 ```
-Total number of gestures among all observations of all participants:
+
+## Get total number of gestures among all observations of all participants:
 ```{r}
 # Sum of all instances of gesture as counted in the non NA values in the above data frame
 all_gestures <- sum(gesture_count$count_non_na)
 
 print(all_gestures)
-
 ```
 
-
-
-Here is how you get the Mean and Standard deviation of ALL gestures 
+Get the Mean and Standard deviation of ALL gestures :
 ```{r, echo=FALSE}
 # get summary statistics of the count_non_na column of the above dataset
 gesture_summary <- gesture_count %>% 
@@ -236,14 +228,10 @@ gesture_summary <- gesture_count %>%
   )
 
 print(gesture_summary)
-
 ```
 
-
-How to quickly get descriptive for iconic gestures: 
-
-If you'd like to inspect a df that only contains the instances of iconic gestures:
-
+# Get descriptive for iconic gestures: 
+## If inspecting a df that only contains the instances of iconic gestures:
 ```{r}
 # Load necessary libraries
 #library(dplyr)   # For data manipulation
@@ -257,7 +245,7 @@ iconic_df <- combined_dataset %>%
 head(iconic_df)
 ```
 
-if you're interested in inspecting how often individual kids do iconic gestures: 
+## If inspecting how often individual kids do iconic gestures: 
 ```{r}
 # Count occurrences of 'iconic' for each participant_id
 iconic_counts <- iconic_df %>%
@@ -267,7 +255,8 @@ iconic_counts <- iconic_df %>%
 # Print results
 print(iconic_counts)
 ```
-Total number of iconic gestures across all participants:
+
+## Total number of iconic gestures across all participants:
 ```{r}
 # The sum of all instances of iconic gestures in the above column
 all_iconic <- sum(iconic_counts$iconic_count)
@@ -275,9 +264,7 @@ all_iconic <- sum(iconic_counts$iconic_count)
 print(all_iconic)
 ```
 
-
-
-Now, if you want some summary statistics across participants, you can do this: 
+## Summary statistics across participants: 
 ```{r}
 # Calculate mean and standard deviation of 'iconic' counts across participants
 iconic_summary <- iconic_counts %>%
@@ -289,7 +276,8 @@ iconic_summary <- iconic_counts %>%
 # Print results
 print(iconic_summary)
 ```
-Here is how we calculate instances of Pretend Play:
+
+## Calculate instances of Pretend Play:
 ```{r}
 # Count the number of times individual participants engaged in pretend play
 pp_count <- combined_dataset %>%
@@ -303,8 +291,8 @@ pp_count <- combined_dataset %>%
 
 print(pp_count)
 ```
-Total number of instances of pretend play:
 
+## Total number of instances of pretend play:
 ```{r}
 # Sum the coun_p_combined column from above
 all_pp <- sum(pp_count$count_p_combined)
@@ -312,7 +300,7 @@ all_pp <- sum(pp_count$count_p_combined)
 print(all_pp)
 ```
 
-Descriptive statistics of all instances of pretend play:
+## Descriptive statistics of all instances of pretend play:
 ```{r}
 # calculate the summary statistics of count_p_combined
 pp_summary <- pp_count %>%
@@ -325,7 +313,7 @@ pp_summary <- pp_count %>%
 print(pp_summary)
 ```
 
-
+## Mean of words per utterance for each child
 ```{r}
 # finding the average words per utterance per participant
 avg_words_per_utt <- combined_dataset %>%
@@ -337,9 +325,9 @@ avg_words_per_utt <- combined_dataset %>%
   )
 
 print(avg_words_per_utt)
-
 ```
 
+## SD of words per utterance for each child
 ```{r}
 # finding the standard deviation for words per utterance per participant
 avg_words_per_utt <- combined_dataset%>%
@@ -352,10 +340,9 @@ avg_words_per_utt <- combined_dataset%>%
   )
 
 print(avg_words_per_utt)
-
 ```
 
-
+## Descriptive statistics of words per utterance
 ```{r}
 # calculate the summary statistics of count_p_combined
 c_wpu_summary <- avg_words_per_utt %>%
@@ -368,11 +355,3 @@ c_wpu_summary <- avg_words_per_utt %>%
 # Print results
 print(c_wpu_summary)
 ```
-
-```{r}
-
-tw_o_tu <- sum(avg_words_per_utt$total_words)/sum(avg_words_per_utt$total_utts)
-print(tw_o_tu)
-```
-
-

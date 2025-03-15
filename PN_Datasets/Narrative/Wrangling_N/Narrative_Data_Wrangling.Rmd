@@ -12,7 +12,7 @@ library(readxl)
 library(dplyr)
 library(stringr)
 ```
-
+# Narrative scores and codes:
 1. No structure (**NS**)- only one clause with or without a verb. 
 2. Descriptive story (**DS**)- a series of clauses that do not report actions constrained by temporality.
 3. Action story (**AC**)-  includes actions *with a temporal order*, but story events are not causally organized.
@@ -24,6 +24,7 @@ library(stringr)
 9. Complete goal-based story with multiple episodes implicit goal (**GBM-IG**)- includes *multiple* goal-attempt-outcome sequences and frequently more than one *implicitly*-stated goal. 
 10. Complete goal-based story with multiple episodes explicit goal (**GBM-EG**)- includes *multiple* goal-attempt-outcome sequences. with at least one of the goals stated *explicitly*.
 
+# Load in data & convert narrative scores to numbers:
 ```{r}
 #read in data for narrative outcomes
 Narrative_Results_Simple <- read_xlsx("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Simple.xlsx")
@@ -40,9 +41,8 @@ Narrative_Results_Numeric <- Narrative_Results_Simple %>%
 write_csv(Narrative_Results_Numeric, "~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Numeric.csv")
 ```
 
+# Determine each participant's highest Narrative Score in each year and overall Avg of high scores:
 ```{r}
-# Determine each participant's overall Narrative Score
-
 # Collect highest score from each year
 Narrative_Results_Score_Totals <- Narrative_Results_Numeric %>%
   rowwise() %>%
@@ -57,7 +57,7 @@ Narrative_Results_Score_Totals <- Narrative_Results_Numeric %>%
 write_csv(Narrative_Results_Score_Totals, "~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Score_Totals.csv")
 ```
 
-
+# Make new datafram with relevant info only:
 ```{r}
 # Make new datafram with relevant info only
 Narrative_Results_Final <- Narrative_Results_Score_Totals %>%

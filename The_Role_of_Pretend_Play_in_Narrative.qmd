@@ -189,9 +189,12 @@ To understand how pretend play gestures support narrative development in TD chil
 # Results
 ## Gesture and Language in Pretend Play
 ```{r}
-#| label: gest_table
+#| label: gest_bargraph
 #| echo: FALSE
 #| fig.pos: "H"
+
+
+
 ```
 
 ## Pretend Play Behaviors as Predictors of Narrative Development

@@ -133,6 +133,7 @@ Play_Narrative_Demographics_xl$MotherEdYrs07 <- as.numeric(Play_Narrative_Demogr
 write.csv(Play_Narrative_Demographics, "Play_Narrative_Demographics.csv", row.names = FALSE)
 ```
 
+# Extract specific data for in line references in Qmd
 ```{r}
 # read in demogrpahics for both P3 and P2
 Play_Narrative_Demographics <- read_xlsx("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Play_Narrative_Demographics.xlsx")
