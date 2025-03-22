@@ -13,7 +13,7 @@
 
 <meta name="date" content="2025-03-04" />
 
-<title>Interrater-Reliability_P3.46.10</title>
+<title>Interrater-Reliability_P3.99.10</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,7 +350,7 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Interrater-Reliability_P3.46.10</h1>
+<h1 class="title toc-ignore">Interrater-Reliability_P3.99.10</h1>
 <h4 class="author">Kristen Johnson</h4>
 <h4 class="date">2025-03-04</h4>
 
@@ -363,11 +363,11 @@ display: none;
 <div id="read-in-the-two-coded-transcripts" class="section level1">
 <h1>read in the two coded transcripts</h1>
 <pre class="r"><code>## be sure to change initials for each coder
-JB_codes&lt;- read_excel(&#39;~/KristenWorkingDirectory/Play_Narrative/PN_Interrater Reliability/Coded_P3_H10/P3.46.10_COMPLETE_JB_02.26.25.xls&#39;)
+#JB_codes&lt;- read_excel(&#39;~/KristenWorkingDirectory/Play_Narrative/PN_Interrater Reliability/Coded_P3_H7/P3.35.07_COMPLETE_JB_02.25.25.xls&#39;)
 
-#MCV_codes&lt;- read_excel(&#39;~/KristenWorkingDirectory/Play_Narrative/PN_Interrater Reliability/Coded_P3_H10/P3.99.10_COMPLETE_MCV_03.03.25.xls&#39;)
+MCV_codes&lt;- read_excel(&#39;~/KristenWorkingDirectory/Play_Narrative/PN_Interrater Reliability/Coded_P3_H10/P3.99.10_COMPLETE_MCV_03.03.25.xls&#39;)
 
-KJ_codes &lt;- read_excel(&#39;~/KristenWorkingDirectory/Play_Narrative/PN_Interrater Reliability/Coded_P3_H10/P3.46.10_COMPLETE_KJ_3.1.25.xls&#39;)</code></pre>
+KJ_codes &lt;- read_excel(&#39;~/KristenWorkingDirectory/Play_Narrative/PN_Interrater Reliability/Coded_P3_H10/P3.99.10_COMPLETE_KJ_3.1.25.xls&#39;)</code></pre>
 </div>
 <div id="if-need-be-troubleshoot-column-name-discrepancies" class="section level1">
 <h1>if need be, troubleshoot column name discrepancies</h1>
@@ -379,22 +379,22 @@ KJ_codes &lt;- read_excel(&#39;~/KristenWorkingDirectory/Play_Narrative/PN_Inter
 </div>
 <div id="combine-datasets-into-one" class="section level1">
 <h1>combine datasets into one</h1>
-<pre class="r"><code>coded_combined &lt;- cbind(JB_codes, KJ_codes) ## be sure to change initials for each coder!
-#coded_combined &lt;- cbind(MCV_codes, KJ_codes)</code></pre>
+<pre class="r"><code>#coded_combined &lt;- cbind(JB_codes, KJ_codes) ## be sure to change initials for each coder!
+coded_combined &lt;- cbind(MCV_codes, KJ_codes)</code></pre>
 </div>
 <div id="create-columns-to-assist-in-calculating-irr" class="section level1">
 <h1>create columns to assist in calculating IRR</h1>
 <pre class="r"><code># create new columns for &quot;both&quot; and &quot;either&quot;
+#coded_combined &lt;- coded_combined %&gt;%
+  #mutate(
+    #both_ones = ifelse(c_pret_JB == 1 &amp; c_pret_KJ == 1, 1, 0), ## don&#39;t forget to change column names according to coder!
+    #either_one = ifelse(c_pret_JB == 1 | c_pret_KJ == 1, 1, 0)
+ # )
 coded_combined &lt;- coded_combined %&gt;%
   mutate(
-    both_ones = ifelse(c_pret_JB == 1 &amp; c_pret_KJ == 1, 1, 0), ## don&#39;t forget to change column names according to coder!
-    either_one = ifelse(c_pret_JB == 1 | c_pret_KJ == 1, 1, 0)
-  )
-#coded_combined &lt;- coded_combined %&gt;%
- # mutate(
-  #  both_ones = ifelse(c_pret_MCV == 1 &amp; c_pret_KJ == 1, 1, 0),
-  #  either_one = ifelse(c_pret_MCV == 1 | c_pret_KJ == 1, 1, 0)
-  #)</code></pre>
+    both_ones = ifelse(c_pret_MCV == 1 &amp; c_pret_KJ == 1, 1, 0),
+    either_one = ifelse(c_pret_MCV == 1 | c_pret_KJ == 1, 1, 0)
+  )</code></pre>
 </div>
 <div id="make-sure-everything-is-numerical" class="section level1">
 <h1>make sure everything is numerical</h1>
@@ -407,7 +407,7 @@ coded_combined[, c(&quot;both_ones&quot;, &quot;either_one&quot;)] &lt;- lapply(
 IRR_score &lt;- sum(coded_combined$both_ones)/sum(coded_combined$either_one)
 
 print(IRR_score)</code></pre>
-<pre><code>## [1] 0.6086957</code></pre>
+<pre><code>## [1] 0.1111111</code></pre>
 </div>
 
 

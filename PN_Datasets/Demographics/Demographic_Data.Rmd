@@ -8,11 +8,11 @@ output: html_document
 SETUP
 ```{r, echo=FALSE}
 # Install the gt package if not already installed
-install.packages("gt")
+#install.packages("gt")
 # Install and load the flextable package
-install.packages("flextable")
+#install.packages("flextable")
 # Install and load kableExtra
-install.packages("kableExtra")
+#install.packages("kableExtra")
 
 # load necessary packages
 library(knitr)  ##Load the knitr package for kable
@@ -52,7 +52,7 @@ write.csv(P3_neurological_data, "P3_neurological_data.csv", row.names = FALSE)
 ```
 
 ```{r}
-neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/P3_neurological_data.csv")
+neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Demographics/P3_neurological_data.csv")
 ```
 
 #Attempts at tables
@@ -113,7 +113,7 @@ kable(neurological_data, booktabs = TRUE, digits = 2,
            ) 
 ```
 
-
+_____________________________________________________________________________
 
 # Demographic Data for Groups P2 & P3
 ```{r}
