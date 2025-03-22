@@ -158,7 +158,7 @@ P3_neurological_data_filtered %>%
 ```
 
 ## Procedure
-Children were visited in their homes every 4 months between 14-58 months of age. At each home visit, researchers video recorded 90-minute sessions of spontaneous parent-child interactions during typical daily activities. Children were later visited in their schools very year between 5 and 8 years of age. At each school visit, researchers video recorded children performing a series of literary tests. The current analyses focus on two key timepoints: ages 30-50 months for analysis of spontaneous pretend play episodes during parent-child interaction, and ages 5-6 years for performance on structured narrative tasks. All home visit interactions were video recorded, transcribed, and coded with high interrater reliability for language (95% agreement on utterance transcription), gesture (88%, κ = .76), and pretend play (95.6%, κ =  0.73. All school visit interactions were video recorded, transcribed, and coded with substqntial reliability (ICC=0.76) for narrative structure, consistent with agreement scores in similar narrative studies [@jonesEffectsSocialRelationships1996; @mccabeComparisonPersonalFictional2008]. All discrepancies were resolved through discussion.
+Children were visited in their homes every 4 months between 14-58 months of age. At each home visit, researchers video recorded 90-minute sessions of spontaneous parent-child interactions during typical daily activities. Children were later visited in their schools every year between 5 and 8 years of age. At each school visit, researchers video recorded children performing a series of literary tests. The current analyses focus on two key time points: ages 30-50 months for analysis of spontaneous pretend play episodes during parent-child interaction, and ages 5-6 years for performance on structured narrative tasks. All home visit interactions were video recorded, transcribed, and coded with high interrater reliability for language (95% agreement on utterance transcription), gesture (88%, κ = .76), and pretend play (95.6%, κ =  0.73. All school visit interactions were video recorded, transcribed, and coded with substqntial reliability (ICC=0.76) for narrative structure, consistent with agreement scores in similar narrative studies [@jonesEffectsSocialRelationships1996; @mccabeComparisonPersonalFictional2008]. All discrepancies were resolved through discussion.
 
 ## Measures
 ### Pretend Play Coding
@@ -168,7 +168,7 @@ Children's spontaneous parent-child interactions were coded for pretend play usi
 Children's gestures during both pretend play and narrative tasks were coded into two main categories: **representational gestures** (including iconic gestures that depict physical properties, metaphoric gestures that represent abstract concepts, and demonstration gestures that show how actions are performed) and **non-representational gestures** (including beat gestures that emphasize rhythm, deictic gestures that point to objects or locations, and conventional gestures that have culturally standardized forms and meanings). 
 
 ### Stein Story Stem Task & Narrative Scoring
-Children's narrative abilities were assessed using the Stein narrative task, which presents children with story stems and asks them to create their own stories. Three stems were used: one about a fox living near a forest, another about a girl living near the ocean, and a third about a boy with many toys. Narrative organization at the global level is assessed using the model of story complexity by @steinn.l.AnalysisStoryComprehension1979, which defines a “good” story as one organized around a protagonist’ goal-directed action. These narratives are built out of four organizing features: an animate protagonist, temporal structure, causal structure and goal-direction action. The presence of each successive feature in this list is contingent upon the presence of earlier features, and stories with more features are considered to be more complex than stories with fewer features. Based on analyses of these features, each child's story was placed into one of the following ten categories: 
+Children's narrative abilities were assessed using the Stein narrative task, which presents children with story stems and asks them to create their own stories. Three stems were used: one about a fox living near a forest, another about a girl living near the ocean, and a third about a boy with many toys. The highest narrative score of all story stems was calculated for each annual visit. The highest three scores from the 3 Literacy visits (from ages 5-8) were then averaged to create the final narrative score for each child. Narrative scores refer to the level of narrative organization of a child's original story. Narrative organization at the global level is assessed using the model of story complexity by @steinn.l.AnalysisStoryComprehension1979, which defines a “good” story as one organized around a protagonist’ goal-directed action. These narratives are built out of four organizing features: an animate protagonist, temporal structure, causal structure and goal-direction action. The presence of each successive feature in this list is contingent upon the presence of earlier features, and stories with more features are considered to be more complex than stories with fewer features. Based on analyses of these features, each child's story was placed into one of the following ten categories: 
 
 1. **No structure (NS)** - includes only one clause with or without a verb. 
 2. **Descriptive story (DS)** - includes a series of clauses that do not report actions constrained by temporality.
@@ -183,7 +183,7 @@ Children's narrative abilities were assessed using the Stein narrative task, whi
 
 ### Plan of Analysis
 
-To understand how pretend play gestures support narrative development in TD children versus children with PL, my analyses proceeded in two phases. the frequency and types of gestures (representational vs. non-representational) during pretend play at 38, 42, and 50 months. Next, I analyzed how early gesture use predicted later narrative skill at around 5-6 years, with particular attention to whether these relationships are moderated by group status.
+To understand how pretend play gestures support narrative development in TD children versus children with PL, my analyses proceeded in two phases. the frequency and types of gestures (representational vs. non-representational) during pretend play at 38, 42, and 50 months. Next, I analyzed how early gesture use predicted later narrative skill (averaged between annual measures from at around 5-6 years, with particular attention to whether these relationships are moderated by group status.
 
 * Narrative ~ group + gest_utt_pp + utt_pp_hr + lg_score + group:fest_utt_pp + (1/subject)
   - for (1) ALL gest_pp, (2) Representational gest_pp, and maaaaybe (3) Iconic gest_pp
@@ -209,6 +209,9 @@ To understand how pretend play gestures support narrative development in TD chil
 #| label: pp_narr_regression
 #| echo: FALSE
 #| fig.pos: "H"
+
+narrative_scores <- read_csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Final.csv")
+
 
 ```
 
