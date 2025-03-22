@@ -40,6 +40,12 @@ execute:
 #| echo: false
 #| include: false
 
+# install necessary packages
+#install.packages("psych", dependencies = TRUE)
+#install.packages(flextable)
+#install.packages("kableExtra")
+
+
 # load necessary packages
 library(tidyverse) # includes dyplyr, readr, forcats, stringr, ggplot2, tibble, lubridate, tidyr, purrr
 library(flextable) # includes functions for tabular reporting
@@ -47,6 +53,7 @@ library(knitr)
 library(kableExtra)
 library(readxl)
 library(scales)
+library(psych)
 ```
 
 The relationship between play and child development has been extensively studied, with research documenting significant associations between play experiences and developmental outcomes. However, the specific mechanisms through which play supports development remain incompletely understood, particularly regarding how biological and environmental factors may moderate these relationships. 
