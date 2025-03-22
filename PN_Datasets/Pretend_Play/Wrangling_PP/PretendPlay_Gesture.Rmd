@@ -1,0 +1,33 @@
+---
+title: "PretendPlay_Gesture"
+author: "Kristen Johnson"
+date: "2025-03-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(stringr)
+library(knitr)
+
+```
+
+# Pretend Play for P3 children
+```{r, echo=FALSE}
+
+```
+
+# Gesture for P3 children
+```{r}
+
+```
+
+# ALL Gesture during Pretend Play fr P3 chldren
+```{r}
+
+```
+
