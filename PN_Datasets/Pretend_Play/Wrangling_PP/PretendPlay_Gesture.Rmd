@@ -2,32 +2,179 @@
 title: "PretendPlay_Gesture"
 author: "Kristen Johnson"
 date: "2025-03-22"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+install.packages("extrafont")
 
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(stringr)
 library(knitr)
-
+library(extrafont)  # Ensures Times New Roman is available
 ```
 
-# Pretend Play for P3 children
-```{r, echo=FALSE}
-
-```
-
-# Gesture for P3 children
+# Pretend Play Instances per Individual
 ```{r}
+# Import and clean dataset
+P3_H8_ALL <- read_csv("/Users/kristenjohnson/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv")
 
+# Summarize pretend play counts per participant
+PP_Individual <- P3_H8_ALL %>%
+  group_by(participant_id) %>%
+  summarise(
+    `Pretend Play` = sum(c_pret, na.rm = TRUE),  # Count of 1s (Pretend Play)
+    `No Pretend Play` = sum(c_pret == 0, na.rm = TRUE)  # Count of 0s
+  ) %>%
+  pivot_longer(cols = c(`Pretend Play`, `No Pretend Play`), 
+               names_to = "Category", values_to = "Count")
+
+# Create paired bar graph with APA formatting
+ggplot(PP_Individual, aes(x = factor(participant_id), y = Count, fill = Category)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Side-by-side bars
+  labs(title = "Instances Pretend Play by Participant",
+       x = "Participant ID",
+       y = "Utterance Occurrence Count") +
+  scale_fill_manual(values = c("Pretend Play" = "blue", "No Pretend Play" = "red")) +
+  
+  # APA Style Formatting
+  theme_minimal() +
+  theme(
+    text = element_text(family = "Times New Roman", size = 12),  # Set Times New Roman
+    plot.title = element_text(hjust = 0.5, face = "bold"),  # Center title, bold
+    axis.title = element_text(face = "bold"),  # Bold axis titles
+    axis.text = element_text(size = 12),  # Ensure axis labels are size 12
+    legend.title = element_blank(),  # Remove the legend title
+    legend.text = element_text(size = 12),  # Legend text size
+    panel.grid.major = element_blank(),  # Remove major gridlines (APA style)
+    panel.grid.minor = element_blank(),  # Remove minor gridlines
+    axis.text.x = element_text(angle = 90, hjust = 1)  # Rotate x-axis labels
+  )
 ```
 
-# ALL Gesture during Pretend Play fr P3 chldren
+# ALL Gestures per Indiviudal
 ```{r}
+# Count gestures (non-NA) and non-gestures (NA) for each participant
+gesture_count <- P3_H8_ALL %>%
+  group_by(participant_id) %>%  # Group data by participant ID
+  summarise(
+    `Gesture` = sum(!is.na(c_form), na.rm = TRUE),  # Counts non-NA values for gestures
+    `No Gesture` = sum(is.na(c_form), na.rm = TRUE)  # Counts NA values (no gesture)
+  ) %>%
+  pivot_longer(cols = c(`Gesture`, `No Gesture`), 
+               names_to = "Gesture Status", values_to = "Count")
 
+# Create a bar graph comparing gestures and non-gestures for each participant
+ggplot(gesture_count, aes(x = factor(participant_id), y = Count, fill = `Gesture Status`)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Side-by-side bars for gestures vs non-gestures
+  labs(title = "Gestures vs Non-Gestures by Participant",
+       x = "Participant ID",
+       y = "Count of Utterances") +
+  
+  # APA Style Formatting
+  theme_minimal() +
+  theme(
+    text = element_text(family = "Times New Roman", size = 12),  # Set Times New Roman
+    plot.title = element_text(hjust = 0.5, face = "bold"),  # Center title, bold
+    axis.title = element_text(face = "bold"),  # Bold axis titles
+    axis.text = element_text(size = 12),  # Ensure axis labels are size 12
+    legend.title = element_blank(),  # Remove the legend title
+    legend.text = element_text(size = 12),  # Legend text size
+    panel.grid.major = element_blank(),  # Remove major gridlines (APA style)
+    panel.grid.minor = element_blank(),  # Remove minor gridlines
+    axis.text.x = element_text(angle = 90, hjust = 1)  # Rotate x-axis labels
+  ) +
+  scale_fill_manual(values = c("Gesture" = "blue", "No Gesture" = "red"))
 ```
 
+# ALL Gesture during Pretend Play per individual
+```{r}
+# Count utterances with and without gestures during pretend play for each participant
+gesture_vs_no_gesture_pp <- P3_H8_ALL %>%
+  filter(c_pret == 1) %>%  # Filter for pretend play instances (c_pret == 1)
+  group_by(participant_id) %>%  # Group by participant ID
+  summarise(
+    `Gesture` = sum(!is.na(c_form), na.rm = TRUE),  # Count gestures (non-NA c_form)
+    `No Gesture` = sum(is.na(c_form), na.rm = TRUE)  # Count non-gestures (NA c_form)
+  ) %>%
+  pivot_longer(cols = c(`Gesture`, `No Gesture`), 
+               names_to = "Gesture Status", values_to = "Count")
+
+# Create the paired bar graph comparing gestures vs. non-gestures during pretend play
+ggplot(gesture_vs_no_gesture_pp, aes(x = factor(participant_id), y = Count, fill = `Gesture Status`)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Side-by-side bars
+  labs(title = "Gestures during Pretend Play by Participant",
+       x = "Participant ID",
+       y = "Count of Utterances") +
+  
+  # APA Style Formatting
+  theme_minimal() +
+  theme(
+    text = element_text(family = "Times New Roman", size = 12),  # Set Times New Roman
+    plot.title = element_text(hjust = 0.5, face = "bold"),  # Center title, bold
+    axis.title = element_text(face = "bold"),  # Bold axis titles
+    axis.text = element_text(size = 12),  # Ensure axis labels are size 12
+    legend.title = element_blank(),  # Remove the legend title
+    legend.text = element_text(size = 12),  # Legend text size
+    panel.grid.major = element_blank(),  # Remove major gridlines (APA style)
+    panel.grid.minor = element_blank(),  # Remove minor gridlines
+    axis.text.x = element_text(angle = 90, hjust = 1)  # Rotate x-axis labels
+  ) +
+  scale_fill_manual(values = c("Gesture" = "blue", "No Gesture" = "red"))
+```
+
+# Representational Gestures per Individual
+```{r}
+# convert every entry in the column to lowercase
+P3_H8_ALL$c_form <- tolower(P3_H8_ALL$c_form)
+
+# list of unique values in the c_form column:
+unique(P3_H8_ALL$c_form)
+
+# Categorize gestures into 'representational' and 'non-representational'
+P3_H8_ALL <- P3_H8_ALL %>%
+  mutate(
+    gesture_category = case_when(
+      !is.na(c_form) &c_form %in% c("iconic", "iconic - flip", "point - iconic", "metaphoric", "demo") ~ "Representational",  # Define representational gestures
+      !is.na(c_form) ~ "Non-Representational",  # All non-NA gestures are non-representational
+      TRUE ~ NA_character_  # Set NA for missing gestures
+    )
+  )
+
+# Count Representational and Non-Representational gestures during pretend play for each participant
+gesture_comparison <- P3_H8_ALL %>%
+  filter(c_pret == 1) %>%  # Filter for pretend play instances
+  group_by(participant_id) %>%  # Group by participant ID
+  summarise(
+    `Representational gestures` = sum(gesture_category == "Representational", na.rm = TRUE),  # Count Representational gestures
+    `Non-Representational gestures` = sum(gesture_category == "Non-Representational", na.rm = TRUE)  # Count Non-Representational gestures
+  ) %>%
+  pivot_longer(cols = c(`Representational gestures`, `Non-Representational gestures`), 
+               names_to = "Gesture_Type", values_to = "Count")
+
+# Create the paired bar graph comparing Representational vs. Non-Representational gestures during pretend play
+ggplot(gesture_comparison, aes(x = factor(participant_id), y = Count, fill = Gesture_Type)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Side-by-side bars
+  labs(title = "Participants' Representational vs. Non-Representational Gestures during Pretend Play",
+       x = "Participant ID",
+       y = "Gesture Count") +
+  
+  # APA Style Formatting
+  theme_minimal() +
+  theme(
+    text = element_text(family = "Times New Roman", size = 12),  # Set Times New Roman
+    plot.title = element_text(hjust = 0.5, face = "bold"),  # Center title, bold
+    axis.title = element_text(face = "bold"),  # Bold axis titles
+    axis.text = element_text(size = 12),  # Ensure axis labels are size 12
+    legend.title = element_blank(),  # Remove the legend title
+    legend.text = element_text(size = 12),  # Legend text size
+    panel.grid.major = element_blank(),  # Remove major gridlines (APA style)
+    panel.grid.minor = element_blank(),  # Remove minor gridlines
+    axis.text.x = element_text(angle = 90, hjust = 1)  # Rotate x-axis labels
+  ) +
+  scale_fill_manual(values = c("Representational gestures" = "blue", "Non-Representational gestures" = "red"))  # Custom colors
+```
