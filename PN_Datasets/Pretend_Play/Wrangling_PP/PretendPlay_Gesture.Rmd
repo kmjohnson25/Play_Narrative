@@ -3,8 +3,8 @@ title: "PretendPlay_Gesture"
 author: "Kristen Johnson"
 date: "2025-03-22"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -21,7 +21,7 @@ library(extrafont)  # Ensures Times New Roman is available
 # Pretend Play Instances per Individual
 ```{r}
 # Import and clean dataset
-P3_H8_ALL <- read_csv("/Users/kristenjohnson/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv")
+P3_H8_ALL <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv")
 
 # Summarize pretend play counts per participant
 PP_Individual <- P3_H8_ALL %>%
