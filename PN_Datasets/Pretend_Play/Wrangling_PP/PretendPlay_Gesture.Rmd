@@ -3,8 +3,8 @@ title: "PretendPlay_Gesture"
 author: "Kristen Johnson"
 date: "2025-03-22"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -178,3 +178,89 @@ ggplot(gesture_comparison, aes(x = factor(participant_id), y = Count, fill = Ges
   ) +
   scale_fill_manual(values = c("Representational gestures" = "blue", "Non-Representational gestures" = "red"))  # Custom colors
 ```
+
+# Scatterplot of gesture and utterance
+```{r}
+# Add a new column classifying gestures as Representational or Non-Representational
+P3_H8_ALL <- P3_H8_ALL %>%
+  mutate(
+    `Gesture Type` = case_when(
+      tolower(c_form) %in% c("iconic", "iconic - flip", "point - iconic", "metaphoric", "demo") ~ "Representational", # Define representational gestures
+      !is.na(c_form) ~ "Non-Representational",# Non-representational for all other non-NA gestures
+      TRUE ~ "No Gesture" # Replace NA with "No Gesture" for missing gesture data
+    )
+  )
+
+# Summarize data: Count utterances and gestures per participant
+gesture_summary <- P3_H8_ALL %>%
+  group_by(participant_id, `Gesture Type`) %>%  # Categorized by gesture type
+  summarise(
+    `Total Utterances` = n(),               # Total utterances per participant
+    `Total Gestures` = sum(!is.na(c_form))  # Count non-NA gestures
+  ) %>%
+  ungroup()
+
+# Scatter plot: Utterances vs Gestures per Participant
+ggplot(gesture_summary, aes(x = `Total Utterances`, y = `Total Gestures`, 
+                            shape = `Gesture Type`, size = `Total Gestures`, color = `Gesture Type`)) +
+  geom_point(alpha = 0.7) +  # Semi-transparent points
+  scale_shape_manual(values = c(16, 17, 18)) +  # Different shapes for gesture categories
+  scale_size_continuous(range = c(3, 8)) +  # Adjust point sizes
+  scale_color_manual(values = c("Representational" = "blue", "Non-Representational" = "red", "No Gesture" = "yellow")) +  # Custom colors for each category
+  labs(title = "Relationship Between Utterances and Gestures",
+       x = "Total Utterances",
+       y = "Total Gestures",
+       shape = "Gesture Type") +  # Legend for gesture type
+  theme_minimal() +
+  theme(text = element_text(family = "Times New Roman", size = 12))
+
+```
+
+
+# Looking at individual participants
+```{r}
+# Scatter plot: Utterances vs Gestures per Participant with Facets
+ggplot(gesture_summary, aes(x = `Total Utterances`, y = `Total Gestures`, 
+                            shape = `Gesture Type`, size = `Total Gestures`, color = `Gesture Type`)) +
+  geom_point(alpha = 0.7) +  # Semi-transparent points
+  scale_shape_manual(values = c(16, 17, 18)) +  # Different shapes for gesture categories
+  scale_size_continuous(range = c(3, 8)) +  # Adjust point sizes
+  scale_color_manual(values = c("Representational" = "blue", 
+                                "Non-Representational" = "red", 
+                                "No Gesture" = "yellow")) +  # Custom color for gesture categories
+  labs(title = "Relationship Between Utterances and Gestures",
+       x = "Total Utterances",
+       y = "Total Gestures",
+       shape = "Gesture Type") +  # Legend for gesture type
+  theme_minimal() +
+  theme(
+    text = element_text(family = "Times New Roman", size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1)  # Rotate x-axis labels
+  ) +
+  facet_wrap(~participant_id)  # Facet by participant_id
+
+```
+```{r}
+# Scatter plot: Utterances vs Gestures per Participant with facet_grid
+ggplot(gesture_summary, aes(x = `Total Utterances`, y = `Total Gestures`, 
+                            shape = `Gesture Type`, size = `Total Gestures`, color = `Gesture Type`)) +
+  geom_point(alpha = 0.7) +  # Semi-transparent points
+  scale_shape_manual(values = c(16, 17, 18)) +  # Different shapes for gesture categories
+  scale_size_continuous(range = c(3, 8)) +  # Adjust point sizes
+  scale_color_manual(values = c("Representational" = "blue", 
+                                "Non-Representational" = "red", 
+                                "No Gesture" = "yellow")) +  # Custom color for gesture categories
+  scale_x_continuous(breaks = seq(0, max(gesture_summary$`Total Utterances`), by = 1000)) +  # Custom breaks
+  labs(title = "Relationship Between Utterances and Gestures",
+       x = "Total Utterances",
+       y = "Total Gestures",
+       shape = "Gesture Type") +  # Legend for gesture type
+  theme_minimal() +
+  theme(
+    text = element_text(family = "Times New Roman", size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1)  # Rotate x-axis labels
+  ) +
+  facet_grid(`Gesture Type` ~ participant_id)  # Facet by gesture type (rows) and participant_id (columns)
+
+```
+
