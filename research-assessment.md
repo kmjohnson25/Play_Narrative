@@ -92,6 +92,8 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
         -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments: 
+          - absolute paths need to be fixed
+          - in general, you want only one R notebook (Quarto or otherwise) for your project. There are good reasons to have more than one if you're dividing up major chunks of work that aren't going to be in the manuscript, but any notebook that is essentially JUST code chunks should be an .R script. Only use notebooks when the Markdown functionality is needed. HOWEVER you do NOT need to change this for this project to get this point. you've got a system that works fine for you. just something you should keep in mind going forward
 
 2.  Maintain an informative and up-to-date README.md
 
@@ -99,8 +101,9 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2.  Outlines the repo structure with file tree or similar
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
+          -
 
 3.  integrate a GitHub repo with an R studio project, including .gitignore file
 
@@ -110,6 +113,8 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
         -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
+          - works once you change to relative paths
+          - your additions to your gitingore need to be cleaned up, you should also have an ignored localonly folder, even if you're not actively using it
 
 4.  effectively use version control
 
@@ -117,7 +122,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2.  Relies on document revisions rather than manually created new versions
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 ### R programming
@@ -129,8 +134,8 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
         2. When a reader opts-in to installing packages by uncommenting the code, it runs without errors 
     2. Uses more than one function to install/load/require packages (including those used in commented code)
 
-        -   [ ] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective attempt
+        -   [x] Objective met
         -   Grader comments:
         
 6.  Use arithmetic, comparison, and logical operators   <------  FOUND IN DATA WRANGLING Rmd's SUCH AS "~/Play_Narrative/PN_Datasets/Pretend Play/Wrangling_PP/Thesis_Data_cleaning.Rmd"
@@ -139,7 +144,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Uses multiple operators in data transformation pipelines and/or inline R code
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 7.  Parse and define functions and arguments.   <------ FOUND IN DATA WRANGLING Rmd's SUCH AS "~/Play_Narrative/PN_Datasets/Pretend Play/Wrangling_PP/Summary_stats.Rmd"
@@ -149,7 +154,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Functions are well-documented with comments
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 8.  Parse and write conditional statements and/or loops.  <------  FOUND IN DATA WRANGLING Rmd's SUCH AS "~/Play_Narrative/PN_Datasets/Pretend Play/Wrangling_PP/Thesis_Data_cleaning.Rmd"
@@ -158,7 +163,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Uses multiple types of conditional/loop functions (e.g., `if_else()`, `case_when()`, `for`, `while`)
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
         
 
@@ -168,7 +173,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Writes out intermediate and/or final datasets in code chunks or sourced scripts
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 10. Use `dplyr` and `tidyr` functions to transform data  <------  FOUND IN DATA WRANGLING Rmd's SUCH AS "~/Play_Narrative/PN_Datasets/Narrative/Wrangling_N/Narrative_Data_Wrangling.Rmd"
@@ -178,7 +183,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Combines `dplyr` and `tidyr` functions in a data transformation pipeline
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 11. Use `stringr` functions to work with string variables  <------  FOUND IN DATA WRANGLING Rmd's SUCH AS "~/Play_Narrative/PN_Datasets/Pretend Play/Wrangling_PP/Thesis_Data_cleaning.Rmd"
@@ -187,7 +192,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Uses `stringr` functions in a data transformation pipeline
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 12. Use `forcats` functions to work with factor variables  <------  FOUND IN ~/Play_Narrative/PN_Datasets/Narrative/Wrangling_N/Narrative_Data_Wrangling.Rmd
@@ -196,7 +201,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Uses `forcats` functions in a data transformation pipeline
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 ### Data visualization with ggplot2
@@ -209,13 +214,15 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
         -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
+          - these need to be in your manuscript to get credit. for now I'm going to look at the ones in this other rmd (which also uses an absolute path!) but for grading I'll only look at ones in the .Qmd 
+          - the ones you have in this file are looking good, but the scatter plots are very hard to interpret. I'm thinking you may have just been playing around with data, so just be selective about what makes it into the manuscript
 
 14. Use dynamic aesthetics to group data <------ FOUND IN ~/Play_Narrative/PN_Datasets/Pretend_Play/Wrangling_PP/PretendPlay_Gesture.Rmd
 
     1. Uses at least 2 unique data-mapped `aes()` arguments (e.g., color, shape, size) to group data in a plot in one or multiple plots
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
         
 15. Use facets to create parallel plots <------ FOUND IN ~/Play_Narrative/PN_Datasets/Pretend_Play/Wrangling_PP/PretendPlay_Gesture.Rmd
@@ -224,7 +231,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Combines facets with other dynamic grouping aesthetics
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
         
 16. Create publication-quality plots using `theme` and `labs` layers <------ FOUND IN ~/Play_Narrative/PN_Datasets/Pretend_Play/Wrangling_PP/PretendPlay_Gesture.Rmd
@@ -235,8 +242,9 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4. Uses at least 1 static aesthetic (e.g., color, shape, size) that improves visual clarity without mapping to data
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
+          - make sure when you actually put plots in the manuscript that each is interpretable and don't have any leftover variable names 
 
 ### Data analysis
 
@@ -247,7 +255,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Presents results in narrative text, table, or plot
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 18. Perform simple hypothesis testing analyses for multiple data types
@@ -280,7 +288,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. May use `cite_r()` to cite R and R packages
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 21. Render an APA7 references page from a .bib file
@@ -292,8 +300,9 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     5. May include references not cited in-text
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
+          - add a page break with latex before # References
 
 ### Notebooks and code chunks
 
@@ -305,8 +314,9 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4.  Chunks are distributed throughout the manuscript, sensibly placed near the text they support
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments: 
+          - when you use quarto comment-style options, some of the option names are slightly different than inline options. mostly it's where "." is replaced with "-", like fig.cap -> fig-cap
         
 23. Use code chunks to set up a quarto document
 
@@ -330,6 +340,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
         -   [ ] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
+          - if you use this table (it looks good!) it needs to be fully interpretable without referring to anything else. use plain English when you can, and if you need to use abbreviations or codes they should be defined in the table's note
 
 25. Execute descriptive analyses and/or hypothesis testing in code chunks
 
@@ -350,7 +361,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     1. Includes all necessary metadata, output options, and formatting options necessary to render an APA styled document (or other specified style if appropriate for the project)
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
         
 27. Use quarto R Markdown to compose an academic manuscript
@@ -362,7 +373,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     - NOTE: This is going to be one of the most flexible objectives to demonstrate.  You need to demonstrate a range of markdown skills and use them to make a readable, informative manuscript. Hitting the four points above should do that, but you can use your judgment about what kind of markdown features will best serve your project. No matter what, you should use markdown to follow APA7 guidelines.
 
         -   [X] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 28. Use inline R variables to replace static text
@@ -392,6 +403,9 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
 
         -   [ ] Objective attempt
         -   [ ] Objective met
-        -   Grader comments:        
-        
+        -   Grader comments:
+          - be sure everything in the render is actually formatted. you've got some raw output appearing if the pdf and in your analysis plan (which i can see you're still drafting) you've got a model that needs to be presented without just the raw R script for the model
+          
+          NOTE: this isn't the most up-to-date version of the research assessment file. the one you want will have a place for the AI statement and down here at the bottom it will have a section for grading. you lose 5 points for a missing ai statement so make sure you switch over to the one that has it!
+
 
