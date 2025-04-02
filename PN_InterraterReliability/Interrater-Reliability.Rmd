@@ -19,7 +19,7 @@ library(tidyverse)  # to manipulate strings and a lot more
 ## be sure to change initials for each coder
 JB_codes<- read_excel('~/KristenWorkingDirectory/Play_Narrative/PN_InterraterReliability/Coded_P3_H10/P3.46.10_COMPLETE_JB_02.26.25.xls')
 
-#MCV_codes<- read_excel('~/KristenWorkingDirectory/Play_Narrative/PN_Interrater Reliability/Coded_P3_H10/P3.99.10_COMPLETE_MCV_03.03.25.xls')
+#MCV_codes<- read_excel('~/KristenWorkingDirectory/Play_Narrative/PN_InterraterReliability/Coded_P3_H10/P3.99.10_COMPLETE_MCV_03.03.25.xls')
 
 KJ_codes <- read_excel('~/KristenWorkingDirectory/Play_Narrative/PN_InterraterReliability/Coded_P3_H10/P3.46.10_COMPLETE_KJ_3.1.25.xls')
 ```
