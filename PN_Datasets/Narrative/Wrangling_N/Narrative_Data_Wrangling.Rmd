@@ -11,6 +11,7 @@ output:
 library(readxl)
 library(dplyr)
 library(stringr)
+library(tidyverse)
 ```
 # Narrative scores and codes:
 1. No structure (**NS**)- only one clause with or without a verb. 
@@ -57,7 +58,7 @@ Narrative_Results_Score_Totals <- Narrative_Results_Numeric %>%
 write_csv(Narrative_Results_Score_Totals, "~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Score_Totals.csv")
 ```
 
-# Make new datafram with relevant info only:
+# Make new dataframe with relevant info only:
 ```{r}
 # Make new datafram with relevant info only
 Narrative_Results_Final <- Narrative_Results_Score_Totals %>%
@@ -67,5 +68,76 @@ print(Narrative_Results_Final)
 
 write_csv(Narrative_Results_Final, "~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Final.csv")
 
+```
+
+# Create new column with clearer group status for kids
+```{r}
+Narrative_Results_Final <- Narrative_Results_Final %>%
+  mutate(GroupStatus = case_when(
+    Project == 3 ~ "BI",
+    Project == 2 ~ "TD",
+    TRUE ~ NA_character_  # Ensures missing values are handled
+  ))
+```
+
+# Renaming & grouping scores to simplify for categorical analysis
+```{r}
+# Categorize ability into Low, Medium, High
+Cat_Narrative_Results_Final <- Narrative_Results_Final %>%
+  mutate(ability_category = factor(
+    case_when(
+      AvgHighScore <= 3 ~ "Low",
+      AvgHighScore <= 7 ~ "Medium",
+      TRUE ~ "High"
+    ),
+    levels = c("Low", "Medium", "High")  # Ensuring consistent order
+  ))
+
+print(Cat_Narrative_Results_Final)
+```
+
+# Ensure a Specific Order for Grouping 
+```{r}
+#ensure BI kids appear first in plots and tables
+Cat_Narrative_Results_Final <- Cat_Narrative_Results_Final %>%
+  mutate(GroupStatus = fct_relevel(GroupStatus, "BI"))
+
+print(Cat_Narrative_Results_Final)
+```
+
+# Check to see if ability categories align with actual scores
+```{r}
+# Order Ability Groups by Mean Narrative Score
+
+Cat_Narrative_Results_Final <- Cat_Narrative_Results_Final %>%
+  mutate(ability_category = fct_reorder(ability_category, AvgHighScore, .fun = mean))
+
+```
+
+# Boxplot of Narrative Scores by Group Status
+```{r}
+ggplot(Cat_Narrative_Results_Final, aes(x = GroupStatus, y = AvgHighScore, fill = GroupStatus)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Comparison of Narrative Ability Scores by Group Status",
+       x = "Group Status",
+       y = "Narrative Score")
+
+```
+
+# Bar Plot of Ability Categories by Group Status
+```{r}
+ggplot(Cat_Narrative_Results_Final, aes(x = ability_category, fill = GroupStatus)) +
+  geom_bar(position = "dodge") +
+  theme_minimal() +
+  labs(title = "Distribution of Narrative Ability Categories by Group Status",
+       x = "Ability Level",
+       y = "Count")
+
+```
+
+# Save it!
+```{r}
+write_csv(Cat_Narrative_Results_Final, "Narrative_Comparison.csv")
 ```
 
