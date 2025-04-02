@@ -49,6 +49,9 @@ This folder contains two subfolders:
     - **Wrangling_PP**
         - contains Rmds with code used to clean and wrangle said data
 
+## **PN_DataAnalysis**
+    - contains Rmds, scripts, and csv's of streamlined data... all relating to final analyses
+
 ## PN_Interrater Reliability
 This folder contains 3 subfolders and an Rmd
 * **Coded_P3_H7**: 

@@ -1,0 +1,143 @@
+---
+title: "PretendPlay_Gesture_Analysis"
+author: "Kristen Johnson"
+date: "2025-04-02"
+output: html_document
+---
+```{r}
+# Load necessary packages
+library(tidyverse)
+library(car)       # For Levene's test and Type III SS
+library(effectsize) # For effect sizes
+library(rstatix)    # For convenient statistical functions
+```
+
+# Assuming your data is in a dataframe called 'data' with columns:
+# - group: Factor with levels "TD" and "PL"
+# - total_gestures: Count of all gestures
+# - representational_gestures: Count of representational gestures
+# - iconic_gestures: Count of iconic gestures
+# - language_score: Language ability measure
+# - pretend_play_freq: Frequency of pretend play instances
+
+```{r}
+
+```
+
+# Assuming your data is in a dataframe called 'data' with columns:
+# - group: Factor with levels "TD" and "PL"
+# - total_gestures: Count of all gestures
+# - representational_gestures: Count of representational gestures
+# - iconic_gestures: Count of iconic gestures
+# - language_score: Language ability measure
+# - pretend_play_freq: Frequency of pretend play instances
+
+# 1. Check for multivariate outliers using Mahalanobis distance
+maha_dist <- data %>%
+  select(total_gestures, representational_gestures, iconic_gestures) %>%
+  mahalanobis_distance() %>%
+  bind_cols(data)
+
+# Flag potential outliers (p < .001)
+outliers <- maha_dist %>%
+  filter(p < .001)
+
+print(paste("Number of multivariate outliers detected:", nrow(outliers)))
+if(nrow(outliers) > 0) print(outliers)
+
+# 2. Test for multivariate normality
+# Note: We're checking univariate normality as a proxy, as multivariate normality
+# is difficult to test directly in R with small samples
+data %>%
+  select(total_gestures, representational_gestures, iconic_gestures) %>%
+  gather(key = "variable", value = "value") %>%
+  group_by(variable) %>%
+  shapiro_test(value)
+
+# 3. Test homogeneity of covariance matrices (Box's M test)
+# Note: This is very sensitive to non-normality, so interpret with caution
+# Particularly with small/unequal sample sizes
+box_m(data[, c("total_gestures", "representational_gestures", "iconic_gestures")], 
+      data$group)
+
+# 4. Run the MANOVA
+manova_result <- manova(cbind(total_gestures, representational_gestures, iconic_gestures) ~ 
+                        group, data = data)
+
+# 5. Print summary of MANOVA
+summary(manova_result, test = "Pillai") # Pillai's trace is most robust to violations
+summary(manova_result, test = "Wilks")  # Wilks' lambda is commonly reported
+summary(manova_result, test = "Hotelling") # Hotelling's trace
+summary(manova_result, test = "Roy")    # Roy's largest root
+
+# 6. Calculate effect size (partial eta squared)
+manova_effsize <- eta_squared(manova_result)
+print(manova_effsize)
+
+# 7. If MANOVA is significant, proceed with univariate ANOVAs
+if(summary(manova_result, test = "Pillai")$stats[1, "Pr(>F)"] < 0.05) {
+  # Univariate ANOVAs
+  total_aov <- aov(total_gestures ~ group, data = data)
+  rep_aov <- aov(representational_gestures ~ group, data = data)
+  iconic_aov <- aov(iconic_gestures ~ group, data = data)
+  
+  # Print summaries
+  cat("\nUnivariate ANOVA results:\n")
+  cat("\nTotal gestures:\n")
+  print(summary(total_aov))
+  print(eta_squared(total_aov))
+  
+  cat("\nRepresentational gestures:\n")
+  print(summary(rep_aov))
+  print(eta_squared(rep_aov))
+  
+  cat("\nIconic gestures:\n")
+  print(summary(iconic_aov))
+  print(eta_squared(iconic_aov))
+  
+  # 8. Descriptive statistics by group
+  group_stats <- data %>%
+    group_by(group) %>%
+    summarise(
+      n = n(),
+      total_mean = mean(total_gestures, na.rm = TRUE),
+      total_sd = sd(total_gestures, na.rm = TRUE),
+      rep_mean = mean(representational_gestures, na.rm = TRUE),
+      rep_sd = sd(representational_gestures, na.rm = TRUE),
+      iconic_mean = mean(iconic_gestures, na.rm = TRUE),
+      iconic_sd = sd(iconic_gestures, na.rm = TRUE)
+    )
+  
+  print(group_stats)
+}
+
+# 9. Optional: MANCOVA controlling for covariates
+# This controls for language score and pretend play frequency
+mancova_result <- manova(cbind(total_gestures, representational_gestures, iconic_gestures) ~ 
+                         group + language_score + pretend_play_freq, data = data)
+
+cat("\nMANCOVA results (controlling for language score and pretend play frequency):\n")
+print(summary(mancova_result, test = "Pillai"))
+print(eta_squared(mancova_result))
+
+# 10. Visualization
+# Create a long-format dataset for plotting
+data_long <- data %>%
+  select(group, total_gestures, representational_gestures, iconic_gestures) %>%
+  pivot_longer(cols = c(total_gestures, representational_gestures, iconic_gestures),
+              names_to = "gesture_type", 
+              values_to = "count")
+
+# Plot means with error bars
+ggplot(data_long, aes(x = gesture_type, y = count, fill = group)) +
+  stat_summary(fun = mean, geom = "bar", position = position_dodge(0.9)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, position = position_dodge(0.9)) +
+  labs(title = "Mean Gesture Counts by Type and Group",
+       x = "Gesture Type",
+       y = "Mean Count",
+       fill = "Group") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1") +
+  scale_x_discrete(labels = c("total_gestures" = "Total",
+                             "representational_gestures" = "Representational",
+                             "iconic_gestures" = "Iconic"))
