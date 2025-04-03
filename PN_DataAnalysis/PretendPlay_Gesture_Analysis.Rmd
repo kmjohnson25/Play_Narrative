@@ -29,91 +29,308 @@ library(rstatix)    # For convenient statistical functions
 ## - C-wpu: Language ability measure
 ## - c_pret: Frequency of pretend play instances
 
-# 1. Check the correlations between your gesture variables
-```{r, echo=FALSE}
-merged_H8 <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/merged_H8.csv")
+# 1. Conduct ANOVAs for each gesture type & summarize results
+```{r}
+# read in data frame that is just gesture during instance of pretend play
+pretend_data_H8 <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/pretend_data_H8.csv")
 
-cor_matrix <- cor(merged_H8[, c("gesture_all", "gesture_rep", "gesture_icon")])
-print(cor_matrix)
-```
-
-
-# 2. Conduct Univariate analyses for each gesture type
-```{r, echo=FALSE}
-# This avoids the multicollinearity issue
+# Aggregate by child
+child_summary <- pretend_data_H8 %>%
+  group_by(participant_id, GroupStatus) %>% # Assuming you have a child_id variable
+  summarize(
+    total_gestures = sum(gesture_all),
+    rep_gestures = sum(gesture_rep),
+    icon_gestures = sum(gesture_icon),
+    prop_rep = sum(gesture_rep) / sum(gesture_all),
+    prop_icon = sum(gesture_icon) / sum(gesture_all)
+  )
 
 # For total gestures
-total_aov <- aov(gesture_all ~ GroupStatus, data = merged_H8)
+total_anova <- aov(total_gestures ~ GroupStatus, data = child_summary)
 cat("\nTotal gestures ANOVA:\n")
-print(summary(total_aov))
+print(summary(total_anova))
 
 # For representational gestures
-rep_aov <- aov(gesture_rep ~ GroupStatus, data = merged_H8)
+rep_anova <- aov(rep_gestures ~ GroupStatus, data = child_summary)
 cat("\nRepresentational gestures ANOVA:\n")
-print(summary(rep_aov))
-
+print(summary(rep_anova))
+ 
 # For iconic gestures
-icon_aov <- aov(gesture_icon ~ GroupStatus, data = merged_H8)
+icon_anova <- aov(icon_gestures ~ GroupStatus, data = child_summary)
 cat("\nIconic gestures ANOVA:\n")
-print(summary(icon_aov))
+print(summary(icon_anova))
+ 
+# For proportion of representational gestures to total gestures
+prop_rep_anova <- aov(prop_rep ~ GroupStatus, data = child_summary)
+cat("\nProportion of representational gestures ANOVA:\n")
+print(summary(prop_rep_anova))
+ 
+#for proportion of iconic gestures to total gestures
+prop_icon_anova <- aov(prop_icon ~ GroupStatus, data = child_summary)
+cat("\nProportion of iconic gestures ANOVA:\n")
+print(summary(prop_icon_anova))
+
 ```
 
-# 3. Descriptive statistics by group
-```{r, echo=FALSE}
-group_stats <- aggregate(cbind(gesture_all, gesture_rep, gesture_icon) ~ GroupStatus, 
-                         data = merged_H8, 
-                         FUN = function(x) c(mean = mean(x, na.rm = TRUE), 
-                                             sd = sd(x, na.rm = TRUE),
-                                             n = sum(!is.na(x))))
-print(group_stats)
-```
-
-# 4. Calculate effect sizes for ANOVAs
-```{r, echo=FALSE}
+# 2. Calculate effect sizes
+```{r}
 if(require(effectsize)) {
   cat("\nEffect sizes:\n")
   cat("Total gestures: ")
-  print(eta_squared(total_aov))
+  print(eta_squared(total_anova))
   cat("Representational gestures: ")
-  print(eta_squared(rep_aov))
+  print(eta_squared(rep_anova))
   cat("Iconic gestures: ")
-  print(eta_squared(icon_aov))
+  print(eta_squared(icon_anova))
+  cat("Proportion representational: ")
+  print(eta_squared(prop_rep_anova))
+  cat("Proportion iconic: ")
+  print(eta_squared(prop_icon_anova))
 } else {
-  # Manual effect size calculation if effectsize package is not available
-  SS_total <- sum((total_aov$model$gesture_all - mean(total_aov$model$gesture_all))^2)
-  SS_effect <- sum(tapply(total_aov$model$gesture_all, 
-                         total_aov$model$GroupStatus, 
-                         function(x) length(x) * (mean(x) - mean(total_aov$model$gesture_all))^2))
-  cat("\nTotal gestures eta-squared: ", SS_effect/SS_total, "\n")
-  
-  # Similar calculations could be done for other variables
+  # Manual calculation if package not available
+  cat("\nEffect sizes calculated manually:\n")
+  # Formula for eta-squared: SS_between / SS_total
+  summary_total <- summary(total_anova)
+  eta_sq_total <- summary_total[[1]]["GroupStatus", "Sum Sq"] / 
+                 sum(summary_total[[1]][, "Sum Sq"])
+  cat("Total gestures eta-squared: ", eta_sq_total, "\n")
+  # Repeat for other ANOVAs
 }
 ```
 
-# 5. Visualization 
-```{r, echo=FALSE}
-# Create a long-format dataset for plotting
-data_long <- merged_H8 %>%
-  select(GroupStatus, gesture_all, gesture_rep, gesture_icon) %>%
-  pivot_longer(cols = c(gesture_all, gesture_rep, gesture_icon),
-              names_to = "gesture_type", 
-              values_to = "count")
+# 3. Descriptive statistics by group
+```{r}
+group_stats <- child_summary %>%
+  group_by(GroupStatus) %>%
+  summarize(
+    n = n(),
+    total_mean = mean(total_gestures, na.rm = TRUE),
+    total_sd = sd(total_gestures, na.rm = TRUE),
+    rep_mean = mean(rep_gestures, na.rm = TRUE),
+    rep_sd = sd(rep_gestures, na.rm = TRUE),
+    icon_mean = mean(icon_gestures, na.rm = TRUE),
+    icon_sd = sd(icon_gestures, na.rm = TRUE),
+    prop_rep_mean = mean(prop_rep, na.rm = TRUE),
+    prop_rep_sd = sd(prop_rep, na.rm = TRUE),
+    prop_icon_mean = mean(prop_icon, na.rm = TRUE),
+    prop_icon_sd = sd(prop_icon, na.rm = TRUE)
+  )
 
-# Plot means with error bars
-ggplot(data_long, aes(x = gesture_type, y = count, fill = GroupStatus)) +
-  stat_summary(fun = mean, geom = "bar", position = position_dodge(0.9)) +
-  stat_summary(fun.data = \(x) {
-    data.frame(y = mean(x, na.rm = TRUE),
-               ymin = mean(x, na.rm = TRUE) - sd(x, na.rm = TRUE)/sqrt(length(x)),
-               ymax = mean(x, na.rm = TRUE) + sd(x, na.rm = TRUE)/sqrt(length(x)))
-  }, geom = "errorbar", width = 0.2, position = position_dodge(0.9)) +
-  labs(title = "Mean Gesture Counts by Type and Group",
-       x = "Gesture Type",
-       y = "Mean Count",
-       fill = "Group Status") +
-  theme_minimal() +
-  scale_fill_brewer(palette = "Set1") +
-  scale_x_discrete(labels = c("gesture_all" = "Total",
-                             "gesture_rep" = "Representational",
-                             "gesture_icon" = "Iconic"))
+print("Descriptive statistics by group:")
+print(group_stats)
 ```
+
+
+# 4. Visualization of results
+```{r}
+if(require(tidyverse)) {
+  # Raw counts visualization
+  counts_long <- child_summary %>%
+    select(GroupStatus, total_gestures, rep_gestures, icon_gestures) %>%
+    pivot_longer(cols = c(total_gestures, rep_gestures, icon_gestures),
+                names_to = "gesture_type", 
+                values_to = "count")
+  
+  p1 <- ggplot(counts_long, aes(x = gesture_type, y = count, fill = GroupStatus)) +
+    stat_summary(fun = mean, geom = "bar", position = position_dodge(0.9)) +
+    stat_summary(fun.data = function(x) {
+      data.frame(y = mean(x, na.rm = TRUE),
+                ymin = mean(x, na.rm = TRUE) - sd(x, na.rm = TRUE)/sqrt(sum(!is.na(x))),
+                ymax = mean(x, na.rm = TRUE) + sd(x, na.rm = TRUE)/sqrt(sum(!is.na(x))))
+    }, geom = "errorbar", width = 0.2, position = position_dodge(0.9)) +
+    labs(title = "Mean Gesture Counts During Pretend Play by Group",
+         x = "Gesture Type",
+         y = "Mean Count",
+         fill = "Group Status") +
+    theme_minimal() +
+    scale_x_discrete(labels = c("total_gestures" = "Total",
+                               "rep_gestures" = "Representational",
+                               "icon_gestures" = "Iconic"))
+  print(p1)
+  
+  # Proportions visualization
+  props_long <- child_summary %>%
+    select(GroupStatus, prop_rep, prop_icon) %>%
+    pivot_longer(cols = c(prop_rep, prop_icon),
+                names_to = "proportion_type", 
+                values_to = "proportion")
+  
+  p2 <- ggplot(props_long, aes(x = proportion_type, y = proportion, fill = GroupStatus)) +
+    stat_summary(fun = mean, geom = "bar", position = position_dodge(0.9)) +
+    stat_summary(fun.data = function(x) {
+      data.frame(y = mean(x, na.rm = TRUE),
+                ymin = mean(x, na.rm = TRUE) - sd(x, na.rm = TRUE)/sqrt(sum(!is.na(x))),
+                ymax = mean(x, na.rm = TRUE) + sd(x, na.rm = TRUE)/sqrt(sum(!is.na(x))))
+    }, geom = "errorbar", width = 0.2, position = position_dodge(0.9)) +
+    labs(title = "Proportion of Gesture Types During Pretend Play by Group",
+         x = "Proportion Type",
+         y = "Mean Proportion",
+         fill = "Group Status") +
+    theme_minimal() +
+    scale_x_discrete(labels = c("prop_rep" = "Representational/Total",
+                               "prop_icon" = "Iconic/Total")) +
+    scale_y_continuous(labels = scales::percent)
+  print(p2)
+}
+```
+
+# 5. Statistical tests to directly compare TD and BI groups
+```{r}
+# t-tests for each variable (alternative to ANOVA with only two groups)
+t_total <- t.test(total_gestures ~ GroupStatus, data = child_summary)
+t_rep <- t.test(rep_gestures ~ GroupStatus, data = child_summary)
+t_icon <- t.test(icon_gestures ~ GroupStatus, data = child_summary)
+t_prop_rep <- t.test(prop_rep ~ GroupStatus, data = child_summary)
+t_prop_icon <- t.test(prop_icon ~ GroupStatus, data = child_summary)
+
+cat("\nt-test results (direct comparison between groups):\n")
+cat("\nTotal gestures:\n")
+print(t_total)
+cat("\nRepresentational gestures:\n")
+print(t_rep)
+cat("\nIconic gestures:\n")
+print(t_icon)
+cat("\nProportion representational:\n")
+print(t_prop_rep)
+cat("\nProportion iconic:\n")
+print(t_prop_icon)
+```
+
+# 6. Calculate Cohen's d effect sizes for t-tests with error handling
+```{r}
+
+cat("\nCohen's d effect sizes:\n")
+
+# Function to safely calculate Cohen's d
+safe_cohens_d <- function(formula, data) {
+  tryCatch({
+    res <- cohens_d(formula, data = data)
+    return(res)
+  }, error = function(e) {
+    # Extract variable name from formula
+    var_name <- as.character(formula)[2]
+    # Get means by group
+    means <- aggregate(formula, data = data, FUN = mean, na.rm = TRUE)
+    sds <- aggregate(formula, data = data, FUN = sd, na.rm = TRUE)
+    
+    cat("Error calculating Cohen's d for", var_name, ":\n")
+    cat("Group means:", toString(means), "\n")
+    cat("Group SDs:", toString(sds), "\n")
+    cat("Error message:", e$message, "\n")
+    return(NULL)
+  })
+}
+
+# Apply the safe function to each variable
+cat("\nTotal gestures:\n")
+print(safe_cohens_d(total_gestures ~ GroupStatus, data = child_summary))
+
+cat("\nRepresentational gestures:\n")
+print(safe_cohens_d(rep_gestures ~ GroupStatus, data = child_summary))
+
+cat("\nIconic gestures:\n")
+print(safe_cohens_d(icon_gestures ~ GroupStatus, data = child_summary))
+
+cat("\nProportion representational:\n")
+print(safe_cohens_d(prop_rep ~ GroupStatus, data = child_summary))
+
+cat("\nProportion iconic:\n")
+print(safe_cohens_d(prop_icon ~ GroupStatus, data = child_summary))
+```
+
+# Make APA-formatted data visualizations
+```{r}
+if(require(tidyverse)) {
+  # Set APA theme
+  apa_theme <- theme_bw() +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.border = element_rect(colour = "black", fill = NA),
+      axis.text = element_text(colour = "black", size = 12),
+      axis.title = element_text(size = 12, face = "bold"),
+      legend.title = element_text(size = 12, face = "bold"),
+      legend.text = element_text(size = 12),
+      legend.position = "bottom",
+      legend.background = element_rect(fill = "white", colour = "black"),
+      plot.title = element_text(size = 14, hjust = 0.5, face = "bold"),
+      text = element_text(family = "Times New Roman")
+    )
+  
+  # Raw counts visualization
+  counts_long <- child_summary %>%
+    select(GroupStatus, total_gestures, rep_gestures, icon_gestures) %>%
+    pivot_longer(cols = c(total_gestures, rep_gestures, icon_gestures),
+                names_to = "gesture_type", 
+                values_to = "count")
+  
+  # Renaming GroupStatus labels to be more readable
+  counts_long$GroupStatus <- factor(counts_long$GroupStatus, 
+                                  levels = c("BI", "TD"),
+                                  labels = c("Brain Injury", "Typically Developing"))
+  
+  p1 <- ggplot(counts_long, aes(x = gesture_type, y = count, fill = GroupStatus)) +
+    stat_summary(fun = mean, geom = "bar", position = position_dodge(0.8), 
+                alpha = 0.8, color = "black", size = 0.2) +
+    stat_summary(fun.data = function(x) {
+      data.frame(y = mean(x, na.rm = TRUE),
+                ymin = mean(x, na.rm = TRUE) - sd(x, na.rm = TRUE)/sqrt(sum(!is.na(x))),
+                ymax = mean(x, na.rm = TRUE) + sd(x, na.rm = TRUE)/sqrt(sum(!is.na(x))))
+    }, geom = "errorbar", width = 0.2, position = position_dodge(0.8)) +
+    labs(title = "Figure 1",
+         subtitle = "Mean Gesture Counts During Pretend Play by Group",
+         x = "Gesture Type",
+         y = "Mean Count",
+         fill = "Group") +
+    scale_x_discrete(labels = c("total_gestures" = "Total",
+                               "rep_gestures" = "Representational",
+                               "icon_gestures" = "Iconic")) +
+    scale_fill_grey(start = 0.4, end = 0.8) +
+    apa_theme +
+    theme(plot.subtitle = element_text(size = 12, hjust = 0.5))
+  
+  print(p1)
+  
+  # Save high-resolution figure
+  ggsave("Figure_1_Gesture_Counts.tiff", p1, width = 7, height = 5, dpi = 300)
+  
+  # Proportions visualization
+  props_long <- child_summary %>%
+    select(GroupStatus, prop_rep, prop_icon) %>%
+    pivot_longer(cols = c(prop_rep, prop_icon),
+                names_to = "proportion_type", 
+                values_to = "proportion")
+  
+  # Renaming GroupStatus labels
+  props_long$GroupStatus <- factor(props_long$GroupStatus, 
+                                  levels = c("BI", "TD"),
+                                  labels = c("Brain Injury", "Typically Developing"))
+  
+  p2 <- ggplot(props_long, aes(x = proportion_type, y = proportion, fill = GroupStatus)) +
+    stat_summary(fun = mean, geom = "bar", position = position_dodge(0.8), 
+                alpha = 0.8, color = "black", size = 0.2) +
+    stat_summary(fun.data = function(x) {
+      data.frame(y = mean(x, na.rm = TRUE),
+                ymin = mean(x, na.rm = TRUE) - sd(x, na.rm = TRUE)/sqrt(sum(!is.na(x))),
+                ymax = mean(x, na.rm = TRUE) + sd(x, na.rm = TRUE)/sqrt(sum(!is.na(x))))
+    }, geom = "errorbar", width = 0.2, position = position_dodge(0.8)) +
+    labs(title = "Figure 2", 
+         subtitle = "Proportion of Gesture Types During Pretend Play by Group",
+         x = "Proportion Type",
+         y = "Mean Proportion",
+         fill = "Group") +
+    scale_x_discrete(labels = c("prop_rep" = "Representational/Total",
+                               "prop_icon" = "Iconic/Total")) +
+    scale_y_continuous(labels = scales::percent, 
+                      breaks = seq(0, 0.25, 0.05)) +
+    scale_fill_grey(start = 0.4, end = 0.8) +
+    apa_theme +
+    theme(plot.subtitle = element_text(size = 12, hjust = 0.5))
+  
+  print(p2)
+  
+  # Save high-resolution figure
+  ggsave("Figure_2_Gesture_Proportions.tiff", p2, width = 7, height = 5, dpi = 300)
+}
+```
+

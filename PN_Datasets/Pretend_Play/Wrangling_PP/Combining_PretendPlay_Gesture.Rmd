@@ -11,6 +11,7 @@ output: html_document
 
 library(dplyr)
 library(tidyr)
+library(readr)
 library(ggplot2)
 library(stringr)
 library(knitr)
@@ -22,6 +23,10 @@ library(extrafont)  # Ensures Times New Roman is available
 # read in total data set create column for Group Status (P3=BI, P2=TD)
 P3_H8_ALL <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv") %>%
   mutate(GroupStatus = "BI") # add column specifying which group this is
+
+P3_H8_ALL$c_form <- tolower(P3_H8_ALL$c_form)
+
+unique(P3_H8_ALL$c_form)
 
 # get rid of unnecessary columns & create necessary columns
 P3_H8_Simple <- P3_H8_ALL %>% 
@@ -37,19 +42,42 @@ P3_H8_Simple <- P3_H8_ALL %>%
 # read in total data set create column for Group Status (P3=BI, P2=TD)
 P2_H8_ALL <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P2_H8_ALL.csv") %>%
   mutate(GroupStatus = "TD") # add column specifying which group this is
+  
+P2_H8_ALL$c_form <- tolower(P2_H8_ALL$c_form)
+  
+unique(P2_H8_ALL$c_form)
 
 # get rid of unnecessary columns & create necessary columns
 P2_H8_Simple <- P2_H8_ALL %>% 
-  select(participant_id, C_wpu, c_pret, c_form, line, GroupStatus)  %>% # Remove all but specific columns
+  select(participant_id, C_wpu, c_pret, c_form, line, GroupStatus) %>%  # Remove all but specific columns
   mutate(
-    gesture_rep = if_else(c_form %in% c("iconic|point-iconic-flip|nod\\+palm\\+palm-iconic|iconic\\s-\\siconic|iconic\\?|iconic-iconic-iconic-iconic|nod\\+iconic|iconic~|iconic-iconic|metaphoric|demo"), 1, 0),
+    gesture_rep = if_else(c_form %in% c("iconic", "iconic?", "iconic-iconic-iconic-iconic", "nod+iconic",  
+                                        "point-iconic-flip", "iconic~", "nod+palm+palm-iconic", "iconic - iconic", 
+                                        "iconic-iconic", "metaphoric", "demo", "demo~"), 1, 0),
+    
     gesture_all = if_else(!is.na(c_form) & c_form != "", 1, 0),
-    gesture_icon = if_else(c_form %in% c("iconic|point-iconic-flip|nod\\+palm\\+palm-iconic|iconic\\s-\\siconic|iconic\\?|iconic-iconic-iconic-iconic|nod\\+iconic|iconic~|iconic-iconic"), 1, 0))
+    
+    gesture_icon = if_else(c_form %in% c("iconic", "iconic?", "iconic-iconic-iconic-iconic", "nod+iconic",  
+                                         "point-iconic-flip", "iconic~", "nod+palm+palm-iconic", "iconic - iconic", 
+                                         "iconic-iconic"), 1, 0)
+  )
+
 ```
 
 # Combine Data from TD and BI kids to have complete year of data
 ```{r}
 # Merge datasets by stacking them
 merged_H8 <- bind_rows(P3_H8_Simple, P2_H8_Simple)
+
+write.csv(merged_H8, file = "merged_H8.csv")
+```
+
+# Filter to include only gestures/utterances during pretend play
+```{r}
+# Filter to include only pretend play episodes
+pretend_data_H8 <- merged_H8[merged_H8$c_pret == 1, ] 
+
+write_csv(pretend_data_H8, file = "pretend_data_H8.csv")
+
 ```
 
