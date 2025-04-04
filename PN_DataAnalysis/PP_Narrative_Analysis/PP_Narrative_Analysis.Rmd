@@ -30,13 +30,32 @@ H8_gesture_play <- merged_H8 %>%
   )
 
 write_csv(H8_gesture_play, 
-          here( "Play_Narrative", "PN_DataAnalysis", "PP_Narrative_Analysis", "H8_gesture_play.csv"))
+          here("PN_DataAnalysis", "PP_Narrative_Analysis", "H8_gesture_play.csv"))
+```
+
+
+```{r}
+
+# read in data frame that is just gesture during instance of pretend play
+pretend_data_H8 <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP","pretend_data_H8.csv"))
+
+# Aggregate by child
+child_summary <- pretend_data_H8 %>%
+  group_by(participant_id, GroupStatus) %>% 
+  summarize(
+    total_gestures = sum(gesture_all),
+    rep_gestures = sum(gesture_rep),
+    icon_gestures = sum(gesture_icon),
+    prop_rep = sum(gesture_rep) / sum(gesture_all),
+    prop_icon = sum(gesture_icon) / sum(gesture_all),
+    mlu = mean(C_wpu, na.rm = TRUE),  # get the mean c_wpu for each child
+  )
 ```
 
 ```{r}
 
 # Create binary variable for representational gesture presence
-pretend_data_H8 <- pretend_data_H8 %>%
+child_summary <- child_summary %>%
   mutate(rep_gesture_present = ifelse(rep_gestures > 0, 1, 0))
 
 # Check distributions
@@ -66,9 +85,10 @@ ggplot(child_summary, aes(x = GroupStatus, fill = factor(rep_gesture_present))) 
        y = "Count")
 
 # 3. Merge with narrative outcome data
-# Assuming narrative_data contains your narrative outcomes
+narrative_data <- read.csv(here("PN_Datasets", "Narrative", "CSVs_of_Combined_Data_N", "Narrative_Results_Final.csv"))
+
 # Replace 'child_id' with your actual ID variable
-merged_data <- left_join(child_summary, narrative_data, by = "participant_id")
+completely_merged_data <- left_join(child_summary, narrative_data, by = "participant_id")
 
 # 4. Run regression models
 # Assuming 'narrative_structure' is your outcome variable

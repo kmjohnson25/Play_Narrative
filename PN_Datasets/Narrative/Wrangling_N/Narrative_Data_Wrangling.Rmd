@@ -12,6 +12,7 @@ library(readxl)
 library(dplyr)
 library(stringr)
 library(tidyverse)
+library(here)
 ```
 # Narrative scores and codes:
 1. No structure (**NS**)- only one clause with or without a verb. 
@@ -27,20 +28,45 @@ library(tidyverse)
 
 # Load in data & convert narrative scores to numbers:
 ```{r}
-#read in data for narrative outcomes
-Narrative_Results_Simple <- read_xlsx("PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Simple.xlsx")
+# Load necessary libraries
+library(dplyr)
+library(readxl)
+
+# Read in the data
+Narrative_Results_Simple <- read_xlsx(here("PN_Datasets", "Narrative", "CSVs_of_Combined_Data_N", "Narrative_Results_Simple.xlsx"))
+
+# Get column names of the data frame
+column_names <- colnames(Narrative_Results_Simple)
+
+# Print the column names
+print(column_names)
+
 
 # Define the abbreviation-to-number mapping
 replacements <- c("NS" = 1, "DS" = 2, "AC" = 3, "RS" = 4, "IGB" = 5, "IGBA" = 6, "GB1-IG" = 7, "GB1-EG" = 8, "GBM-IG" = 9, "GBM-EG" = 10)
 
-# Replace abbreviations, handle NA, and convert to numeric
+# Replace abbreviations in multiple columns and handle NA
 Narrative_Results_Numeric <- Narrative_Results_Simple %>%
-  mutate(across(everything(), ~ recode(., !!!replacements))) %>%  # Replace abbreviations
-  mutate(across(everything(), ~ replace_na(., 0)))   # Replace NA with "0"
-  
-# write the updated data frame into a csv
-write_csv(Narrative_Results_Numeric, "Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Numeric.csv")
+  mutate(across(c("FoxHOS07", "AliceHOS07", "AlanHOS07",  "FoxHOS08",  "AlanHOS08", "FoxHOS09", "AlanHOS09" ), ~ case_when(
+    . == "NS" ~ 1,
+    . == "DS" ~ 2,
+    . == "AC" ~ 3,
+    . == "RS" ~ 4,
+    . == "IGB" ~ 5,
+    . == "IGBA" ~ 6,
+    . == "GB1-IG" ~ 7,
+    . == "GB1-EG" ~ 8,
+    . == "GBM-IG" ~ 9,
+    . == "GBM-EG" ~ 10,
+    TRUE ~ as.numeric(NA)  # In case of any unmatched value, set to NA
+  ))) %>%
+  mutate(across(c("FoxHOS07", "AliceHOS07", "AlanHOS07",  "FoxHOS08",  "AlanHOS08", "FoxHOS09", "AlanHOS09"), ~ replace_na(., 0)))  # Replace NA with 0 in the selected columns
+
+# Write the updated data frame into a csv
+write_csv(Narrative_Results_Numeric, here("PN_Datasets", "Narrative", "CSVs_of_Combined_Data_N", "Narrative_Results_Numeric.csv"))
+
 ```
+
 
 # Determine each participant's highest Narrative Score in each year and overall Avg of high scores:
 ```{r}
@@ -55,7 +81,7 @@ Narrative_Results_Score_Totals <- Narrative_Results_Numeric %>%
   ) %>%
   ungroup()  # Remove rowwise grouping after mutation
 
-write_csv(Narrative_Results_Score_Totals, "PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Score_Totals.csv")
+write_csv(Narrative_Results_Score_Totals,  here("PN_Datasets", "Narrative", "CSVs_of_Combined_Data_N", "Narrative_Results_Score_Totals.csv"))
 ```
 
 # Make new dataframe with relevant info only:
@@ -66,7 +92,7 @@ Narrative_Results_Final <- Narrative_Results_Score_Totals %>%
 
 print(Narrative_Results_Final)
 
-write_csv(Narrative_Results_Final, "PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Final.csv")
+write_csv(Narrative_Results_Final,  here("PN_Datasets", "Narrative", "CSVs_of_Combined_Data_N", "Narrative_Results_Final.csv"))
 
 ```
 
@@ -74,7 +100,7 @@ write_csv(Narrative_Results_Final, "PN_Datasets/Narrative/CSVs_of_Combined_Data_
 ```{r}
 Narrative_Results_Final <- Narrative_Results_Final %>%
   mutate(GroupStatus = case_when(
-    Project == 3 ~ "BI",
+    Project == 3 ~ "PL",
     Project == 2 ~ "TD",
     TRUE ~ NA_character_  # Ensures missing values are handled
   ))
@@ -100,7 +126,7 @@ print(Cat_Narrative_Results_Final)
 ```{r}
 #ensure BI kids appear first in plots and tables
 Cat_Narrative_Results_Final <- Cat_Narrative_Results_Final %>%
-  mutate(GroupStatus = fct_relevel(GroupStatus, "BI"))
+  mutate(GroupStatus = fct_relevel(GroupStatus, "PL"))
 
 print(Cat_Narrative_Results_Final)
 ```

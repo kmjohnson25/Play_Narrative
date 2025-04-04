@@ -52,7 +52,7 @@ execute:
 #install.packages("rstatix")
 #install.packages("extrafont")
 #install.packages("here")
-library(here)
+
 # load necessary packages
 library(tidyverse) # includes dyplyr, readr, forcats, stringr, ggplot2, tibble, lubridate, tidyr, purrr
 library(flextable) # includes functions for tabular reporting
@@ -98,7 +98,7 @@ Based on previous research, I hypothesized that the relationship between pretend
 #| echo: false
 #| include: false
 
-Play_Narrative_Demographics <- read.csv("PN_Datasets/Demographics/Play_Narrative_Demographics.csv")
+Play_Narrative_Demographics <- read.csv(here("PN_Datasets", "Demographics", "Play_Narrative_Demographics.csv"))
 
 # get the total number of participants in each group and extract # for inline use
 total_group2 <- Play_Narrative_Demographics %>% filter(Group == 2) %>% nrow()
@@ -152,7 +152,7 @@ Recruitment for children with PL involved pediatric neurologists and parent supp
 #| fig-pos: "H"
 
 # Read in the CSV file
-P3_neurological_data <- read.csv("PN_Datasets/Demographics/P3_neurological_data.csv")
+P3_neurological_data <- read.csv(here("PN_Datasets", "Demographics", "P3_neurological_data.csv"))
                           
 # Remove the two columns (update names as needed)
 P3_neurological_data_filtered <- P3_neurological_data %>%
@@ -215,17 +215,18 @@ To understand how pretend play gestures support narrative development in TD chil
 #| include: false
 
 # read in data frame that is just gesture during instance of pretend play
-pretend_data_H8 <- read.csv("PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/pretend_data_H8.csv")
+pretend_data_H8 <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "pretend_data_H8.csv"))
 
 # Aggregate by child
 child_summary <- pretend_data_H8 %>%
-  group_by(participant_id, GroupStatus) %>% # Assuming you have a child_id variable
+  group_by(participant_id, GroupStatus) %>% 
   summarize(
     total_gestures = sum(gesture_all),
     rep_gestures = sum(gesture_rep),
     icon_gestures = sum(gesture_icon),
     prop_rep = sum(gesture_rep) / sum(gesture_all),
-    prop_icon = sum(gesture_icon) / sum(gesture_all)
+    prop_icon = sum(gesture_icon) / sum(gesture_all),
+    mlu = mean(C_wpu, na.rm = TRUE),  # get the mean c_wpu for each child
   )
 ```
 
