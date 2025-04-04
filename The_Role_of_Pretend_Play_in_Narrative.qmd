@@ -36,7 +36,6 @@ execute:
   warning: false
   message: false
   error: false
-
 ---
 
 ```{r}
@@ -52,7 +51,8 @@ execute:
 #install.packages("effectsize")
 #install.packages("rstatix")
 #install.packages("extrafont")
-
+#install.packages("here")
+library(here)
 # load necessary packages
 library(tidyverse) # includes dyplyr, readr, forcats, stringr, ggplot2, tibble, lubridate, tidyr, purrr
 library(flextable) # includes functions for tabular reporting
@@ -65,6 +65,7 @@ library(car)       # For Levene's test and Type III SS
 library(effectsize) # For effect sizes
 library(rstatix)    # For convenient statistical functions
 library(extrafont)  # Ensures Times New Roman is available
+library(here)  # Helps with absolute paths
 ```
 
 The relationship between play and child development has been extensively studied, with research documenting significant associations between play experiences and developmental outcomes. However, the specific mechanisms through which play supports development remain incompletely understood, particularly regarding how biological and environmental factors may moderate these relationships. 
@@ -148,7 +149,7 @@ Recruitment for children with PL involved pediatric neurologists and parent supp
 ```{r}
 #| label: neuro-data
 #| echo: FALSE
-#| fig.pos: "H"
+#| fig-pos: "H"
 
 # Read in the CSV file
 P3_neurological_data <- read.csv("PN_Datasets/Demographics/P3_neurological_data.csv")
@@ -198,18 +199,16 @@ Children's narrative abilities were assessed using the Stein narrative task, whi
 To understand how pretend play gestures support narrative development in TD children versus children with PL, my analyses proceeded in two phases. the frequency and types of gestures (representational vs. non-representational) during pretend play at 38, 42, and 50 months. Next, I analyzed how early gesture use predicted later narrative skill (averaged between annual measures from at around 5-6 years, with particular attention to whether these relationships are moderated by group status.
 
 * Narrative ~ group + gest_utt_pp + utt_pp_hr + lg_score + group:fest_utt_pp + (1/subject)
-  - for (1) ALL gest_pp, (2) Representational gest_pp, and maaaaybe (3) Iconic gest_pp
+  - for (1) ALL gest_pp, (2) Representational gest_pp
   
 * AND/OR.... 
   1.classify children into those who use 1+ iconic/representational gesture and those who don't, and then use that as a binary (yes/no) predictor in your analysis rather than a numeric one (0–infinity)
 
-  2. consider whether it would be useful to use all gesture instead (e.g., you can look at whether iconic gesture frequency and all gesture frequency are correlated, to reason about what you could learn indirectly about iconic gesture from measuring all gestures)
-
+  2. consider whether it would be useful to use all gesture instead (e.g., you can look at whether representational gesture frequency and all gesture frequency are correlated, to reason about what you could learn indirectly about iconic gesture from measuring all gestures)
 
 
 # Results
 ## Gesture Use During Pretend Play
-
 ```{r}
 #| echo: false
 #| label: PP_Gest_Data
@@ -230,18 +229,18 @@ child_summary <- pretend_data_H8 %>%
   )
 ```
 
-Analyses of gesture production during pretend play at 59 months revealed differences between typically developing (TD) children and children with pre- or perinatal unilateral brain injury (PL), though these differences did not reach statistical significance (see [Figure 1](#PP_Gest_boxplot_props) . Children with brain injury produced more total gestures during pretend play episodes (M = `r round(mean(child_summary$total_gestures[child_summary$GroupStatus == "BI"]), 2)`, SD = `r round(sd(child_summary$total_gestures[child_summary$GroupStatus == "BI"]), 2)`) compared to TD children (M = `r round(mean(child_summary$total_gestures[child_summary$GroupStatus == "TD"]), 2)`, SD = `r round(sd(child_summary$total_gestures[child_summary$GroupStatus == "TD"]), 2)`), though this difference was `r if(0.194 < 0.05) {"statistically significant"} else {"not statistically significant"}`, F(1, 21) = 1.80, p = .194, η² = .079. This medium effect size suggests that approximately 7.9% of the variance in total gesture production is explained by group status.
+Analyses of gesture production during pretend play at 59 months revealed differences between typically developing (TD) children and children with pre- or perinatal unilateral brain injury (PL), though these differences did not reach statistical significance (see [Figure 1](#PP_Gest_boxplot_props) . Children with brain injury produced more total gestures during pretend play episodes (*M* = `r round(mean(child_summary$total_gestures[child_summary$GroupStatus == "BI"]), 2)`, *SD* = `r round(sd(child_summary$total_gestures[child_summary$GroupStatus == "BI"]), 2)`) compared to TD children (M = `r round(mean(child_summary$total_gestures[child_summary$GroupStatus == "TD"]), 2)`, *SD* = `r round(sd(child_summary$total_gestures[child_summary$GroupStatus == "TD"]), 2)`), though this difference was `r if(0.194 < 0.05) {"statistically significant"} else {"not statistically significant"}`, *F*(1, 21) = 1.80, *p* = .194, η² = .079. This medium effect size suggests that approximately 8% of the variance in total gesture production is explained by group status.
 
-In contrast to the pattern observed for total gestures, TD children produced more representational gestures (M = 0.53, SD = 0.83) than children with PL (M = 0.25, SD = 0.71), F(1, 21) = 0.665, p = .424, η² = .031. Similarly, TD children produced slightly more iconic gestures (M = 0.40, SD = 0.83) than children with PL (M = 0.25, SD = 0.71), F(1, 21) = 0.188, p = .669, η² = .009. Neither of these differences reached statistical significance, and the effect sizes were small to negligible.
+In contrast to the pattern observed for total gestures, TD children produced more representational gestures (*M* = 0.53, *SD* = 0.83) than children with PL (*M* = 0.25, *SD* = 0.71), *F*(1, 21) = 0.665, *p* = .424, η² = .031. Similarly, TD children produced slightly more iconic gestures (*M* = 0.40, *SD* = 0.83) than children with PL (*M* = 0.25, *SD* = 0.71), *F*(1, 21) = 0.188, *p* = .669, η² = .009. Neither of these differences reached statistical significance, and the effect sizes were small to negligible.
 
-When examining the proportion of gestures that were representational, TD children had a higher proportion (M = 16.23%, SD = 24.75%) compared to children with PL (M = 3.03%, SD = 7.42%), F(1, 15) = 1.585, p = .227, η² = .096. Similarly, TD children had a higher proportion of iconic gestures (M = 13.20%, SD = 25.33%) compared to children with PL (M = 3.03%, SD = 7.42%), F(1, 15) = 0.900, p = .358, η² = .057. These findings indicate that while children with PL may gesture more overall, a smaller proportion of these gestures serve representational functions.
+When examining the proportion of gestures that were representational, TD children had a higher proportion (*M* = 16%, *SD* = 25%) compared to children with *PL* (M = 3%, SD = 7%), *F*(1, 15) = 1.585, *p* = .227, η² = .096. Similarly, TD children had a higher proportion of iconic gestures (*M* = 13%, *SD* = 25%) compared to children with PL (*M* = 3%, *SD* = 7%), *F*(1, 15) = 0.900, *p* = .358, η² = .057. These findings indicate that while children with PL may gesture more overall, a smaller proportion of these gestures serve representational functions.
 
-The lack of statistical significance despite medium effect sizes for total gestures and proportion of representational gestures likely reflects the small sample sizes (PL: n = `r sum(child_summary$GroupStatus == "BI")`; TD: n = `r sum(child_summary$GroupStatus == "TD")`) and substantial within-group variability, particularly in the PL group. The standard deviation for total gestures in the PL group (SD = 5.73) approached the magnitude of the mean (M = 6.25), indicating considerable individual differences in gesture production among children with early brain injury.
+The lack of statistical significance despite medium effect sizes for total gestures and proportion of representational gestures likely reflects the small sample sizes (PL: *n* = `r sum(child_summary$GroupStatus == "BI")`; TD: *n* = `r sum(child_summary$GroupStatus == "TD")`) and substantial within-group variability, particularly in the PL group. The standard deviation for total gestures in the PL group (*SD* = 5.73) approached the magnitude of the mean (*M* = 6.25), indicating considerable individual differences in gesture production among children with early brain injury.
 
 ```{r}
 #| label: PP_Gest_boxplot_props
 #| echo: FALSE
-#| fig.pos: "H"
+#| fig-pos: "H"
 
 # set APA theme
 apa_theme <- theme_bw() +
@@ -283,6 +282,7 @@ apa_theme <- theme_bw() +
          subtitle = "Proportion of Gesture Types During Pretend Play by Group",
          x = "Proportion Type",
          y = "Mean Proportion",
+         caption = "Fig-cap: Proportion of representational and iconic gestures during pretend play by group (TD or PL).",
          fill = "Group") +
     scale_x_discrete(labels = c("prop_rep" = "Representational/Total",
                                "prop_icon" = "Iconic/Total")) +
@@ -300,7 +300,7 @@ apa_theme <- theme_bw() +
 ```{r}
 #| label: pp_narr_regression
 #| echo: FALSE
-#| fig.pos: "H"
+#| fig-pos: "H"
 #| include: false
 
 narrative_scores <- read_csv("PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Final.csv")
@@ -321,5 +321,8 @@ These findings will contribute to both theoretical understanding of how gestural
 
 
 
+\newpage
+
+# References
 
 # References

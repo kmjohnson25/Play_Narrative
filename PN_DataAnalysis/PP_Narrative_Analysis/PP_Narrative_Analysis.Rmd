@@ -1,0 +1,135 @@
+---
+title: "PP_Narrative_Analysis"
+author: "Kristen Johnson"
+date: "2025-04-04"
+output: html_document
+---
+
+```{r}
+
+# Load required packages
+library(tidyverse)
+library(car)       # For regression diagnostics
+library(lmtest)    # For regression diagnostics
+library(effectsize) # For effect sizes
+library(ggplot2)   # For visualization
+library(here)
+
+# This will find your project root directory automatically
+merged_H8 <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "merged_H8.csv"))
+
+
+H8_gesture_play <- merged_H8 %>%
+  group_by(participant_id) %>%
+  summarise(
+    mean_c_wpu = mean(C_wpu, na.rm = TRUE),
+    any_pretend_play = if_else(any(c_pret == 1, na.rm = TRUE), 1, 0),
+    total_rep_gestures = sum(gesture_rep == 1, na.rm = TRUE),
+    total_all_gestures = sum(gesture_all == 1, na.rm = TRUE),
+    group_status = first(GroupStatus)
+  )
+
+write_csv(H8_gesture_play, 
+          here( "Play_Narrative", "PN_DataAnalysis", "PP_Narrative_Analysis", "H8_gesture_play.csv"))
+```
+
+```{r}
+
+# Create binary variable for representational gesture presence
+pretend_data_H8 <- pretend_data_H8 %>%
+  mutate(rep_gesture_present = ifelse(rep_gestures > 0, 1, 0))
+
+# Check distributions
+hist(child_summary$total_gestures)
+hist(child_summary$rep_gestures)
+table(child_summary$rep_gesture_present, child_summary$GroupStatus)
+
+# Check correlation between total gestures and representational gestures
+cor.test(child_summary$total_gestures, child_summary$rep_gestures)
+
+# 2. Data visualization
+# Boxplot of total gestures by group
+ggplot(child_summary, aes(x = GroupStatus, y = total_gestures, fill = GroupStatus)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Total Gestures by Group",
+       x = "Group Status",
+       y = "Total Gesture Count")
+
+# Bar chart of representational gesture presence by group
+ggplot(child_summary, aes(x = GroupStatus, fill = factor(rep_gesture_present))) +
+  geom_bar(position = "dodge") +
+  scale_fill_discrete(name = "Rep. Gesture", labels = c("Absent", "Present")) +
+  theme_minimal() +
+  labs(title = "Representational Gesture Presence by Group",
+       x = "Group Status",
+       y = "Count")
+
+# 3. Merge with narrative outcome data
+# Assuming narrative_data contains your narrative outcomes
+# Replace 'child_id' with your actual ID variable
+merged_data <- left_join(child_summary, narrative_data, by = "participant_id")
+
+# 4. Run regression models
+# Assuming 'narrative_structure' is your outcome variable
+# Model 1: Total gestures as predictor
+model1 <- lm(narrative_structure ~ age + language_ability + parent_education + 
+             GroupStatus + total_gestures + GroupStatus:total_gestures, 
+             data = merged_data)
+
+# Model 2: Representational gesture presence as predictor
+model2 <- lm(narrative_structure ~ age + language_ability + parent_education + 
+             GroupStatus + rep_gesture_present + GroupStatus:rep_gesture_present, 
+             data = merged_data)
+
+# 5. Examine model results
+summary(model1)
+summary(model2)
+
+# Calculate effect sizes
+eta_squared(model1)
+eta_squared(model2)
+
+# 6. Diagnostic checks
+# Check assumptions for Model 1
+plot(model1, which = 1)  # Residuals vs Fitted
+plot(model1, which = 2)  # Normal Q-Q
+vif(model1)              # Check for multicollinearity
+
+# Check assumptions for Model 2
+plot(model2, which = 1)  # Residuals vs Fitted
+plot(model2, which = 2)  # Normal Q-Q
+vif(model2)              # Check for multicollinearity
+
+# 7. Simplified models if needed (if sample size is a concern)
+simple_model1 <- lm(narrative_structure ~ GroupStatus + total_gestures, data = merged_data)
+simple_model2 <- lm(narrative_structure ~ GroupStatus + rep_gesture_present, data = merged_data)
+
+summary(simple_model1)
+summary(simple_model2)
+
+# 8. Separate analyses for each group (if sample size allows)
+td_model <- lm(narrative_structure ~ total_gestures, 
+               data = filter(merged_data, GroupStatus == "TD"))
+pl_model <- lm(narrative_structure ~ total_gestures, 
+               data = filter(merged_data, GroupStatus == "PL"))
+
+summary(td_model)
+summary(pl_model)
+
+# 9. Create publication-ready tables and figures
+# Example of creating a regression results table
+library(sjPlot)
+tab_model(model1, model2, 
+          pred.labels = c("Intercept", "Age", "Language Ability", "Parent Education", 
+                          "Group Status (PL)", "Total Gestures", "Rep. Gesture Present",
+                          "Group Status × Total Gestures", "Group Status × Rep. Gesture Present"),
+          dv.labels = c("Model 1: Total Gestures", "Model 2: Rep. Gesture Presence"))
+
+# Create interaction plot for Model 1 (if interaction is significant)
+interact_plot(model1, pred = "total_gestures", modx = "GroupStatus", 
+              plot.points = TRUE, interval = TRUE,
+              x.label = "Total Gestures", y.label = "Narrative Structure",
+              legend.main = "Group Status")
+```
+

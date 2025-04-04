@@ -325,7 +325,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Sets preferences/options in at least 1 code chunk
     4. Organizes setup chunks sensibly
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
         
@@ -337,7 +337,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4. All tables and figures are referenced in the narrative text (e.g., Figure 1)
     5. References render without error and link to the correct table/figure in pdf/html output
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
           - if you use this table (it looks good!) it needs to be fully interpretable without referring to anything else. use plain English when you can, and if you need to use abbreviations or codes they should be defined in the table's note
