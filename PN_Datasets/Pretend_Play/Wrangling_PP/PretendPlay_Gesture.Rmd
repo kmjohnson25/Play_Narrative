@@ -21,7 +21,7 @@ library(extrafont)  # Ensures Times New Roman is available
 # Pretend Play Instances per Individual
 ```{r}
 # Import and clean dataset
-P3_H8_ALL <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv")
+P3_H8_ALL <- read.csv("PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv")
 
 # Summarize pretend play counts per participant
 PP_Individual <- P3_H8_ALL %>%
@@ -261,10 +261,6 @@ ggplot(gesture_summary, aes(x = `Total Utterances`, y = `Total Gestures`,
     axis.text.x = element_text(angle = 45, hjust = 1)  # Rotate x-axis labels
   ) +
   facet_grid(`Gesture Type` ~ participant_id)  # Facet by gesture type (rows) and participant_id (columns)
-
-```
-
-```{r}
 
 ```
 

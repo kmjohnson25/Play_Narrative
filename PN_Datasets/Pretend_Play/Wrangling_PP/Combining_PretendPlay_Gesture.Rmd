@@ -21,7 +21,7 @@ library(extrafont)  # Ensures Times New Roman is available
 # Reorganize Data for BI group
 ```{r}
 # read in total data set create column for Group Status (P3=BI, P2=TD)
-P3_H8_ALL <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv") %>%
+P3_H8_ALL <- read.csv("PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv") %>%
   mutate(GroupStatus = "BI") # add column specifying which group this is
 
 P3_H8_ALL$c_form <- tolower(P3_H8_ALL$c_form)
@@ -40,7 +40,7 @@ P3_H8_Simple <- P3_H8_ALL %>%
 # Reorganize Data for TD group
 ```{r}
 # read in total data set create column for Group Status (P3=BI, P2=TD)
-P2_H8_ALL <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P2_H8_ALL.csv") %>%
+P2_H8_ALL <- read.csv("PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P2_H8_ALL.csv") %>%
   mutate(GroupStatus = "TD") # add column specifying which group this is
   
 P2_H8_ALL$c_form <- tolower(P2_H8_ALL$c_form)

@@ -32,7 +32,7 @@ library(rstatix)    # For convenient statistical functions
 # 1. Conduct ANOVAs for each gesture type & summarize results
 ```{r}
 # read in data frame that is just gesture during instance of pretend play
-pretend_data_H8 <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/pretend_data_H8.csv")
+pretend_data_H8 <- read.csv("PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/pretend_data_H8.csv")
 
 # Aggregate by child
 child_summary <- pretend_data_H8 %>%

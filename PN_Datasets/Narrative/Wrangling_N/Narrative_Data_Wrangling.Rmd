@@ -28,7 +28,7 @@ library(tidyverse)
 # Load in data & convert narrative scores to numbers:
 ```{r}
 #read in data for narrative outcomes
-Narrative_Results_Simple <- read_xlsx("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Simple.xlsx")
+Narrative_Results_Simple <- read_xlsx("PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Simple.xlsx")
 
 # Define the abbreviation-to-number mapping
 replacements <- c("NS" = 1, "DS" = 2, "AC" = 3, "RS" = 4, "IGB" = 5, "IGBA" = 6, "GB1-IG" = 7, "GB1-EG" = 8, "GBM-IG" = 9, "GBM-EG" = 10)
@@ -39,7 +39,7 @@ Narrative_Results_Numeric <- Narrative_Results_Simple %>%
   mutate(across(everything(), ~ replace_na(., 0)))   # Replace NA with "0"
   
 # write the updated data frame into a csv
-write_csv(Narrative_Results_Numeric, "~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Numeric.csv")
+write_csv(Narrative_Results_Numeric, "Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Numeric.csv")
 ```
 
 # Determine each participant's highest Narrative Score in each year and overall Avg of high scores:
@@ -55,7 +55,7 @@ Narrative_Results_Score_Totals <- Narrative_Results_Numeric %>%
   ) %>%
   ungroup()  # Remove rowwise grouping after mutation
 
-write_csv(Narrative_Results_Score_Totals, "~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Score_Totals.csv")
+write_csv(Narrative_Results_Score_Totals, "PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Score_Totals.csv")
 ```
 
 # Make new dataframe with relevant info only:
@@ -66,7 +66,7 @@ Narrative_Results_Final <- Narrative_Results_Score_Totals %>%
 
 print(Narrative_Results_Final)
 
-write_csv(Narrative_Results_Final, "~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Final.csv")
+write_csv(Narrative_Results_Final, "PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Final.csv")
 
 ```
 

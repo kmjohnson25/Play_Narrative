@@ -20,7 +20,7 @@ I needed to get a clear idea of gesture and pretend play for each group, so I ma
 ## Read in csv (this one will give Summary Statistics for P3_H8)
 ```{r, echo=FALSE}
 # Read in data
-csv_all <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P3_H8_ALL.csv")
+csv_all <- read.csv("PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv")
 ```
 
 ### ALL Gestures by Participant ID

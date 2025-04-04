@@ -15,7 +15,7 @@ I needed to see if there were enough gestures within the P3 group (the populatio
 
 ## read in csv
 ```{r}
-P3_H8_ALL <- read_csv('/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P3_H8_ALL.csv')
+P3_H8_ALL <- read_csv('PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv')
 ```
 
 ## filter for columns on pretend play (c_pret) and gesture (c_form) & count overlaps

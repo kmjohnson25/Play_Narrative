@@ -193,7 +193,7 @@ combined_dataset <- combined_dataset %>%
 ## Save combined_data as CSV to specified location:
 ```{r}
 # change the group_timepoint_item being coded
-write.csv(combined_dataset, "/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P2_H8_cwpu.csv", row.names = FALSE)
+write.csv(combined_dataset, "PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P2_H8_cwpu.csv", row.names = FALSE)
 ```
 
 ## Get descriptive statistics for ALL Gestures:

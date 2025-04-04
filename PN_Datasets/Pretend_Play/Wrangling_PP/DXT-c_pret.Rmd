@@ -22,7 +22,7 @@ library(lubridate)  # For handling datetime columns (if needed)
 Read in the P3_H8 CSV file
 ```{r}
 
-p3_h8 <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P3_H8_cwpu.csv")
+p3_h8 <- read.csv("/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_cwpu.csv")
 
 ```
 
@@ -35,12 +35,12 @@ p3_h8 <- p3_h8 %>%
 
 Write a new .csv for P3_H8
 ```{r}
-write.csv(p3_h8, "/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P3_H8_ALL.csv", row.names = FALSE)
+write.csv(p3_h8, "/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv", row.names = FALSE)
 ```
 
 Read in the P2_H8 CSV file
 ```{r}
-p2_h8 <- read.csv("/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P2_H8_cwpu.csv")
+p2_h8 <- read.csv("PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P2_H8_cwpu.csv")
 ```
 
 Add the c_pret column
@@ -51,6 +51,6 @@ p2_h8 <- p2_h8 %>%
 
 write a new .csv for P2_H8
 ```{r}
-write.csv(p2_h8, "/Users/kristenjohnson/KristenWorkingDirectory/Narrative Data/CSVs_of_Combined_Data/P2_H8_ALL.csv", row.names = FALSE)
+write.csv(p2_h8, "PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P2_H8_ALL.csv", row.names = FALSE)
 ```
 
