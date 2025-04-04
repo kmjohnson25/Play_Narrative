@@ -28,15 +28,14 @@ library(kableExtra) ##load the kableExtra package
 P3_neurological_data <- data.frame(
   ID = c(30, 35, 46, 93, 94, 98, 99, 117, 132, 135, 150),
   Age_at_visit = c(5.52, 6.33, 5.82, 5.65, 6.32, 8.96, 7, 5.96, 5.64, 5.13, 5.25),
-  Sex = c("F", "F", "F", "M", "F", "M", "M", "F", "F", "F", "F"),
-  Side = c("L", "L", "R", "R", "R", "L", "L", "R", "L", "R", "L"),
-  Size = c("L", "M", "L", "S", "S", "S", "L", "M", "S", "S", "S"),
-  Type = c("CI", "Pv", "CI", "Pv", "Pv", "CI", "CI", "CI", "Pv", "CI", "Pv"),
+  Sex = c("Female", "Female", "Female", "Male", "Female", "Male", "Male", "Female", "Female", "Female", "Female"),
+  Side = c("Left", "Left", "Right", "Right", "Right", "Left", "Left", "Right", "Left", "Right", "Left"),
+  Size = c("Large", "Medium", "Large", "Small", "Small", "Small", "Large", "Medium", "Small", "Small", "Small"),
+  Type = c("Cerebrovascular Infarct", "Periventricular", "Cerebrovascular Infarct", "Periventricular", "Periventricular", "Cerebrovascular Infarct", "Cerebrovascular Infarct", "Cerebrovascular Infarct", "Periventricular", "Cerebrovascular Infarct", "Periventricular"),
   Seizure = c("No", "No", "Yes", "Yes", "No", "Yes", "Yes", "Yes", "No", "No*", "No"),
   Areas_affected = c(
-    "F, T, P, O, subcortical", "Subcortical", "F, T, P, subcortical", "Subcortical",
-    "T, P, IC, subcortical", "F, T, subcortical", "T, P, O, IC, subcortical",
-    "F, T, P, subcortical", "T, subcortical", "F, P", "WM, subcortical"
+    "Frontal, Temporal, Parietal, Occipital, Subcortical", "Subcortical", "Frontal, Temporal, Parietal, Subcortical", "Subcortical",
+    "Temporal, Parietal, Internal Capsule, Subcortical", "Frontal, Temporal, Subcortical", "Temporal, Parietal, Occipital, Internal Capsule, Subcortical", "Frontal, Temporal, Parietal, Subcortical", "Temporal, Subcortical", "Frontal, Parietal", "White Matter, Subcortical"
   ),
   Premature = c("No", "36.5 wk", "34 wk", "No", "No", "No", "No", "No", "No", "No", "No")
 )
@@ -61,7 +60,7 @@ neurological_data <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datas
 
 # Create a table with a note to then print the table in a well-formatted way
 kable(neurological_data, caption = "Neurological Information about Children with Pre- or Perinatal Brain Injury") %>%
-  footnote(general = "Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication."
+  footnote(general = "Codes are Type (CI, cerebrovascular infarct; Pv, periventricular), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication."
           ) 
 ```
 
@@ -75,7 +74,7 @@ neurological_data %>%
     subtitle = "Pre- or Perinatal Brain Injury"
   ) %>%
   tab_footnote(
-    footnote = "Note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication."
+    footnote = "Note: F=frontal, T=temporal, P=parietal, O,=occipital IC=internal capsule (white matter in the frontal area), WM=white matter; * Neonatal seizures resolved without medication."
   ) %>%
   fmt_number(
     columns = "Age_at_visit",
@@ -99,7 +98,7 @@ neurological_data %>%
 # Create a nicely formatted table
 flextable(neurological_data) %>%
   set_caption("Neurological Information about Children with Pre- or Perinatal Brain Injury") %>%
-  add_footer_lines("Note: Codes are Sex (F, female; M, male), Side (L, left; R, right), Size (S, small; M, medium; L, large), Type (CI, cerebrovascular infarct; Pv, periventricular), Seizure (Y. history of seizures; N, no history), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter); periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts. * Neonatal seizures resolved without medication.") %>%
+  add_footer_lines("Note: Codes are Type (CI, cerebrovascular infarct; Pv, periventricular), Areas affected (F, frontal; T, temporal; P, parietal; O, occipital; IC, internal capsule (white matter in the frontal area); WM, white matter): * Neonatal seizures resolved without medication.") %>%
   autofit()
 ```
 

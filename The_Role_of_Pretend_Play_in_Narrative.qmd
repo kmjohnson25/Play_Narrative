@@ -33,6 +33,10 @@ donotrepeattitle: true
 execute: 
   freeze: auto
   working-directory: project
+  warning: false
+  message: false
+  error: false
+
 ---
 
 ```{r}
@@ -44,7 +48,10 @@ execute:
 #install.packages("psych", dependencies = TRUE)
 #install.packages(flextable)
 #install.packages("kableExtra")
-
+#install.packages("car")
+#install.packages("effectsize")
+#install.packages("rstatix")
+#install.packages("extrafont")
 
 # load necessary packages
 library(tidyverse) # includes dyplyr, readr, forcats, stringr, ggplot2, tibble, lubridate, tidyr, purrr
@@ -54,6 +61,10 @@ library(kableExtra)
 library(readxl)
 library(scales)
 library(psych)
+library(car)       # For Levene's test and Type III SS
+library(effectsize) # For effect sizes
+library(rstatix)    # For convenient statistical functions
+library(extrafont)  # Ensures Times New Roman is available
 ```
 
 The relationship between play and child development has been extensively studied, with research documenting significant associations between play experiences and developmental outcomes. However, the specific mechanisms through which play supports development remain incompletely understood, particularly regarding how biological and environmental factors may moderate these relationships. 
@@ -132,7 +143,7 @@ sd_parent_ed_group3 <- demographics_group3 %>% ## Standard Deviation
 ## Participants
 Participants are `r total_group2` typically developing (TD) children (`r sum(demographics_group2$ChildGender == "F")` girls, `r sum(demographics_group2$ChildGender == "M")` boys) and `r total_group3` children with pre- or perinatal unilateral brain injury (PL) (`r sum(demographics_group3$ChildGender == "F")`girls, `r sum(demographics_group3$ChildGender == "M")` boys) who were part of a larger longitudinal study of language development in the greater Chicago area. All families were monolingual English-speaking. Recruitment for TD children involved advertisements and direct mailings to targeted zip codes, with the sample selected to represent the socioeconomic diversity of the major Midwestern city in which the study took place. 
 The TD children (`r race_group2$Percentage[3]`% White, `r race_group2$Percentage[1]`% Black, and `r race_group2$Percentage[2]`% mixed race; `r ethnicity_group2$Percentage[1]`% Hispanic,) were approximately 38 months at the first time of pretend play assessment and approximately 5 years old at the first time of narrative assessment. Parental education for TD children ranged from 12 to 18 years (M=`r avg_parent_ed_group2`; SD= `r sd_parent_ed_group2` and median annual household income was $42,000. 
-Recruitment for children with PL involved pediatric neurologists and parent support groups in the same metropolitan area as TD children. Children with PL (`r race_group3$Percentage[1]`% White) were approximately 38 months at the first time of pretend play assessment and approximately 6 years old at the first time of narrative assessment. Parental education for TD children ranged from 12 to 18 years (M=`r avg_parent_ed_group3`; SD=`r sd_parent_ed_group3`) and median annual household income was $87,500. See [Table 1](#neuro-data) for information on the neurological profiles^[L = left; R = right; S = small; M = medium; L = large; CI = cerebrovascular infarct; Pv = periventricular; Seizure: Yes = history of seizures; No = no history; No* = Neonatal seizures resolved without medication; F= frontal; T = temporal; P = parietal; O = occipital; IC = internal capsule (white matter in the frontal area); WM = white matter; periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts.] of children with pre- or perinantal brain injury.
+Recruitment for children with PL involved pediatric neurologists and parent support groups in the same metropolitan area as TD children. Children with PL (`r race_group3$Percentage[1]`% White) were approximately 38 months at the first time of pretend play assessment and approximately 6 years old at the first time of narrative assessment. Parental education for children with PL ranged from 12 to 18 years (M=`r avg_parent_ed_group3`; SD=`r sd_parent_ed_group3`) and median annual household income was $87,500. Children with PL were grouped into two categories: those with cerebrovascular infarcts and those with periventricular lesions.^[ Cerebrovascular infarcts were of the middle cerebral artery territory, and tended to affect the inferior frontal and⁄or superior temporal regions; whereas,periventricular lesions involve the thalamus, basal ganglia, the medial temporal lobe and/or white matter tracts.] See [Table 1](#neuro-data) for further information on the neurological profiles of children with pre- or perinatal brain injury.
 
 ```{r}
 #| label: neuro-data
@@ -154,7 +165,8 @@ P3_neurological_data_filtered %>%
   kable_styling(latex_options = c("striped", "scale_down", "hold_position"),
                 font_size = 12, 
                 full_width = FALSE) %>%
-                footnote(general = "See footnote for codes.")
+                footnote(general = "* Neonatal seizures resolved without medication.")
+
 ```
 
 ## Procedure
@@ -193,16 +205,18 @@ To understand how pretend play gestures support narrative development in TD chil
 
   2. consider whether it would be useful to use all gesture instead (e.g., you can look at whether iconic gesture frequency and all gesture frequency are correlated, to reason about what you could learn indirectly about iconic gesture from measuring all gestures)
 
-# Results
-## Gesture and Language in Pretend Play
+
 
 # Results
-
 ## Gesture Use During Pretend Play
 
 ```{r}
+#| echo: false
+#| label: PP_Gest_Data
+#| include: false
+
 # read in data frame that is just gesture during instance of pretend play
-pretend_data_H8 <- read.csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/pretend_data_H8.csv")
+pretend_data_H8 <- read.csv("PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/pretend_data_H8.csv")
 
 # Aggregate by child
 child_summary <- pretend_data_H8 %>%
@@ -216,7 +230,7 @@ child_summary <- pretend_data_H8 %>%
   )
 ```
 
-Analyses of gesture production during pretend play at 59 months revealed differences between typically developing (TD) children and children with pre- or perinatal unilateral brain injury (PL), though these differences did not reach statistical significance (see Table 1). Children with `r unique(child_summary$GroupStatus)[child_summary$GroupStatus == "BI"]` produced more total gestures during pretend play episodes (M = `r round(mean(child_summary$total_gestures[child_summary$GroupStatus == "BI"]), 2)`, SD = `r round(sd(child_summary$total_gestures[child_summary$GroupStatus == "BI"]), 2)`) compared to TD children (M = `r round(mean(child_summary$total_gestures[child_summary$GroupStatus == "TD"]), 2)`, SD = `r round(sd(child_summary$total_gestures[child_summary$GroupStatus == "TD"]), 2)`), though this difference was `r if(0.194 < 0.05) {"statistically significant"} else {"not statistically significant"}`, F(1, 21) = 1.80, p = .194, η² = .079. This medium effect size suggests that approximately 7.9% of the variance in total gesture production is explained by group status.
+Analyses of gesture production during pretend play at 59 months revealed differences between typically developing (TD) children and children with pre- or perinatal unilateral brain injury (PL), though these differences did not reach statistical significance (see [Figure 1](#PP_Gest_boxplot_props) . Children with brain injury produced more total gestures during pretend play episodes (M = `r round(mean(child_summary$total_gestures[child_summary$GroupStatus == "BI"]), 2)`, SD = `r round(sd(child_summary$total_gestures[child_summary$GroupStatus == "BI"]), 2)`) compared to TD children (M = `r round(mean(child_summary$total_gestures[child_summary$GroupStatus == "TD"]), 2)`, SD = `r round(sd(child_summary$total_gestures[child_summary$GroupStatus == "TD"]), 2)`), though this difference was `r if(0.194 < 0.05) {"statistically significant"} else {"not statistically significant"}`, F(1, 21) = 1.80, p = .194, η² = .079. This medium effect size suggests that approximately 7.9% of the variance in total gesture production is explained by group status.
 
 In contrast to the pattern observed for total gestures, TD children produced more representational gestures (M = 0.53, SD = 0.83) than children with PL (M = 0.25, SD = 0.71), F(1, 21) = 0.665, p = .424, η² = .031. Similarly, TD children produced slightly more iconic gestures (M = 0.40, SD = 0.83) than children with PL (M = 0.25, SD = 0.71), F(1, 21) = 0.188, p = .669, η² = .009. Neither of these differences reached statistical significance, and the effect sizes were small to negligible.
 
@@ -225,11 +239,60 @@ When examining the proportion of gestures that were representational, TD childre
 The lack of statistical significance despite medium effect sizes for total gestures and proportion of representational gestures likely reflects the small sample sizes (PL: n = `r sum(child_summary$GroupStatus == "BI")`; TD: n = `r sum(child_summary$GroupStatus == "TD")`) and substantial within-group variability, particularly in the PL group. The standard deviation for total gestures in the PL group (SD = 5.73) approached the magnitude of the mean (M = 6.25), indicating considerable individual differences in gesture production among children with early brain injury.
 
 ```{r}
-#| label: gest_bargraph
+#| label: PP_Gest_boxplot_props
 #| echo: FALSE
 #| fig.pos: "H"
 
-
+# set APA theme
+apa_theme <- theme_bw() +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.border = element_rect(colour = "black", fill = NA),
+      axis.text = element_text(colour = "black", size = 12),
+      axis.title = element_text(size = 12, face = "bold"),
+      legend.title = element_text(size = 12, face = "bold"),
+      legend.text = element_text(size = 12),
+      legend.position = "bottom",
+      legend.background = element_rect(fill = "white", colour = "black"),
+      plot.title = element_text(size = 14, hjust = 0.5, face = "bold"),
+      text = element_text(family = "Times New Roman")
+    )
+  
+  # Proportions visualization
+  props_long <- child_summary %>%
+    select(GroupStatus, prop_rep, prop_icon) %>%
+    pivot_longer(cols = c(prop_rep, prop_icon),
+                names_to = "proportion_type", 
+                values_to = "proportion")
+  
+  # Renaming GroupStatus labels
+  props_long$GroupStatus <- factor(props_long$GroupStatus, 
+                                  levels = c("BI", "TD"),
+                                  labels = c("Brain Injury", "Typically Developing"))
+  
+  p2 <- ggplot(props_long, aes(x = proportion_type, y = proportion, fill = GroupStatus)) +
+    stat_summary(fun = mean, geom = "bar", position = position_dodge(0.8), 
+                alpha = 0.8, color = "black", size = 0.2) +
+    stat_summary(fun.data = function(x) {
+      data.frame(y = mean(x, na.rm = TRUE),
+                ymin = mean(x, na.rm = TRUE) - sd(x, na.rm = TRUE)/sqrt(sum(!is.na(x))),
+                ymax = mean(x, na.rm = TRUE) + sd(x, na.rm = TRUE)/sqrt(sum(!is.na(x))))
+    }, geom = "errorbar", width = 0.2, position = position_dodge(0.8)) +
+    labs(title = "Figure 1", 
+         subtitle = "Proportion of Gesture Types During Pretend Play by Group",
+         x = "Proportion Type",
+         y = "Mean Proportion",
+         fill = "Group") +
+    scale_x_discrete(labels = c("prop_rep" = "Representational/Total",
+                               "prop_icon" = "Iconic/Total")) +
+    scale_y_continuous(labels = scales::percent, 
+                      breaks = seq(0, 0.25, 0.05)) +
+    scale_fill_grey(start = 0.4, end = 0.8) +
+    apa_theme +
+    theme(plot.subtitle = element_text(size = 12, hjust = 0.5))
+  
+   print(p2)
 
 ```
 
@@ -238,8 +301,9 @@ The lack of statistical significance despite medium effect sizes for total gestu
 #| label: pp_narr_regression
 #| echo: FALSE
 #| fig.pos: "H"
+#| include: false
 
-narrative_scores <- read_csv("~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Final.csv")
+narrative_scores <- read_csv("PN_Datasets/Narrative/CSVs_of_Combined_Data_N/Narrative_Results_Final.csv")
 
 
 ```
