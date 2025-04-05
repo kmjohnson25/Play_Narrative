@@ -14,6 +14,7 @@ library(lmtest)    # For regression diagnostics
 library(effectsize) # For effect sizes
 library(ggplot2)   # For visualization
 library(here)
+library(dplyr)
 
 # This will find your project root directory automatically
 merged_H8 <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "merged_H8.csv"))
@@ -22,6 +23,7 @@ merged_H8 <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data
 H8_gesture_play <- merged_H8 %>%
   group_by(participant_id) %>%
   summarise(
+    total_pretend_play = sum(c_pret, na.rm = TRUE),
     mean_c_wpu = mean(C_wpu, na.rm = TRUE),
     any_pretend_play = if_else(any(c_pret == 1, na.rm = TRUE), 1, 0),
     total_rep_gestures = sum(gesture_rep == 1, na.rm = TRUE),
@@ -65,7 +67,9 @@ table(child_summary$rep_gesture_present, child_summary$GroupStatus)
 
 # Check correlation between total gestures and representational gestures
 cor.test(child_summary$total_gestures, child_summary$rep_gestures)
+```
 
+```{r}
 # 2. Data visualization
 # Boxplot of total gestures by group
 ggplot(child_summary, aes(x = GroupStatus, y = total_gestures, fill = GroupStatus)) +
@@ -83,25 +87,35 @@ ggplot(child_summary, aes(x = GroupStatus, fill = factor(rep_gesture_present))) 
   labs(title = "Representational Gesture Presence by Group",
        x = "Group Status",
        y = "Count")
+```
 
+```{r}
 # 3. Merge with narrative outcome data
 narrative_data <- read.csv(here("PN_Datasets", "Narrative", "CSVs_of_Combined_Data_N", "Narrative_Results_Final.csv"))
 
+# Rename participant column
+narrative_data <- narrative_data %>%
+  rename(participant_id = ChildID)
+
+
 # Replace 'child_id' with your actual ID variable
 completely_merged_data <- left_join(child_summary, narrative_data, by = "participant_id")
+```
 
+```{r}
 # 4. Run regression models
 # Assuming 'narrative_structure' is your outcome variable
 # Model 1: Total gestures as predictor
-model1 <- lm(narrative_structure ~ age + language_ability + parent_education + 
-             GroupStatus + total_gestures + GroupStatus:total_gestures, 
+model1 <- lm(AvgHighScore ~ GroupStatus + total_gestures + mlu + GroupStatus:total_gestures, 
              data = merged_data)
 
 # Model 2: Representational gesture presence as predictor
 model2 <- lm(narrative_structure ~ age + language_ability + parent_education + 
              GroupStatus + rep_gesture_present + GroupStatus:rep_gesture_present, 
              data = merged_data)
+```
 
+```{r}
 # 5. Examine model results
 summary(model1)
 summary(model2)
@@ -109,7 +123,9 @@ summary(model2)
 # Calculate effect sizes
 eta_squared(model1)
 eta_squared(model2)
+```
 
+```{r}
 # 6. Diagnostic checks
 # Check assumptions for Model 1
 plot(model1, which = 1)  # Residuals vs Fitted
@@ -120,14 +136,18 @@ vif(model1)              # Check for multicollinearity
 plot(model2, which = 1)  # Residuals vs Fitted
 plot(model2, which = 2)  # Normal Q-Q
 vif(model2)              # Check for multicollinearity
+```
 
+```{r}
 # 7. Simplified models if needed (if sample size is a concern)
 simple_model1 <- lm(narrative_structure ~ GroupStatus + total_gestures, data = merged_data)
 simple_model2 <- lm(narrative_structure ~ GroupStatus + rep_gesture_present, data = merged_data)
 
 summary(simple_model1)
 summary(simple_model2)
+```
 
+```{r}
 # 8. Separate analyses for each group (if sample size allows)
 td_model <- lm(narrative_structure ~ total_gestures, 
                data = filter(merged_data, GroupStatus == "TD"))
@@ -136,7 +156,9 @@ pl_model <- lm(narrative_structure ~ total_gestures,
 
 summary(td_model)
 summary(pl_model)
+```
 
+```{r}
 # 9. Create publication-ready tables and figures
 # Example of creating a regression results table
 library(sjPlot)
