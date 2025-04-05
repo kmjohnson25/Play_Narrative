@@ -40,7 +40,7 @@ P3_H8_Simple <- P3_H8_ALL %>%
 # Reorganize Data for TD group
 ```{r}
 # read in total data set create column for Group Status (P3=BI, P2=TD)
-P2_H8_ALL <- read.csv("PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P2_H8_ALL.csv") %>%
+P2_H8_ALL <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P2_H8_ALL.csv")) %>%
   mutate(GroupStatus = "TD") # add column specifying which group this is
   
 P2_H8_ALL$c_form <- tolower(P2_H8_ALL$c_form)
@@ -69,7 +69,7 @@ P2_H8_Simple <- P2_H8_ALL %>%
 # Merge datasets by stacking them
 merged_H8 <- bind_rows(P3_H8_Simple, P2_H8_Simple)
 
-write.csv(merged_H8, file = "merged_H8.csv")
+write.csv(merged_H8, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "merged_H8.csv"))
 ```
 
 # Filter to include only gestures/utterances during pretend play
@@ -77,7 +77,7 @@ write.csv(merged_H8, file = "merged_H8.csv")
 # Filter to include only pretend play episodes
 pretend_data_H8 <- merged_H8[merged_H8$c_pret == 1, ] 
 
-write_csv(pretend_data_H8, file = "pretend_data_H8.csv")
+write_csv(pretend_data_H8, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "pretend_data_H8.csv"))
 
 ```
 

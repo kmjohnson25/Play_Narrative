@@ -24,7 +24,7 @@ library(knitr)
 ## Import and Clean Dataset
 ```{r, echo=FALSE}
 
-P3_H8_ALL <- read.csv('PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv')
+P3_H8_ALL <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H8_ALL.csv"))
 
 # makes all c_form entries lower case
 P3_H8_ALL$c_form <- tolower(P3_H8_ALL$c_form)

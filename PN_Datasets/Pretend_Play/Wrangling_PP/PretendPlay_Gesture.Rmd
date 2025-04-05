@@ -21,7 +21,7 @@ library(extrafont)  # Ensures Times New Roman is available
 # Pretend Play Instances per Individual
 ```{r}
 # Import and clean dataset
-P3_H8_ALL <- read.csv("PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P3_H8_ALL.csv")
+P3_H8_ALL <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H8_ALL.csv"))
 
 # Summarize pretend play counts per participant
 PP_Individual <- P3_H8_ALL %>%
