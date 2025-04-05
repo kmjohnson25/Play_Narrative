@@ -6,6 +6,9 @@ output: html_document
 ---
 
 ```{r}
+# install necessary packages
+
+#install.packages("lmerTest")
 
 # Load required packages
 library(tidyverse)
@@ -15,8 +18,10 @@ library(effectsize) # For effect sizes
 library(ggplot2)   # For visualization
 library(here)
 library(dplyr)
+library(lme4)
+library(lmerTest)
 
-# This will find your project root directory automatically
+# find  project root directory automatically
 merged_H8 <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "merged_H8.csv"))
 
 
@@ -24,7 +29,7 @@ H8_gesture_play <- merged_H8 %>%
   group_by(participant_id) %>%
   summarise(
     total_pretend_play = sum(c_pret, na.rm = TRUE),
-    mean_c_wpu = mean(C_wpu, na.rm = TRUE),
+    mlu = mean(C_wpu, na.rm = TRUE),
     any_pretend_play = if_else(any(c_pret == 1, na.rm = TRUE), 1, 0),
     total_rep_gestures = sum(gesture_rep == 1, na.rm = TRUE),
     total_all_gestures = sum(gesture_all == 1, na.rm = TRUE),
@@ -50,29 +55,41 @@ child_summary <- pretend_data_H8 %>%
     icon_gestures = sum(gesture_icon),
     prop_rep = sum(gesture_rep) / sum(gesture_all),
     prop_icon = sum(gesture_icon) / sum(gesture_all),
-    mlu = mean(C_wpu, na.rm = TRUE),  # get the mean c_wpu for each child
   )
 ```
 
 ```{r}
+# add mlu from all utterances 
+
+pretend_data <- child_summary %>%
+  left_join(select(H8_gesture_play, participant_id, mlu), by = "participant_id") %>%
+  left_join(select(H8_gesture_play, participant_id, total_pretend_play), by = "participant_id")
+
+write_csv(pretend_data, here("PN_DataAnalysis", "PP_Narrative_Analysis", "pretend_data.csv"))
+
+```
+
+
+
+```{r}
 
 # Create binary variable for representational gesture presence
-child_summary <- child_summary %>%
+pretend_data <- pretend_data %>%
   mutate(rep_gesture_present = ifelse(rep_gestures > 0, 1, 0))
 
 # Check distributions
-hist(child_summary$total_gestures)
-hist(child_summary$rep_gestures)
-table(child_summary$rep_gesture_present, child_summary$GroupStatus)
+hist(pretend_data$total_gestures)
+hist(pretend_data$rep_gestures)
+table(pretend_data$rep_gesture_present, pretend_data$GroupStatus)
 
 # Check correlation between total gestures and representational gestures
-cor.test(child_summary$total_gestures, child_summary$rep_gestures)
+cor.test(pretend_data$total_gestures, pretend_data$rep_gestures)
 ```
 
 ```{r}
 # 2. Data visualization
 # Boxplot of total gestures by group
-ggplot(child_summary, aes(x = GroupStatus, y = total_gestures, fill = GroupStatus)) +
+ggplot(pretend_data, aes(x = GroupStatus, y = total_gestures, fill = GroupStatus)) +
   geom_boxplot() +
   theme_minimal() +
   labs(title = "Total Gestures by Group",
@@ -80,7 +97,7 @@ ggplot(child_summary, aes(x = GroupStatus, y = total_gestures, fill = GroupStatu
        y = "Total Gesture Count")
 
 # Bar chart of representational gesture presence by group
-ggplot(child_summary, aes(x = GroupStatus, fill = factor(rep_gesture_present))) +
+ggplot(pretend_data, aes(x = GroupStatus, fill = factor(rep_gesture_present))) +
   geom_bar(position = "dodge") +
   scale_fill_discrete(name = "Rep. Gesture", labels = c("Absent", "Present")) +
   theme_minimal() +
@@ -88,35 +105,34 @@ ggplot(child_summary, aes(x = GroupStatus, fill = factor(rep_gesture_present))) 
        x = "Group Status",
        y = "Count")
 ```
-
-```{r}
 # 3. Merge with narrative outcome data
+```{r}
 narrative_data <- read.csv(here("PN_Datasets", "Narrative", "CSVs_of_Combined_Data_N", "Narrative_Results_Final.csv"))
 
 # Rename participant column
 narrative_data <- narrative_data %>%
   rename(participant_id = ChildID)
 
+write.csv(narrative_data, here("PN_DataAnalysis", "PP_Narrative_Analysis", "narrative_data.csv"))
 
-# Replace 'child_id' with your actual ID variable
-completely_merged_data <- left_join(child_summary, narrative_data, by = "participant_id")
+# MERGE IT
+completely_merged_data <- left_join(pretend_data, narrative_data, by = "participant_id") %>%
+  mutate(GroupStatus = if_else(GroupStatus == "BI", "PL", GroupStatus))
+
+write_csv(completely_merged_data, here("PN_DataAnalysis", "PP_Narrative_Analysis", "completely_merged_data.csv"))
 ```
 
-```{r}
 # 4. Run regression models
-# Assuming 'narrative_structure' is your outcome variable
+```{r}
+
 # Model 1: Total gestures as predictor
-model1 <- lm(AvgHighScore ~ GroupStatus + total_gestures + mlu + GroupStatus:total_gestures, 
-             data = merged_data)
+model1 <- lm(AvgHighScore ~ GroupStatus + total_gestures + total_pretend_play + mlu + GroupStatus:total_gestures, 
+             data = completely_merged_data)
 
 # Model 2: Representational gesture presence as predictor
-model2 <- lm(narrative_structure ~ age + language_ability + parent_education + 
-             GroupStatus + rep_gesture_present + GroupStatus:rep_gesture_present, 
-             data = merged_data)
-```
+model2 <- lm(AvgHighScore ~ GroupStatus + rep_gesture_present + total_pretend_play + mlu + GroupStatus:rep_gesture_present, 
+             data = completely_merged_data)
 
-```{r}
-# 5. Examine model results
 summary(model1)
 summary(model2)
 
@@ -125,53 +141,151 @@ eta_squared(model1)
 eta_squared(model2)
 ```
 
+# 5b. USE WHEN HAVE ALL DATA FROM 3 TIMEPOINTS..... mixed effects models 
 ```{r}
-# 6. Diagnostic checks
-# Check assumptions for Model 1
-plot(model1, which = 1)  # Residuals vs Fitted
-plot(model1, which = 2)  # Normal Q-Q
-vif(model1)              # Check for multicollinearity
+library(lme4)
+library(lmerTest)
 
-# Check assumptions for Model 2
-plot(model2, which = 1)  # Residuals vs Fitted
-plot(model2, which = 2)  # Normal Q-Q
-vif(model2)              # Check for multicollinearity
+mixed_model1 <- lmer(AvgHighScore ~ GroupStatus + total_gestures + total_pretend_play + mlu + 
+                     GroupStatus:total_gestures + (1|participant_id), 
+                     data = completely_merged_data)
+
+mixed_model2 <- lmer(AvgHighScore ~ GroupStatus + rep_gesture_present + total_pretend_play + mlu + 
+                     GroupStatus:rep_gesture_present + (1|participant_id), 
+                     data = completely_merged_data)
+
+summary(mixed_model1)
+summary(mixed_model2)
 ```
 
 ```{r}
-# 7. Simplified models if needed (if sample size is a concern)
-simple_model1 <- lm(narrative_structure ~ GroupStatus + total_gestures, data = merged_data)
-simple_model2 <- lm(narrative_structure ~ GroupStatus + rep_gesture_present, data = merged_data)
+# Interaction Plot: Group × Representational Gesture Presence
+#| label: fig-interaction
+#| fig-cap: "Predicted narrative scores by group and representational gesture use. Error bars represent 95% confidence intervals. Children with brain injury show significant benefits from representational gesture use (p < .05)."
+#| fig-width: 6
+#| fig-height: 4
 
-summary(simple_model1)
-summary(simple_model2)
+# Create a data frame for prediction
+newdata <- expand.grid(
+  GroupStatus = c("PL", "TD"),
+  rep_gesture_present = c(0, 1),
+  # Set other predictors to mean values
+  total_pretend_play = mean(completely_merged_data$total_pretend_play, na.rm = TRUE),
+  mlu = mean(completely_merged_data$mlu, na.rm = TRUE)
+)
+
+# Get predictions from your model
+newdata$predicted <- predict(model2, newdata = newdata)
+
+# Calculate standard errors
+pred_se <- predict(model2, newdata = newdata, se.fit = TRUE)$se.fit
+newdata$lower <- newdata$predicted - 1.96 * pred_se
+newdata$upper <- newdata$predicted + 1.96 * pred_se
+
+# Rename factor levels for clarity
+newdata$GroupStatus <- factor(newdata$GroupStatus, 
+                             levels = c("PL", "TD"),
+                             labels = c("Peri- and Postnatal Lesions", "Typically Developing"))
+newdata$rep_gesture_present <- factor(newdata$rep_gesture_present,
+                                     levels = c(0, 1),
+                                     labels = c("No", "Yes"))
+
+# Create the interaction plot
+ggplot(newdata, aes(x = rep_gesture_present, y = predicted, 
+                   group = GroupStatus, color = GroupStatus, 
+                   linetype = GroupStatus, shape = GroupStatus)) +  # Add shape to aes()
+  geom_line(size = 1) +
+  geom_point(size = 3) +  # Shape is now controlled by scale_shape_manual
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
+  labs(x = "Representational Gestures Present",
+       y = "Predicted Narrative Score") +
+  scale_color_grey(start = 0.2, end = 0.8) +
+  scale_linetype_manual(values = c("solid", "dashed")) +
+  scale_shape_manual(values = c(16, 17)) +  # Define shapes here
+  theme_bw() +
+  theme(
+    text = element_text(family = "Times New Roman", size = 12),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black")
+  )
 ```
+
 
 ```{r}
-# 8. Separate analyses for each group (if sample size allows)
-td_model <- lm(narrative_structure ~ total_gestures, 
-               data = filter(merged_data, GroupStatus == "TD"))
-pl_model <- lm(narrative_structure ~ total_gestures, 
-               data = filter(merged_data, GroupStatus == "PL"))
+# Scatter Plot: Raw Data with Regression Lines
+#| label: fig-scatter
+#| fig-cap: "Relationship between representational gesture presence and narrative scores by group. Shaded areas represent 95% confidence intervals around regression lines."
+#| fig-width: 7
+#| fig-height: 4
 
-summary(td_model)
-summary(pl_model)
+ggplot(completely_merged_data, aes(x = as.factor(rep_gesture_present), y = AvgHighScore, 
+                                 fill = GroupStatus, shape = GroupStatus)) +
+  geom_jitter(width = 0.1, height = 0, size = 3, alpha = 0.7) +
+  geom_smooth(aes(group = GroupStatus, linetype = GroupStatus, color = GroupStatus),
+              method = "lm", se = TRUE, formula = y ~ x) +
+  scale_x_discrete(labels = c("0" = "No", "1" = "Yes")) +
+  scale_shape_manual(values = c(21, 24)) +
+  scale_fill_grey(start = 0.5, end = 0.8) +
+  scale_color_grey(start = 0.2, end = 0.6) +
+  scale_linetype_manual(values = c("solid", "dashed")) +
+  labs(x = "Representational Gestures Present",
+       y = "Narrative Score") +
+  facet_wrap(~ GroupStatus, scales = "free_x") +
+  theme_bw() +
+  theme(
+    text = element_text(family = "Times New Roman", size = 12),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    legend.position = "none",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black"),
+    strip.background = element_rect(fill = "white"),
+    strip.text = element_text(size = 12)
+  )
 ```
 
-```{r}
-# 9. Create publication-ready tables and figures
-# Example of creating a regression results table
-library(sjPlot)
-tab_model(model1, model2, 
-          pred.labels = c("Intercept", "Age", "Language Ability", "Parent Education", 
-                          "Group Status (PL)", "Total Gestures", "Rep. Gesture Present",
-                          "Group Status × Total Gestures", "Group Status × Rep. Gesture Present"),
-          dv.labels = c("Model 1: Total Gestures", "Model 2: Rep. Gesture Presence"))
-
-# Create interaction plot for Model 1 (if interaction is significant)
-interact_plot(model1, pred = "total_gestures", modx = "GroupStatus", 
-              plot.points = TRUE, interval = TRUE,
-              x.label = "Total Gestures", y.label = "Narrative Structure",
-              legend.main = "Group Status")
 ```
+# Total Gestures Scatter Plot with facet_grid
+#| label: fig-total-gestures-grid
+#| fig-cap: "Relationship between total gesture count and narrative scores, faceted by group status and the presence of representational gesture. The top row shows children who used representational gestures during pretend play, while the bottom row shows those who did not."
+#| fig-width: 8
+#| fig-height: 6
 
+# First, create a factor for rep_gesture_present for better labeling
+completely_merged_data$rep_gesture_factor <- factor(
+  completely_merged_data$rep_gesture_present,
+  levels = c(0, 1),
+  labels = c("No Representational", "Representational")
+)
+
+ggplot(completely_merged_data, aes(x = total_gestures, y = AvgHighScore, 
+                                 color = GroupStatus, shape = GroupStatus)) +
+  geom_point(size = 3, alpha = 0.8) +
+  geom_smooth(aes(linetype = GroupStatus), method = "lm", se = TRUE) +
+  labs(x = "Total Number of Gestures",
+       y = "Narrative Score") +
+  scale_color_grey(start = 0.2, end = 0.8) +
+  scale_shape_manual(values = c(16, 17)) +
+  scale_linetype_manual(values = c("solid", "dashed")) +
+  # Add facet_grid with rep_gesture_factor in rows and GroupStatus in columns
+  facet_grid(rep_gesture_factor ~ GroupStatus, scales = "free_x") +
+  theme_bw() +
+  theme(
+    text = element_text(family = "Times New Roman", size = 12),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black"),
+    strip.background = element_rect(fill = "white"),
+    strip.text = element_text(size = 11)
+  )
+```
