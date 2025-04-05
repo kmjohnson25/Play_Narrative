@@ -408,4 +408,5 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
           
           NOTE: this isn't the most up-to-date version of the research assessment file. the one you want will have a place for the AI statement and down here at the bottom it will have a section for grading. you lose 5 points for a missing ai statement so make sure you switch over to the one that has it!
 
+AI Statement: I used ChatGPT for torublshooting problems when I couldn't get my code to work.
 
