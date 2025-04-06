@@ -23,31 +23,31 @@ To complete this assessment:
 
 
 ## Basic information
+Name: Kristen Johnson
 
-Name:
+CNetID: kmjohnson25
 
-CNetID:
+Section: 1
 
-Section:
+Research project title: The Role of Pretend Play in Narrative Development: Comparing Gestural and Symbolic Pathways in Children With and Without Early Unilateral Brain Injury
 
-Research project title:
+Submission date: 4/5/25
 
-Submission date:
+Submission number (1-4): 2
 
-Submission number (1-4):
+Project GitHub repository URL: https://github.com/kmjohnson25/Play_Narrative.git
 
-Project GitHub repository URL:
+Filename of manuscript .qmd: The_Role_of_Pretend_Play_in_Narrative.qmd
 
-Filename of manuscript .qmd:
-
-Filename of knitted .pdf:
+Filename of knitted .pdf: The_Role_of_Pretend_Play_in_Narrative.pdf
 
 
 ## AI Statement
 
-Describe whether and how you used AI/LLMs when completing this project: 
+Describe whether and how you used AI/LLMs when completing this project: I used chatGPT to help troubleshoot coding issues that arose while working on my manuscript.
 
-Optionally (for engagement points) reflect on your use of AI:
+Optionally (for engagement points) reflect on your use of AI: 
+While I normally don't use (or even want to use ) AI for schoolwork, as I worry that it would take away from the learning experience, I cannot imagine doing any coursework that requires coding sans AI. The tool not only helps me catch obvious typos in my own code that I have stopped seeing, but has also helped train me in many ways on how to write better code to begin with.
 
 
 
@@ -100,7 +100,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2.  Uses relative paths correctly
     3.  Does not have duplicate/redundant elements
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments: 
 
@@ -109,7 +109,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     1.  Includes description of repo purpose, data use, research questions, etc.
     2.  Outlines the repo structure with file tree or similar
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -118,7 +118,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     1.  All scripts run and all notebooks render if the repo is cloned to another location
     2.  .gitingore comprehensively excludes unnecessary, private, and very large files and are commented appropriately
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -127,7 +127,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     1.  Used frequent, informative commit messages
     2.  Relies on document revisions rather than manually created new versions
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -140,7 +140,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
         2. When a reader opts-in to installing packages by uncommenting the code, it runs without errors 
     2. Uses more than one function to install/load/require packages (including those used in commented code)
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
         
@@ -149,7 +149,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     1. Uses all three types of operators
     2. Uses multiple operators in data transformation pipelines and/or inline R code
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -159,7 +159,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. User-defined function(s) run(s) without error and produces expected output in at least 2 contexts
     3. Functions are well-documented with comments
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -168,7 +168,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     1. Uses conditional in multiple contexts, including dplyr pipelines
     2. Uses multiple types of conditional/loop functions (e.g., `if_else()`, `case_when()`, `for`, `while`)
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
         
@@ -179,30 +179,30 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Writes out intermediate and/or final datasets in code chunks or sourced scripts
     3. Uses only relative paths that run without error when repo is cloned
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
-10. Use `dplyr` and `tidyr` functions to transform data
+10. Use `dplyr` and `tidyr` functions to transform data.  <------  FOUND IN DATA WRANGLING Rmd's SUCH AS "~/PN_Datasets/Narrative/Wrangling_N/Narrative_Data_Wrangling.Rmd"
 
     1. Uses at least 3 unique `dplyr` functions
     2. Uses at least 1 `tidyr` function in a data transformation pipeline
     3. Combines `dplyr` and `tidyr` functions in a data transformation pipeline
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
-11. Use `stringr` functions to work with string variables
+11. Use `stringr` functions to work with string variables.   <------  FOUND IN DATA WRANGLING Rmd's SUCH AS "~/Play_Narrative/PN_Datasets/Pretend Play/Wrangling_PP/Thesis_Data_cleaning.Rmd"
 
     1. Uses ate least 2 unique `stringr` functions 
     2. Uses `stringr` functions in a data transformation pipeline
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
-12. Use `forcats` functions to work with factor variables
+12. Use `forcats` functions to work with factor variables.  <------  FOUND IN DATA WRANGLING Rmd's SUCH AS "~/PN_Datasets/Narrative/Wrangling_N/Narrative_Data_Wrangling.Rmd"
 
     1. Uses ate least 2 unique `forcats` functions or one function in 2 unique contexts (with different purposes)
     2. Uses `forcats` functions in a data transformation pipeline
@@ -219,7 +219,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     1. Creates at least 2 figures with different `geom_*` layers (e.g., a scatter plot and a bar plot)
     2. At least one plot is multi-variable
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -227,7 +227,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
 
     1. Uses at least 2 unique data-mapped `aes()` arguments (e.g., color, shape, size) to group data in a plot in one or multiple plots
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
         
@@ -239,7 +239,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Combines facets with other dynamic grouping aesthetics
       1. If data only includes 1 sensible grouping variable, it may be used for both the faceting and groupin aes.  
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
         
@@ -250,7 +250,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Variables and labels display in plain English (e.g., "Age (years)" not "child_age_yrs"
     4. Uses at least 1 static aesthetic (e.g., color, shape, size) that improves visual clarity without mapping to data
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -263,7 +263,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Presents results in narrative text, table, or plot
     - NOTE: This objective may be met with only numeric or non-numeric summaries if they are sufficiently complex (at Dr. Dowling's discretion)
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -274,7 +274,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Presents results in narrative text, table, or plot
     - NOTE: This objective may be met with only numeric or factor data analyses if they are sufficiently complex (at Dr. Dowling's discretion)
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -285,7 +285,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Discriminates between informative and non-informative statistics and presents only the former in narrative text
     4. Uses dynamic inline R code to render data-dependent text
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -297,7 +297,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Uses at least 2 citation forms (e.g., (Author, Year), Author (Year), etc.)
     3. May use `cite_r()` to cite R and R packages
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -309,7 +309,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4. May include R and R package citations with `cite_r()`
     5. May include references not cited in-text
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -322,7 +322,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3.  Follows the "1-chunk-1-thing" rule
     4.  Chunks are distributed throughout the manuscript, sensibly placed near the text they support
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments: 
         
@@ -333,7 +333,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Sets preferences/options in at least 1 code chunk
     4. Organizes setup chunks sensibly
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
         
@@ -346,7 +346,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     5. References render without error and link to the correct table/figure in pdf/html output
     - NOTE: Ideally your table(s) should be produced in APA7 style, but this is not a strict requirement. At a minimum, they should render as formatted tables (not raw output), have readable and correctly formatted text (e.g., column headers should be capitalized and in plain english, not literal variable names), and the table must be dynamically referenced in the text.
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -358,7 +358,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4. Results are not displayed as raw R output
     5. Chunks are organized sensibly and appear near the text they support
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -368,7 +368,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     
     1. Includes all necessary metadata, output options, and formatting options necessary to render an APA styled document (or other specified style if appropriate for the project)
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
         
@@ -380,7 +380,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4. Includes at least 1 footnote
     - NOTE: This is going to be one of the most flexible objectives to demonstrate.  You need to demonstrate a range of markdown skills and use them to make a readable, informative manuscript. Hitting the four points above should do that, but you can use your judgment about what kind of markdown features will best serve your project. No matter what, you should use markdown to follow APA7 guidelines.
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -390,7 +390,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Replaces static text with inline R references in at least 1 character context
     3. Ideally, uses inline R references for *all* data-dependent text
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -398,7 +398,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
 
     1. Uses inline R functions to render at least 3 unique data-dependent text outputs (e.g., performs rounding, calculates means, subtracts one list length from another, etc. -- inline rather than in a code chunk)
 
-        -   [ ] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
         
@@ -409,7 +409,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. PDF renders without error and includes all text, tables, and figures
     4. No additional steps are needed (e.g., finding data, determining necessary packages to install and load, running unsourced scripts, correcting aboslute paths)
 
-        -   [ ] Objective attempt
+        -   [] Objective attempt
         -   [ ] Objective met
         -   Grader comments:        
    
@@ -419,10 +419,19 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
 Optionally (for engagement points) write a brief reflection about your work on this project. You can use this space to answer the following questions, but feel free to ignore these questions and write about whatever you think is most important.
 
 - What was the most challenging aspect of this project?
+As evident in my preliminary analyses (particularly in the PP_Gesture_H8.pdf document), the high variability within the brain injury group often led to non-significant findings despite medium effect sizes. For example, children with brain injury produced nearly twice as many total gestures during pretend play episodes compared to typically developing peers (M = 6.25 vs. M = 3.53), but with a standard deviation nearly equivalent to the mean (SD = 5.73), this difference did not reach statistical significance despite a medium effect size (η² = .079).
+
 - What was the most rewarding aspect of this project?
+The most rewarding aspect was uncovering evidence supporting my hypothesis about differential developmental pathways in children with and without brain injury. The finding that representational gestures during pretend play significantly predicted narrative development specifically for children with brain injury (but not for typically developing children) provides a glimpse into potential compensatory mechanisms that could inform both developmental theory and clinical practice.
+
 - What would you do differently if you were to start over?
+I would have started the data cleaning process sooner, as that was easily the most time-consuming component of all the work.
+
 - What did you learn from this project that you will carry forward to future projects?
+R is an incredibly powerful tool for statistics and data management but also for drafting APA manuscripts. I never thought I would choose to write a paper in rStudio, but this is now how I plan to draft all future manuscripts.
+
 - What are you most proud of in this project?
+Everything. I am not and never have been a computer-0savvy individual... but I feel like I rose to the challenge and (thanks to the incredibly well-documented course website) was able to leave with some real honest to god computer skills.
 
 
 Alternatively/additionally in mind some of the suggested ways to earn engagement points, and expand on this (or other aspects of your project) in your reflection:
