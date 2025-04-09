@@ -1,5 +1,5 @@
 ---
-title: "Interrater-Reliability_P3.46.10"
+title: "Interrater-Reliability_P3.93.10"
 author: "Kristen Johnson"
 date: "2025-03-04"
 output:
@@ -18,11 +18,11 @@ library(here)
 # read in the two coded transcripts
 ```{r}
 ## be sure to change initials for each coder
-JB_codes<- read_excel(here("PN_InterraterReliability", "Coded_P3_H10", "P3.46.10_COMPLETE_JB_02.26.25.xls"))
+JB_codes<- read_excel(here("PN_InterraterReliability", "Coded_P3_H10", "P3.93.10_COMPLETE_JB_Final.xls"))
 
 #MCV_codes<- read_excel('~/KristenWorkingDirectory/Play_Narrative/PN_InterraterReliability/Coded_P3_H10/P3.99.10_COMPLETE_MCV_03.03.25.xls')
 
-KJ_codes <- read_excel(here("PN_InterraterReliability", "Coded_P3_H10", "P3.46.10_COMPLETE_KJ_3.1.25.xls"))
+KJ_codes <- read_excel(here("PN_InterraterReliability", "Coded_P3_H10", "P3.93.10_COMPLETE_KJ_Final.xls"))
 ```
 
 # if need be, troubleshoot column name discrepancies
@@ -42,7 +42,7 @@ colnames(KJ_codes)
 
 # extract c_pret columns to get pretend play codes from each coder's transcript
 JB_codes <- JB_codes %>%  ## be sure to change initials for each coder!
-  select(c_pret_JB)
+  select(C_pret_JB)
 
 #MCV_codes<- MCV_codes %>%
   #select(c_pret_MCV)
@@ -62,8 +62,8 @@ coded_combined <- cbind(JB_codes, KJ_codes) ## be sure to change initials for ea
 # create new columns for "both" and "either"
 coded_combined <- coded_combined %>%
   mutate(
-    both_ones = ifelse(c_pret_JB == 1 & c_pret_KJ == 1, 1, 0), ## don't forget to change column names according to coder!
-    either_one = ifelse(c_pret_JB == 1 | c_pret_KJ == 1, 1, 0)
+    both_ones = ifelse(C_pret_JB == 1 & c_pret_KJ == 1, 1, 0), ## don't forget to change column names according to coder!
+    either_one = ifelse(C_pret_JB == 1 | c_pret_KJ == 1, 1, 0)
   )
 #coded_combined <- coded_combined %>%
  # mutate(

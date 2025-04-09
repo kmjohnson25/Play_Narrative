@@ -16,6 +16,7 @@ library(ggplot2)
 library(stringr)
 library(knitr)
 library(extrafont)  # Ensures Times New Roman is available
+library(here)
 ```
 
 # Pretend Play Instances per Individual
