@@ -409,7 +409,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. PDF renders without error and includes all text, tables, and figures
     4. No additional steps are needed (e.g., finding data, determining necessary packages to install and load, running unsourced scripts, correcting aboslute paths)
 
-        -   [] Objective attempt
+        -   [X] Objective attempt
         -   [ ] Objective met
         -   Grader comments:        
    
@@ -431,7 +431,7 @@ I would have started the data cleaning process sooner, as that was easily the mo
 R is an incredibly powerful tool for statistics and data management but also for drafting APA manuscripts. I never thought I would choose to write a paper in rStudio, but this is now how I plan to draft all future manuscripts.
 
 - What are you most proud of in this project?
-Everything. I am not and never have been a computer-0savvy individual... but I feel like I rose to the challenge and (thanks to the incredibly well-documented course website) was able to leave with some real honest to god computer skills.
+Everything. I am not and never have been a computer-savvy individual... but I feel like I rose to the challenge and (thanks to the incredibly well-documented course website) was able to leave with some real honest to god computer skills.
 
 
 Alternatively/additionally in mind some of the suggested ways to earn engagement points, and expand on this (or other aspects of your project) in your reflection:
