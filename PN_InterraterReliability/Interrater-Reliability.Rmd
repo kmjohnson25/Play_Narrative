@@ -18,11 +18,11 @@ library(here)
 # read in the two coded transcripts
 ```{r}
 ## be sure to change initials for each coder
-JB_codes<- read_excel(here("PN_InterraterReliability", "Coded_P3_H10", "P3.93.10_COMPLETE_JB_Final.xls"))
+#JB_codes<- read_excel(here("PN_InterraterReliability", "Coded_P3_H10", "P3.93.10_COMPLETE_JB_Final.xls"))
 
-#MCV_codes<- read_excel('~/KristenWorkingDirectory/Play_Narrative/PN_InterraterReliability/Coded_P3_H10/P3.99.10_COMPLETE_MCV_03.03.25.xls')
+MCV_codes<- read_excel(here("PN_InterraterReliability", "Coded_P3_H10", "P3.150.10_COMPLETE_MCV_03.25.25.xls"))
 
-KJ_codes <- read_excel(here("PN_InterraterReliability", "Coded_P3_H10", "P3.93.10_COMPLETE_KJ_Final.xls"))
+KJ_codes <- read_excel(here("PN_InterraterReliability", "Coded_P3_H10", "For_Analysis", "P3.150.10_COMPLETE_KJ_Final.xls"))
 ```
 
 # if need be, troubleshoot column name discrepancies
@@ -36,16 +36,16 @@ KJ_codes <- read_excel(here("PN_InterraterReliability", "Coded_P3_H10", "P3.93.1
 ```{r, include=FALSE}
 # get column names (to make sure c_pret is labelled right way)
 
-colnames(JB_codes)  # Returns column names as a character vector
-#colnames(MCV_codes)
+#colnames(JB_codes)  # Returns column names as a character vector
+colnames(MCV_codes)
 colnames(KJ_codes)
 
 # extract c_pret columns to get pretend play codes from each coder's transcript
-JB_codes <- JB_codes %>%  ## be sure to change initials for each coder!
-  select(C_pret_JB)
+#JB_codes <- JB_codes %>%  ## be sure to change initials for each coder!
+  #select(C_pret_JB)
 
-#MCV_codes<- MCV_codes %>%
-  #select(c_pret_MCV)
+MCV_codes<- MCV_codes %>%
+  select(C_pret_MCV)
 
 KJ_codes <- KJ_codes %>%
   select(c_pret_KJ)
@@ -53,23 +53,23 @@ KJ_codes <- KJ_codes %>%
 
 # combine datasets into one
 ```{r}
-coded_combined <- cbind(JB_codes, KJ_codes) ## be sure to change initials for each coder!
-#coded_combined <- cbind(MCV_codes, KJ_codes)
+#coded_combined <- cbind(JB_codes, KJ_codes) ## be sure to change initials for each coder!
+coded_combined <- cbind(MCV_codes, KJ_codes)
 ```
 
 # create columns to assist in calculating IRR
 ```{r}
 # create new columns for "both" and "either"
+#coded_combined <- coded_combined %>%
+  #mutate(
+   # both_ones = ifelse(C_pret_JB == 1 & c_pret_KJ == 1, 1, 0), ## don't forget to change column names according to coder!
+    #either_one = ifelse(C_pret_JB == 1 | c_pret_KJ == 1, 1, 0)
+ # )
 coded_combined <- coded_combined %>%
   mutate(
-    both_ones = ifelse(C_pret_JB == 1 & c_pret_KJ == 1, 1, 0), ## don't forget to change column names according to coder!
-    either_one = ifelse(C_pret_JB == 1 | c_pret_KJ == 1, 1, 0)
+    both_ones = ifelse(C_pret_MCV == 1 & c_pret_KJ == 1, 1, 0),
+    either_one = ifelse(C_pret_MCV == 1 | c_pret_KJ == 1, 1, 0)
   )
-#coded_combined <- coded_combined %>%
- # mutate(
-  #  both_ones = ifelse(c_pret_MCV == 1 & c_pret_KJ == 1, 1, 0),
-  #  either_one = ifelse(c_pret_MCV == 1 | c_pret_KJ == 1, 1, 0)
-  #)
 ```
 
 # make sure everything is numerical
