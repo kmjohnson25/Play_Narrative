@@ -10,6 +10,7 @@ library(readxl)   # For reading Excel files
 library(dplyr)    # For binding and data manipulation
 library(lubridate)  # For handling datetime columns (if needed)
 library(tidyverse)  # to manipulate strings and a lot more
+library(here)
 ```
 
 # COLLECTION OF CODE CHUNKS FOR CLEANING DATA SPECIFIC TO MAPSS THESIS STUDY
@@ -18,7 +19,7 @@ I compiled a number of code chunks that I used while cleaning the original raw d
 ## Setup steps
 ```{r}
 # Set the directory path where your .xlsx files are located
-directory_path <- '/Users/kristenjohnson/Desktop/University_of_Chicago/Thesis/Data/decontextualized/08/P2_H8'
+directory_path <- '~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/Raw_Data/For_Analysis'
 
 file.exists(directory_path)
 
@@ -188,12 +189,13 @@ combined_dataset <- combined_dataset %>%
                                  0,  # Assign 0 if the cell is empty or NA
                                  str_count(c_utts, "\\S+")  # Count words using regex
                                  ))
+head(combined_dataset)
 ```
 
 ## Save combined_data as CSV to specified location:
 ```{r}
 # change the group_timepoint_item being coded
-write.csv(combined_dataset, "PN_Datasets/Pretend_Play/CSVs_of_Combined_Data_PP/P2_H8_cwpu.csv", row.names = FALSE)
+write.csv(combined_dataset, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H10_cwpu.csv", row.names = FALSE))
 ```
 
 ## Get descriptive statistics for ALL Gestures:
