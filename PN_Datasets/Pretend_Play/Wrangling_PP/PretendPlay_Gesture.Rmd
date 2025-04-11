@@ -19,6 +19,17 @@ library(extrafont)  # Ensures Times New Roman is available
 library(here)
 ```
 
+#Check out combined data file to make sure its kosher
+```{r}
+#P3_H8_cwpu <- read_csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H8_cwpu.csv"))
+#colnames(P3_H8_cwpu)
+
+#P3_H10_cwpu <- read_csv (here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H10_cwpu.csv"))
+#colnames(P3_H10_cwpu )
+
+```
+
+
 # Pretend Play Instances per Individual
 ```{r}
 # Import and clean dataset

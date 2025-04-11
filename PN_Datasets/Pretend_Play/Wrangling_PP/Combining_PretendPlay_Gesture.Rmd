@@ -16,44 +16,47 @@ library(ggplot2)
 library(stringr)
 library(knitr)
 library(extrafont)  # Ensures Times New Roman is available
+library(here)
 ```
 
 # Reorganize Data for BI group
 ```{r}
 # read in total data set create column for Group Status (P3=BI, P2=TD)
-P3_H8_ALL <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H8_ALL.csv") %>%
-  mutate(GroupStatus = "BI")) # add column specifying which group this is
+P3_H10_ALL <- read.csv(
+  here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H10_ALL.csv")
+) %>%
+  mutate(GroupStatus = "PL")
 
-P3_H8_ALL$c_form <- tolower(P3_H8_ALL$c_form)
+# ensure that all entries in c_form are in lower case
+P3_H10_ALL$c_form <- tolower(P3_H10_ALL$c_form)
 
-unique(P3_H8_ALL$c_form)
+unique(P3_H10_ALL$c_form)
 
 # get rid of unnecessary columns & create necessary columns
-P3_H8_Simple <- P3_H8_ALL %>% 
+P3_H10_Simple <- P3_H10_ALL %>% 
   select(participant_id, C_wpu, c_pret, c_form, line, GroupStatus)  %>% # Remove all but specific columns
   mutate(
-    gesture_rep = if_else(c_form %in% c("iconic", "iconic - flip", "point - iconic", "metaphoric", "demo"), 1, 0),
+    gesture_rep = if_else(c_form %in% c("iconic", "iconic - nod", "point - iconic", "iconic - iconic", "ioonic", "iconic - iconic - point", "metaphoric", "demo"), 1, 0),
     gesture_all = if_else(!is.na(c_form) & c_form != "", 1, 0),
-    gesture_icon = if_else(c_form %in% c("iconic", "iconic - flip", "point - iconic"), 1, 0))
+    gesture_icon = if_else(c_form %in% c("iconic", "iconic - nod", "point - iconic", "iconic - iconic", "ioonic", "iconic - iconic - point"), 1, 0))
+    
 ```
 
 # Reorganize Data for TD group
 ```{r}
 # read in total data set create column for Group Status (P3=BI, P2=TD)
-P2_H8_ALL <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P2_H8_ALL.csv")) %>%
+P2_H10_ALL <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P2_H8_ALL.csv")) %>%
   mutate(GroupStatus = "TD") # add column specifying which group this is
   
-P2_H8_ALL$c_form <- tolower(P2_H8_ALL$c_form)
+P2_H10_ALL$c_form <- tolower(P2_H10_ALL$c_form)
   
-unique(P2_H8_ALL$c_form)
+unique(P2_H10_ALL$c_form)
 
 # get rid of unnecessary columns & create necessary columns
-P2_H8_Simple <- P2_H8_ALL %>% 
+P2_H10_Simple <- P2_H10_ALL %>% 
   select(participant_id, C_wpu, c_pret, c_form, line, GroupStatus) %>%  # Remove all but specific columns
   mutate(
-    gesture_rep = if_else(c_form %in% c("iconic", "iconic?", "iconic-iconic-iconic-iconic", "nod+iconic",  
-                                        "point-iconic-flip", "iconic~", "nod+palm+palm-iconic", "iconic - iconic", 
-                                        "iconic-iconic", "metaphoric", "demo", "demo~"), 1, 0),
+    gesture_rep = if_else(c_form %in% c("iconic", "iconic - iconic", "iconic?", "nod+iconic", "iconic-iconic", "iconic-iconic-iconic-iconic",  "point-iconic-flip", "iconic~", "nod+palm+palm-iconic", "metaphoric", "demo", "demo~"), 1, 0),
     
     gesture_all = if_else(!is.na(c_form) & c_form != "", 1, 0),
     
@@ -67,17 +70,17 @@ P2_H8_Simple <- P2_H8_ALL %>%
 # Combine Data from TD and BI kids to have complete year of data
 ```{r}
 # Merge datasets by stacking them
-merged_H8 <- bind_rows(P3_H8_Simple, P2_H8_Simple)
+merged_H10 <- bind_rows(P3_H10_Simple, P2_H10_Simple)
 
-write.csv(merged_H8, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "merged_H8.csv"))
+write.csv(merged_H10, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "merged_H10.csv"))
 ```
 
 # Filter to include only gestures/utterances during pretend play
 ```{r}
 # Filter to include only pretend play episodes
-pretend_data_H8 <- merged_H8[merged_H8$c_pret == 1, ] 
+pretend_data_H10 <- merged_H10[merged_H10$c_pret == 1, ] 
 
-write_csv(pretend_data_H8, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "pretend_data_H8.csv"))
+write_csv(pretend_data_H10, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "pretend_data_H10.csv"))
 
 ```
 
