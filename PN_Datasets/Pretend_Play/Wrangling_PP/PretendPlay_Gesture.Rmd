@@ -27,13 +27,16 @@ library(here)
 #P3_H10_cwpu <- read_csv (here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H10_cwpu.csv"))
 #colnames(P3_H10_cwpu )
 
+P3_H7_ALL <- read_csv (here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H7_ALL.csv"))
+colnames(P3_H7_ALL )
+
 ```
 
 
 # Pretend Play Instances per Individual
 ```{r}
 # Import and clean dataset
-P3_H8_ALL <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H8_ALL.csv"))
+P3_H7_ALL <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H7_ALL.csv"))
 
 # Summarize pretend play counts per participant
 PP_Individual <- P3_H8_ALL %>%
