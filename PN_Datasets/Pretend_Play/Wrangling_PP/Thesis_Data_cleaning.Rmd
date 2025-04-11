@@ -11,7 +11,9 @@ library(dplyr)    # For binding and data manipulation
 library(lubridate)  # For handling datetime columns (if needed)
 library(tidyverse)  # to manipulate strings and a lot more
 library(here)
+library(extrafont)
 ```
+
 
 # COLLECTION OF CODE CHUNKS FOR CLEANING DATA SPECIFIC TO MAPSS THESIS STUDY
 I compiled a number of code chunks that I used while cleaning the original raw data (coded transciptions of participants). It's unlikely I would need these again so I refrained from making eahc into its own r. script. That said, I might use them again for this or a related study and so I wanted them organized all together.
@@ -194,8 +196,26 @@ head(combined_dataset)
 
 ## Save combined_data as CSV to specified location:
 ```{r}
-# change the group_timepoint_item being coded
-write.csv(combined_dataset, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H10_cwpu.csv", row.names = FALSE))
+write.csv(
+  combined_dataset,
+  here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H10_cwpu.csv"),
+  row.names = FALSE
+)
+```
+
+## Get rid of extra columns:
+```{r}
+P3_H10_ALL <- P3_H10_cwpu %>%
+  select("trans.ID", "time", "line", "key", "p_utts", "p_form", "p_lrb", "p_obj", "p_gloss", "p_orient", "p_mspd", "c_utts", "c_form", "c_lrb", "c_obj", "c_gloss", "c_orient", "c_mspd", "context", "c_pret", "participant_id", "session", "C_wpu",  "comments_KJ")
+```
+
+## Save necessary data as CSV:
+```{r}
+write.csv(
+  P3_H10_ALL,
+  here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H10_ALL.csv"),
+  row.names = FALSE
+)
 ```
 
 ## Get descriptive statistics for ALL Gestures:

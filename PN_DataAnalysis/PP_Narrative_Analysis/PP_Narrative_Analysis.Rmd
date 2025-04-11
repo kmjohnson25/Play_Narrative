@@ -22,6 +22,7 @@ library(here)
 library(dplyr)
 library(lme4)
 library(lmerTest)
+library(extrafont)
 ```
 
 ```{r}
@@ -124,7 +125,6 @@ write_csv(completely_merged_data_H10, here("PN_DataAnalysis", "PP_Narrative_Anal
 
 # 4. Run regression models
 ```{r}
-
 # Model 1: Total gestures as predictor
 model1 <- lm(AvgHighScore ~ GroupStatus + total_gestures + total_pretend_play + mlu + GroupStatus:total_gestures, 
              data = completely_merged_data_H10)
@@ -158,50 +158,51 @@ eta_squared(model2)
 #summary(mixed_model2)
 ```
 
+
 ```{r}
 # Interaction Plot: Group × Representational Gesture Presence
 #| label: fig-interaction
-#| fig-cap: "Predicted narrative scores by group and representational gesture use. Error bars represent 95% confidence intervals. Children with brain injury show significant benefits from representational gesture use (p < .05)."
+#| fig-cap: "Predicted narrative scores by group and representational gesture use. Error bars represent 95% confidence intervals."
 #| fig-width: 6
 #| fig-height: 4
+#| 
+options(warn = 2)
 
-# Create a data frame for prediction
+
+# Create a data frame for prediction (numeric variables for model compatibility)
 newdata <- expand.grid(
   GroupStatus = c("PL", "TD"),
   rep_gesture_present = c(0, 1),
-  # Set other predictors to mean values
   total_pretend_play = mean(completely_merged_data_H10$total_pretend_play, na.rm = TRUE),
   mlu = mean(completely_merged_data_H10$mlu, na.rm = TRUE)
 )
 
-# Get predictions from your model
+# Get predictions and standard errors from the model
 newdata$predicted <- predict(model2, newdata = newdata)
-
-# Calculate standard errors
 pred_se <- predict(model2, newdata = newdata, se.fit = TRUE)$se.fit
 newdata$lower <- newdata$predicted - 1.96 * pred_se
 newdata$upper <- newdata$predicted + 1.96 * pred_se
 
-# Rename factor levels for clarity
+# Relabel variables as factors for plotting clarity
 newdata$GroupStatus <- factor(newdata$GroupStatus, 
-                             levels = c("PL", "TD"),
-                             labels = c("Peri- and Postnatal Lesions", "Typically Developing"))
+                              levels = c("PL", "TD"),
+                              labels = c("Peri- and Postnatal Lesions", "Typically Developing"))
 newdata$rep_gesture_present <- factor(newdata$rep_gesture_present,
-                                     levels = c(0, 1),
-                                     labels = c("No", "Yes"))
+                                      levels = c(0, 1),
+                                      labels = c("No", "Yes"))
 
 # Create the interaction plot
 ggplot(newdata, aes(x = rep_gesture_present, y = predicted, 
-                   group = GroupStatus, color = GroupStatus, 
-                   linetype = GroupStatus, shape = GroupStatus)) +  # Add shape to aes()
-  geom_line(size = 1) +
-  geom_point(size = 3) +  # Shape is now controlled by scale_shape_manual
+                    group = GroupStatus, color = GroupStatus, 
+                    linetype = GroupStatus, shape = GroupStatus)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 3) +
   geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
   labs(x = "Representational Gestures Present",
        y = "Predicted Narrative Score") +
   scale_color_grey(start = 0.2, end = 0.8) +
   scale_linetype_manual(values = c("solid", "dashed")) +
-  scale_shape_manual(values = c(16, 17)) +  # Define shapes here
+  scale_shape_manual(values = c(16, 17)) +
   theme_bw() +
   theme(
     text = element_text(family = "Times New Roman", size = 12),
@@ -216,7 +217,7 @@ ggplot(newdata, aes(x = rep_gesture_present, y = predicted,
 ```
 
 
-```{r}
+
 # Scatter Plot: Raw Data with Regression Lines
 #| label: fig-scatter
 #| fig-cap: "Relationship between representational gesture presence and narrative scores by group. Shaded areas represent 95% confidence intervals around regression lines."
