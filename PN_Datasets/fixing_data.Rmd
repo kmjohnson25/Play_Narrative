@@ -1,0 +1,40 @@
+---
+title: "fixing_data"
+author: "Kristen Johnson"
+date: "2025-04-12"
+output: html_document
+---
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(stringr)
+library(knitr)
+library(extrafont)  # Ensures Times New Roman is available
+library(here)
+```
+
+
+```{r}
+# Read in total data set and create column for Group Status (P3 = BI)
+P3_H7_ALL <- read.csv(
+  here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H7_ALL.csv")
+) %>%
+  mutate(groupstatus = "PL")  # Correct the capitalization of 'GroupStatus' to lowercase
+
+# Ensure that all entries in c_form are in lower case
+P3_H7_ALL$c_form <- tolower(P3_H7_ALL$c_form)
+
+# Verify unique entries in c_form
+unique(P3_H7_ALL$c_form)
+
+```
+
+```{r}
+
+```
+
+
+
