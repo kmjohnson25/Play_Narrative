@@ -21,7 +21,7 @@ I compiled a number of code chunks that I used while cleaning the original raw d
 ## Setup steps
 ```{r}
 # Set the directory path where your .xlsx files are located
-directory_path <- '~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/Raw_Data/For_Analysis'
+directory_path <- '~/KristenWorkingDirectory/Play_Narrative/PN_Datasets/Pretend_Play/Raw_Data/P3_H7'
 
 file.exists(directory_path)
 
@@ -156,7 +156,11 @@ load_and_bind_files <- function(files) {
         data <- data %>%
           rename('context' = 'Context')
     } 
-    
+    # Coerce c_pret to numeric if it exists
+    if ("c_pret" %in% colnames(data)) {
+        data$c_pret <- as.numeric(data$c_pret)
+    }
+
     return(data)
   })
 
@@ -194,29 +198,103 @@ combined_dataset <- combined_dataset %>%
 head(combined_dataset)
 ```
 
-## Save combined_data as CSV to specified location:
 ```{r}
-write.csv(
-  combined_dataset,
-  here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H10_cwpu.csv"),
-  row.names = FALSE
-)
+# Make all column names lowercase
+names(combined_dataset) <- tolower(names(combined_dataset))
+
+# View the updated column names
+head(combined_dataset)
+
+
+unique(combined_dataset$c_pret)
 ```
+
 
 ## Get rid of extra columns:
 ```{r}
-P3_H10_ALL <- P3_H10_cwpu %>%
-  select("trans.ID", "time", "line", "key", "p_utts", "p_form", "p_lrb", "p_obj", "p_gloss", "p_orient", "p_mspd", "c_utts", "c_form", "c_lrb", "c_obj", "c_gloss", "c_orient", "c_mspd", "context", "c_pret", "participant_id", "session", "C_wpu",  "comments_KJ")
+# Keep only the specified columns
+combined_dataset <- combined_dataset %>%
+  select(line, p_utts, p_form, participant_id, session, c_utts, c_form, c_gloss, c_pret, c_wpu, trans.id)
+
+head(combined_dataset)
+```
+
+## get rid of commas ENTIRELY
+```{r}
+combined_dataset <- combined_dataset %>%
+  mutate(across(where(is.character), ~ gsub(",", ";", .)))
+
+head(combined_dataset)
+```
+
+## GUT the motherfucker
+```{r}
+combined_dataset <- combined_dataset %>%
+  mutate(across(where(is.character), ~ gsub("[\r\n\t\"]", " ", .)))
+
+combined_dataset$c_utts <- gsub("[^[:print:][:space:]]", "", combined_dataset$c_utts) #remove non-printing characters
+
+combined_dataset <- combined_dataset %>% 
+  mutate(across(where(is.factor), as.character)) #Convert Factors to Characters
+
+combined_dataset$c_utts <- trimws(combined_dataset$c_utts) #Trim extra spaces
+
+head(combined_dataset)
+```
+
+
+## Save combined_data as CSV to specified location:
+```{r}
+write_csv(combined_dataset, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H7_cwpu.csv"))
+
+P3_H7_cwpu <- read_csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H7_cwpu.csv"))
+
+
+write_csv(combined_dataset, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H7_cwpu.csv"))
 ```
 
 ## Save necessary data as CSV:
 ```{r}
 write.csv(
-  P3_H10_ALL,
-  here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H10_ALL.csv"),
+  P3_H7_cwpu,
+  here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "P3_H7_ALL.csv"),
   row.names = FALSE
 )
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Get descriptive statistics for ALL Gestures:
 ```{r}
