@@ -46,7 +46,6 @@ write_csv(H7_gesture_play,
 
 
 ```{r}
-
 # read in data frame that is just gesture during instance of pretend play
 pretend_data_H7_allgestures <- read.csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP","pretend_data_H7_allgestures.csv"))
 
@@ -86,9 +85,8 @@ table(pretend_data_H7_allgestures$rep_gesture_present, pretend_data_H7_allgestur
 # Check correlation between total gestures and representational gestures
 cor.test(pretend_data_H7_allgestures$total_gestures, pretend_data_H7_allgestures$rep_gestures)
 ```
-
-```{r}
 # 2. Data visualization
+```{r}
 # Boxplot of total gestures by group
 ggplot(pretend_data_H7_allgestures, aes(x = groupstatus, y = total_gestures, fill = groupstatus)) +
   geom_boxplot() +
@@ -141,7 +139,7 @@ eta_squared(model1)
 eta_squared(model2)
 ```
 
-# 5b. USE WHEN HAVE ALL DATA FROM 3 TIMEPOINTS..... mixed effects models 
+# 5. USE WHEN HAVE ALL DATA FROM 3 TIMEPOINTS..... mixed effects models 
 ```{r}
 #library(lme4)
 #library(lmerTest)

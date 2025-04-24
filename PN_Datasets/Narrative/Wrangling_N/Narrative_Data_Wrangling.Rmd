@@ -67,7 +67,6 @@ write_csv(Narrative_Results_Numeric, here("PN_Datasets", "Narrative", "CSVs_of_C
 
 ```
 
-
 # Determine each participant's highest Narrative Score in each year and overall Avg of high scores:
 ```{r}
 # Collect highest score from each year

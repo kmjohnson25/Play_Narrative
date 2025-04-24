@@ -1,9 +1,10 @@
 ---
-title: "fixing_data"
+title: "New_PP_Gesture_Data_Wrangling_H7"
 author: "Kristen Johnson"
-date: "2025-04-12"
+date: "2025-04-24"
 output: html_document
 ---
+
 ```{r}
 # Load necessary libraries
 library(dplyr)
@@ -38,7 +39,6 @@ P3_H7_Simple <- P3_H7_ALL %>%
   mutate(
     gesture_rep = if_else(c_form %in% c("point/iconic?", "iconic?", "iconic?~", "point - iconic", "iconic", "nod + iconic~", "point-iconic", "iconic~", "metaphoric", "demo"), 1, 0),
     gesture_all = if_else(!is.na(c_form) & c_form != "", 1, 0),
-    gesture_icon = if_else(c_form %in% c("point/iconic?", "iconic?", "iconic?~", "point - iconic", "iconic", "nod + iconic~", "point-iconic", "iconic~"), 1, 0)
   )
 ```
 
@@ -46,7 +46,6 @@ P3_H7_Simple <- P3_H7_ALL %>%
 # Make all column names lowercase
 names(P3_H7_Simple) <- tolower(names(P3_H7_Simple))
 ```
-
 
 # Reorganize Data for TD Group
 ```{r}
@@ -73,10 +72,8 @@ P2_H7_Simple <- P2_H7_ALL %>%
   mutate(
     gesture_rep = if_else(c_form %in% c("iconic", "iconic+shake", "beat-iconic-nod", "iconic~", "iconic-point", "iconic-iconic", "point~.iconic", "iconic - iconic", "iconic-iconic-cont palm", "palm-iconic", "iconic-iconic-iconic", "point~-iconic", "iconic ~", "point-iconic", "point-iconic-point", "demo", "metaphoric"), 1, 0),
     gesture_all = if_else(!is.na(c_form) & c_form != "", 1, 0),
-    gesture_icon = if_else(c_form %in% c("iconic", "iconic+shake", "beat-iconic-nod", "iconic~", "iconic-point", "iconic-iconic", "point~.iconic", "iconic - iconic", "iconic-iconic-cont palm", "palm-iconic", "iconic-iconic-iconic", "point~-iconic", "iconic ~", "point-iconic", "point-iconic-point"), 1, 0)
   )
 ```
-
 
 # Combine Data from TD and BI Kids for a Complete Year of Data
 ```{r}
@@ -87,17 +84,39 @@ merged_H7 <- bind_rows(P3_H7_Simple, P2_H7_Simple)
 write.csv(merged_H7, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "merged_H7.csv"))
 ```
 
-
 # Filter to Include Only Gestures/Utterances During Pretend Play
 ```{r}
-# Filter to include only pretend play episodes that have any gesture
+# Filter to include only pretend play episodes 
 pretend_data_H7 <- merged_H7 %>%
-  filter(c_pret == 1 & !is.na(c_form) & c_form != "")
+  filter(c_pret == 1)
 
 # Preview the filtered data
 head(pretend_data_H7)
 
 # Save the filtered data to a CSV
 write_csv(pretend_data_H7, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "pretend_data_H7_allgestures.csv"))
+```
+# group by participant and get summary of important data and create mlu column
+```{r}
+child_summary_H7 <- pretend_data_H7 %>%
+  group_by(participant_id, groupstatus) %>%
+  summarize(
+    total_gestures = sum(gesture_all),
+    rep_gestures = sum(gesture_rep),
+    total_pretend_episodes = n(),  # total pretend play rows
+    episodes_with_gesture = sum(gesture_all > 0, na.rm = TRUE),  # pretend episodes where gesture occurred
+    prop_episodes_with_gesture = episodes_with_gesture / total_pretend_episodes,
+    prop_rep = sum(gesture_rep) / sum(gesture_all),
+    mlu = if (all(is.na(c_wpu))) NA_real_ else mean(c_wpu, na.rm = TRUE),
+    mlu_missing_flag = all(is.na(c_wpu)),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    mlu = ifelse(is.na(mlu), 0, mlu)
+  )
+
+print(child_summary_H7)
+
+write_csv(child_summary_H7, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "child_summary_H7.csv"))
 ```
 

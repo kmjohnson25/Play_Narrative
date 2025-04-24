@@ -1,0 +1,83 @@
+---
+title: "AllYears_PP_Narr_Analysis"
+author: "Kristen Johnson"
+date: "2025-04-24"
+output: html_document
+---
+
+# Load in packages
+```{r}
+# install necessary packages
+
+#install.packages("lmerTest")
+
+# Load required packages
+library(tidyverse)
+library(car)       # For regression diagnostics
+library(lmtest)    # For regression diagnostics
+library(effectsize) # For effect sizes
+library(ggplot2)   # For visualization
+library(here)
+library(dplyr)
+library(lme4)
+library(lmerTest)
+library(extrafont)
+
+```
+
+# Read in each dataset and add Year column
+```{r}
+completely_merged_data_H10 <- read_csv(here("PN_DataAnalysis", "PP_Narrative_Analysis", "completely_merged_data_H10.csv"))
+completely_merged_data_H10$Year <- 10
+
+completely_merged_data_H8 <- read_csv(here("PN_DataAnalysis", "PP_Narrative_Analysis", "completely_merged_data_H8.csv"))
+completely_merged_data_H8$Year <- 8
+
+completely_merged_data_H7 <- read_csv(here("PN_DataAnalysis", "PP_Narrative_Analysis", "completely_merged_data_H7.csv"))
+completely_merged_data_H7$Year <- 7
+```
+
+# Combine data across ALL THREE YEARS
+```{r}
+# Combine all datasets into one data frame
+completely_merged_data_ALLyears <- bind_rows(completely_merged_data_H10, completely_merged_data_H8, completely_merged_data_H7)
+
+# View the combined dataset
+head(completely_merged_data_ALLyears)
+```
+
+
+```{r}
+# Model 1: Total gestures as predictor
+mixed_model1 <- lmer(max_avg ~ groupstatus + total_gestures + total_pretend_episodes + mlu + groupstatus:total_gestures + Year + (1|participant_id), 
+             data = completely_merged_data_ALLyears)
+
+# Model 2: Representational gesture presence as predictor
+mixed_model2 <- lmer(max_avg ~ groupstatus + rep_gesture_present + total_pretend_episodes + mlu + groupstatus:rep_gesture_present + Year + (1|participant_id), 
+             data = completely_merged_data_ALLyears)
+
+summary(mixed_model1)
+summary(mixed_model2)
+
+# Calculate effect sizes
+eta_squared(mixed_model1)
+eta_squared(mixed_model2)
+```
+
+
+# USE WHEN HAVE ALL DATA FROM 3 TIMEPOINTS..... mixed effects models 
+```{r}
+library(lme4)
+library(lmerTest)
+
+mixed_model1 <- lmer(AvgHighScore ~ GroupStatus + total_gestures + total_pretend_play + mlu + 
+                    GroupStatus:total_gestures + (1|participant_id), 
+                    data = completely_merged_data)
+
+mixed_model2 <- lmer(AvgHighScore ~ GroupStatus + rep_gesture_present + total_pretend_play + mlu + 
+                     GroupStatus:rep_gesture_present + (1|participant_id), 
+                     data = completely_merged_data)
+
+summary(mixed_model1)
+ssummary(mixed_model2)
+```

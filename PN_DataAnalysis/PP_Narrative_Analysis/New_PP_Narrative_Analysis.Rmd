@@ -1,0 +1,211 @@
+---
+title: "New_PP_Narrative_Analysis_H10"
+author: "Kristen Johnson"
+date: "2025-04-24"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+# install necessary packages
+
+#install.packages("lmerTest")
+
+# Load required packages
+library(tidyverse)
+library(car)       # For regression diagnostics
+library(lmtest)    # For regression diagnostics
+library(effectsize) # For effect sizes
+library(ggplot2)   # For visualization
+library(here)
+library(dplyr)
+library(lme4)
+library(lmerTest)
+library(extrafont)
+
+```
+
+# read in, simplify, and check gesture data in pretend play 
+```{r}
+pretend_data_H10 <- read_csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "child_summary_H10.csv"))
+
+# Create binary variable for representational gesture presence
+pretend_data_H10 <- pretend_data_H10 %>%
+  mutate(rep_gesture_present = ifelse(rep_gestures > 0, 1, 0))
+
+# Check distributions
+hist(pretend_data_H10$total_gestures)
+hist(pretend_data_H10$rep_gestures)
+table(pretend_data_H10$rep_gesture_present, pretend_data_H10$groupstatus)
+
+# Check correlation between total gestures and representational gestures
+cor.test(pretend_data_H10$total_gestures, pretend_data_H10$rep_gestures)
+```
+
+# 2. Data visualization for gesture in pretend play
+```{r}
+# Boxplot of total gestures by group
+ggplot(pretend_data_H10, aes(x = groupstatus, y = total_gestures, fill = groupstatus)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Total Gestures by Group",
+       x = "Group Status",
+       y = "Total Gesture Count")
+
+# Bar chart of representational gesture presence by group
+ggplot(pretend_data_H10, aes(x = groupstatus, fill = factor(rep_gesture_present))) +
+  geom_bar(position = "dodge") +
+  scale_fill_discrete(name = "Rep. Gesture", labels = c("Absent", "Present")) +
+  theme_minimal() +
+  labs(title = "Representational Gesture Presence by Group",
+       x = "Group Status",
+       y = "Count")
+```
+
+# 3. Merge with narrative outcome data
+```{r}
+narrative_data <- read.csv(here("PN_Datasets", "Narrative", "CSVs_of_Combined_Data_N", "Narrative_Results_Final.csv"))
+
+# Rename participant column
+#narrative_data <- narrative_data %>%
+ # rename(participant_id = ChildID)
+
+write.csv(narrative_data, here("PN_DataAnalysis", "PP_Narrative_Analysis", "narrative_data.csv"))
+
+# MERGE IT
+completely_merged_data_H10 <- left_join(pretend_data_H10, narrative_data, by = "participant_id") %>%
+  mutate(groupstatus = if_else(groupstatus == "BI", "PL", groupstatus))
+
+write_csv(completely_merged_data_H10, here("PN_DataAnalysis", "PP_Narrative_Analysis", "completely_merged_data_H10.csv"))
+```
+
+# 4. Run regression models
+```{r}
+# Model 1: Total gestures as predictor
+model1 <- lm(max_avg ~ groupstatus + total_gestures + total_pretend_episodes + mlu + groupstatus:total_gestures, 
+             data = completely_merged_data_H10)
+
+# Model 2: Representational gesture presence as predictor
+model2 <- lm(max_avg ~ groupstatus + rep_gesture_present + total_pretend_episodes + mlu + groupstatus:rep_gesture_present, 
+             data = completely_merged_data_H10)
+
+summary(model1)
+summary(model2)
+
+# Calculate effect sizes
+eta_squared(model1)
+eta_squared(model2)
+```
+# Clean the data for plotting
+```{r}
+# Recode Factors for clarity
+clean_data_H10 <- completely_merged_data_H10 %>%
+  mutate(
+    groupstatus = factor(groupstatus, levels = c("PL", "TD"), labels = c("Perinatal Lesions", "Typically Developing")),
+    rep_gesture_present = factor(rep_gesture_present, levels = c(0, 1), labels = c("Absent", "Present"))
+  )
+
+# Rename Variables for clarity
+clean_data_H10 <- clean_data_H10 %>%
+  rename(
+    "Narrative Score"= max_avg,
+    "Instances of Pretend Play"= total_pretend_episodes,
+    "Group Status"= groupstatus,
+    "Representative Gesture"= rep_gesture_present,
+    "Total Gestures"= total_gestures,
+    "Mean Length of Utterance"= mlu
+  )
+
+write_csv(clean_data_H10, here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "clean_data_H10.csv"))
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# Refit the model using the cleaned dataset and new variable names
+model1_clean <- lm(`Narrative Score` ~ `Group Status` * `Total Gestures` +
+                     `Instances of Pretend Play` + `Mean Length of Utterance`,
+                   data = clean_data_H10)
+
+model2_clean <- lm(`Narrative Score` ~ `Group Status` * `Representative Gesture` +
+                     `Instances of Pretend Play` + `Mean Length of Utterance`,
+                   data = clean_data_H10)
+```
+
+# Interaction Plot relationship between total gestures and narrative score, colored by groupstatus. 
+```{r}
+ggplot(clean_data_H10, aes(x = `Total Gestures`, y = `Narrative Score`, color = `Group Status`)) +
+  geom_point(alpha = 0.7, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, aes(fill = `Group Status`), alpha = 0.2) +
+  labs(
+    title = NULL,
+    x = "Total gestures during pretend play",
+    y = "Narrative structure score",
+    color = "Group",
+    fill = "Group"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom")
+
+## APA Figure Caption
+
+## Figure 1
+
+#Interaction between total gestures during pretend play and group status in predicting children's narrative structure scores. Although the interaction was not statistically significant, a crossover pattern was observed: for children with perinatal lesions, greater gesture use was associated with higher narrative scores, while for typically developing children, the relationship was slightly negative. Shaded ribbons represent 95% confidence intervals around the fitted regression lines.
+
+```
+# Boxplot of narrative structure score by representational gesture presence and group
+```{r}
+ggplot(clean_data_H10, aes(x = `Representative Gesture`, y = `Narrative Score`, fill = `Group Status`)) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(~ `Group Status`) +
+  labs(
+    title = NULL,
+    x = "Presence of representational gesture",
+    y = "Narrative structure score",
+    fill = "Group"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "none")
+
+#APA Figure Caption
+
+#Figure 1
+#Interaction between total gestures during pretend play and group status in predicting children's narrative structure scores. Total gestures were ______ associated with narrative structure for ____ groups, but the relationship was more pronounced for [insert group with steeper slope, if applicable]. Shaded ribbons represent 95% confidence intervals.h higher narrative structure scores. Boxplots show medians and interquartile ranges.
+
+```
+# Predicted narrative structure scores from regression model
+```{r}
+#install.packages("ggeffects")  # Only run this once
+library(ggeffects)
+
+model2_clean <- lm(`Narrative Score` ~ `Group Status` * `Representative Gesture` +
+                     `Instances of Pretend Play` + `Mean Length of Utterance`,
+                   data = clean_data_H10)
+
+effect_df <- ggpredict(model2_clean, terms = c("Representative Gesture", "Group Status"))
+
+ggplot(effect_df, aes(x = x, y = predicted, color = group)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2, color = NA) +
+  labs(
+    title = NULL,
+    x = "Presence of representational gesture",
+    y = "Predicted narrative structure score",
+    color = "Group",
+    fill = "Group"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom")
+
+#APA Figure Caption
+
+#Figure 3
+#Predicted narrative structure scores by group and representational gesture presence. Model estimates indicate that representational gestures significantly improved narrative quality in children with perinatal lesions, but not in typically developing children. Error ribbons reflect 95% confidence intervals.
+```
+
+
+
