@@ -1,0 +1,129 @@
+---
+title: "PP_Narr_mixed_effects"
+author: "Kristen Johnson"
+date: "2025-04-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# Load required libraries
+library(robustlmm)
+library(lme4)
+library(tidyverse)
+library(here)
+library(dplyr)
+library(sandwich)
+library(lmtest)
+```
+
+
+```{r}
+completely_merged_data_ALLyears <- read_csv(here("PN_DataAnalysis", "PP_Narrative_Analysis", "completely_merged_data_ALLyears.csv"))
+```
+# Prepare and Check Data
+```{r}
+# Convert Year and groupstatus to factor
+completely_merged_data_ALLyears <- completely_merged_data_ALLyears %>%
+  mutate(
+    participant_id = factor(participant_id),
+    Year = factor(Year),
+    groupstatus = factor(groupstatus)
+  )
+
+# Quick check structure
+str(completely_merged_data_ALLyears)
+
+```
+
+# try robust mixed effects
+```{r}
+robust_model_time <- rlmer(
+  max_avg ~ groupstatus + total_gestures + mlu + Year + (Year | participant_id),
+  data = completely_merged_data_ALLyears
+)
+
+# Summarize results
+summary(robust_model_time)
+
+```
+
+# check which moel would be best
+```{r}
+completely_merged_data_ALLyears %>%
+  group_by(participant_id) %>%
+  summarize(n_observations = n(),
+            years_measured = n_distinct(Year)) %>%
+  arrange(years_measured)
+```
+
+# intercept only model with scaling corrected
+```{r}
+completely_merged_data_ALLyears <- completely_merged_data_ALLyears %>%
+  mutate(
+    total_gestures_z = scale(total_gestures),
+    mlu_z = scale(mlu),
+  )
+
+final_model <- rlmer(
+  max_avg ~ groupstatus + total_gestures_z + mlu_z + Year + rep_gestures + total_pretend_episodes + (1 | participant_id),
+  data = completely_merged_data_ALLyears
+)
+
+summary(final_model)
+
+```
+
+```{r}
+library(dplyr)
+
+participant_obs <- completely_merged_data_ALLyears %>%
+  group_by(participant_id) %>%
+  summarise(obs_per_participant = n()) %>%
+  arrange(obs_per_participant)
+
+participant_obs
+
+```
+mixed effects attempt
+```{r}
+library(robustlmm)
+
+model_intercepts_only <- rlmer(
+  max_avg ~ groupstatus + total_gestures_z + mlu_z + Year + (1 | participant_id),
+  data = completely_merged_data_ALLyears
+)
+
+summary(model_intercepts_only)
+
+```
+# robust SE fixed effects model
+```{r}
+
+library(sandwich)
+library(lmtest)
+
+# Run fixed model
+model_fixed_effects <- lm(
+  max_avg ~ groupstatus + total_gestures_z + mlu_z + rep_gestures + total_pretend_episodes + Year,
+  data = completely_merged_data_ALLyears
+)
+
+# Get robust standard errors
+coeftest(model_fixed_effects, vcov = vcovHC(model_fixed_effects, type = "HC3"))
+
+```
+
+# refined model
+```{r}
+# Run the refined model
+refined_model <- lm(
+  max_avg ~ total_gestures_z + rep_gestures + mlu_z,
+  data = completely_merged_data_ALLyears
+)
+
+
+
+coeftest(refined_model, vcov = vcovHC(refined_model, type = "HC3"))
+
+```
+
