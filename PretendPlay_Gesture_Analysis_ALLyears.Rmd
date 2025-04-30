@@ -7,6 +7,8 @@ output:
   html_document: default
 ---
 
+# SETUP
+## load packages
 ```{r, echo=FALSE}
 # Install required packages if you don't have them
 # Remove the comment symbols (#) to run these lines
@@ -29,7 +31,7 @@ library(e1071)
 library(rstatix)
 ```
 
-# Read in each dataset and add Year column
+## Read in each dataset and add Year column
 ```{r}
 child_summary_H10 <- read_csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combined_Data_PP", "child_summary_H10.csv"))
 child_summary_H10$Year <- 10
@@ -41,7 +43,7 @@ child_summary_H7 <- read_csv(here("PN_Datasets", "Pretend_Play", "CSVs_of_Combin
 child_summary_H7$Year <- 7
 ```
 
-# Combine data across ALL THREE YEARS
+## Combine data across ALL THREE YEARS
 ```{r}
 # Combine all datasets into one data frame
 pp_gesture_data_ALLyears <- bind_rows(child_summary_H10, child_summary_H8, child_summary_H7)
@@ -50,13 +52,13 @@ pp_gesture_data_ALLyears <- bind_rows(child_summary_H10, child_summary_H8, child
 head(pp_gesture_data_ALLyears)
 ```
 
-Check for Skewness
+## Check for Skewness
 ```{r}
  #Calculate skewness
-skewness(completely_merged_data_ALLyears$rep_gestures, na.rm = TRUE)
+skewness(pp_gesture_data_ALLyears$rep_gestures, na.rm = TRUE)
 
 # Histogram of rep_gestures
-ggplot(completely_merged_data_ALLyears, aes(x = rep_gestures)) +
+ggplot(pp_gesture_data_ALLyears, aes(x = rep_gestures)) +
   geom_histogram(binwidth = 1, fill = "gray80", color = "black") +
   labs(
     title = "Distribution of Representational Gesture Counts",
@@ -71,23 +73,23 @@ ggplot(completely_merged_data_ALLyears, aes(x = rep_gestures)) +
   )
 
 ```
-
-#bc highly skewed, ruyn Mann-Whitney instead of ANOVA:
+# Correlations in Skewed Data
+## Mann-Whitney U test on Rep Gestures (instead of ANOVA, bc highly skewed data)
 ```{r}
 # Step 1: Run the Mann-Whitney U test properly
 mw_result <- wilcox.test(rep_gestures ~ groupstatus, 
-                         data = completely_merged_data_ALLyears, 
+                         data = pp_gesture_data_ALLyears, 
                          exact = FALSE)
 
 # View the output if you want
 print(mw_result)
 
 # Step 2: Calculate total N
-n1 <- completely_merged_data_ALLyears %>%
+n1 <- pp_gesture_data_ALLyears %>%
   filter(groupstatus == "TD") %>%
   nrow()
 
-n2 <- completely_merged_data_ALLyears %>%
+n2 <- pp_gesture_data_ALLyears %>%
   filter(groupstatus == "PL") %>%
   nrow()
 
@@ -105,24 +107,28 @@ cat("Mann-Whitney U result: W =", mw_result$statistic,
     ", p =", signif(mw_result$p.value, 3), 
     ", r =", round(r_effect_size, 2), "\n")
 
+# get medians for reporting (due to skewness)
+pp_gesture_data_ALLyears %>%
+  group_by(groupstatus) %>%
+  summarise(Median_RepGest = median(rep_gestures, na.rm = TRUE))
 ```
 
-# same for total gestures
+## Mann-Whitney U test on Total Gestures
 ```{r}
 # Step 1: Run the Mann-Whitney U test properly
 mw_result <- wilcox.test(total_gestures ~ groupstatus, 
-                         data = completely_merged_data_ALLyears, 
+                         data = pp_gesture_data_ALLyears, 
                          exact = FALSE)
 
 # View the output if you want
 print(mw_result)
 
 # Step 2: Calculate total N
-n1 <- completely_merged_data_ALLyears %>%
+n1 <- pp_gesture_data_ALLyears %>%
   filter(groupstatus == "TD") %>%
   nrow()
 
-n2 <- completely_merged_data_ALLyears %>%
+n2 <- pp_gesture_data_ALLyears %>%
   filter(groupstatus == "PL") %>%
   nrow()
 
@@ -140,23 +146,27 @@ cat("Mann-Whitney U result: W =", mw_result$statistic,
     ", p =", signif(mw_result$p.value, 3), 
     ", r =", round(r_effect_size, 2), "\n")
 
+# get medians for reporting (due to skewness)
+pp_gesture_data_ALLyears %>%
+  group_by(groupstatus) %>%
+  summarise(Median_TotGest = median(total_gestures, na.rm = TRUE))
 ```
 
-# same for proportion of rep to total gesture
+## Mann-Whitney U test on Proportion of Rep to Total Gesture
 ```{r}
 # Mann-Whitney U for proportion of representative gestures
 wilcox.test(prop_rep ~ groupstatus, 
-            data = completely_merged_data_ALLyears, 
+            data = pp_gesture_data_ALLyears, 
             exact = FALSE)
 
 # Calculate N
-n1 <- completely_merged_data_ALLyears %>% filter(groupstatus == "TD") %>% nrow()
-n2 <- completely_merged_data_ALLyears %>% filter(groupstatus == "PL") %>% nrow()
+n1 <- pp_gesture_data_ALLyears %>% filter(groupstatus == "TD") %>% nrow()
+n2 <- pp_gesture_data_ALLyears %>% filter(groupstatus == "PL") %>% nrow()
 N <- n1 + n2
 
 # Run Mann-Whitney test
 mw_result_prop <- wilcox.test(prop_rep ~ groupstatus, 
-                              data = completely_merged_data_ALLyears, 
+                              data = pp_gesture_data_ALLyears, 
                               exact = FALSE)
 
 # Approximate Z from p-value
@@ -170,14 +180,191 @@ cat("Mann-Whitney U result for proportion: W =", mw_result_prop$statistic,
     ", p =", signif(mw_result_prop$p.value, 3), 
     ", r =", round(r_effect_size_prop, 2), "\n")
 
-completely_merged_data_ALLyears %>%
+# get medians for reporting (due to skewness)
+pp_gesture_data_ALLyears %>%
   group_by(groupstatus) %>%
   summarise(Median_PropRep = median(prop_rep, na.rm = TRUE))
+```
 
+## APA Table of ALL Results
+```{r}
+# Load packages
+library(dplyr)
+library(gt)
+
+# Create tidy data frame
+gesture_results <- tibble::tibble(
+  Variable = c("Total Gestures", "Representative Gestures", "Proportion of Representative Gestures"),
+  PL_Median = c(3, 0, 0.00),
+  TD_Median = c(6, 1, 0.08),
+  W = c(573, 508, 277.5),
+  p = c(0.235, 0.036, 0.011),
+  r = c(0.13, 0.23, 0.29)
+) %>%
+  mutate(
+    sig = ifelse(p < 0.05, TRUE, FALSE),
+    p_formatted = ifelse(p < .001, "< .001", sprintf("%.3f", p)),
+    r_formatted = sprintf("%.2f", r)
+  )
+
+# Build APA-style table: only bold p-values
+gesture_results %>%
+  select(Variable, PL_Median, TD_Median, W, p_formatted, r_formatted, sig) %>%
+  rename(
+    `Variable` = Variable,
+    `Median (PL)` = PL_Median,
+    `Median (TD)` = TD_Median,
+    `W` = W,
+    `p` = p_formatted,
+    `r` = r_formatted
+  ) %>%
+  gt() %>%
+  tab_header(
+    title = md("**Table X**"),
+    subtitle = md("_Mann-Whitney U Tests Comparing Gesture Measures Between Groups_")
+  ) %>%
+  tab_style(
+    style = cell_text(font = "Times New Roman"),
+    locations = cells_body()
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(
+      columns = p,  # Bold only p-values
+      rows = sig == TRUE
+    )
+  ) %>%
+  tab_source_note(
+    source_note = md("**Note.** _W_ = Wilcoxon rank sum test statistic. _r_ = effect size (rank biserial correlation). Bolded p-values indicate p < .05.")
+  ) %>%
+  fmt_number(
+    columns = c(`Median (PL)`, `Median (TD)`, `W`, `r`),
+    decimals = 2
+  ) %>%
+  cols_align(
+    align = "left", columns = "Variable"
+  ) %>%
+  cols_align(
+    align = "center", columns = c(`Median (PL)`, `Median (TD)`, `W`, `p`, `r`)
+  ) %>%
+  tab_options(
+    table.font.size = "small",
+    data_row.padding = px(2),
+    table.align = "center",
+    table.font.names = "Times New Roman"
+  ) %>%
+  cols_hide(columns = c(sig))  # Hide significance helper column
 
 ```
 
+## Means & SD's for ALL
 ```{r}
+# Load dplyr
+library(dplyr)
+
+# Assuming your gesture_results or full dataset is called pp_gesture_data_ALLyears or similar
+# Here’s the simple code:
+
+# Calculate means and SDs by group
+gesture_summary_stats <- pp_gesture_data_ALLyears %>%
+  group_by(groupstatus) %>%
+  summarize(
+    Mean_Total_Gestures = mean(total_gestures, na.rm = TRUE),
+    SD_Total_Gestures = sd(total_gestures, na.rm = TRUE),
+    Mean_Rep_Gestures = mean(rep_gestures, na.rm = TRUE),
+    SD_Rep_Gestures = sd(rep_gestures, na.rm = TRUE),
+    Mean_Prop_Rep = mean(prop_rep, na.rm = TRUE),
+    SD_Prop_Rep = sd(prop_rep, na.rm = TRUE),
+    n = n()
+  )
+
+# View the summary
+gesture_summary_stats
+
+```
+
+## Violin Plot of Representative Gestures X Group Status
+```{r}
+# Load libraries
+library(ggplot2)
+library(dplyr)
+
+# Simple violin + jitter plot of representative gestures by group
+pp_gesture_data_ALLyears %>%
+  ggplot(aes(x = groupstatus, y = rep_gestures, fill = groupstatus)) +
+  geom_violin(trim = FALSE, alpha = 0.6) +    # Violin for distribution
+  geom_jitter(width = 0.2, size = 2, alpha = 0.7) +  # Individual points
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white", color = "black") +  # Mean as white diamond
+  labs(
+    title = "Distribution of Representative Gestures During Pretend Play",
+    x = "Group",
+    y = "Number of Representative Gestures"
+  ) +
+  scale_fill_grey(start = 0.4, end = 0.8) +  # Subtle grayscale if you want APA look
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    text = element_text(family = "Times New Roman"),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+```
+
+## Box Plot of Representative Gestures X Group Status
+```{r}
+# APA-style boxplot of representative gestures by group
+pp_gesture_data_ALLyears %>%
+  ggplot(aes(x = groupstatus, y = rep_gestures, fill = groupstatus)) +
+  geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.6) +  # No outlier points (APA-style boxplots often omit)
+  geom_jitter(width = 0.2, size = 2, alpha = 0.7) +  # Add individual points
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white", color = "black") +  # Mean as white diamond
+  labs(
+    title = "Number of Representative Gestures During Pretend Play",
+    x = "Group",
+    y = "Representative Gestures"
+  ) +
+  scale_fill_grey(start = 0.4, end = 0.8) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    text = element_text(family = "Times New Roman"),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+```
+
+## Bar Graph of Means for Poportion of Rep Gest
+```{r}
+# Create clean bar graph of proportion of representative gestures
+pp_gesture_data_ALLyears %>%
+  ggplot(aes(x = groupstatus, y = prop_rep, fill = groupstatus)) +
+  stat_summary(fun = mean, geom = "bar", width = 0.6, color = "black", alpha = 0.7) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  labs(
+    title = NULL,
+    x = "Group",
+    y = "Proportion of Representative Gestures"
+  ) +
+  scale_fill_grey(start = 0.4, end = 0.8) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +  # Display y-axis as percentages
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    text = element_text(family = "Times New Roman"),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+# Figure X
+# Mean proportion of representative gestures during pretend play by group. Error bars represent ±1 standard error of the mean. Although group medians were used for nonparametric inferential testing (Mann-Whitney U), means are presented here for ease of interpretation.
+
+```
+
+
+
+# OLD CODE
+## table opton 1
+```{r, eval=FALSE}
 # Load required libraries
 library(dplyr)
 library(gt)
@@ -222,8 +409,8 @@ mann_whitney_summary %>%
 # Note. W = Wilcoxon rank-sum statistic (equivalent to Mann-Whitney U); r = effect size
 ```
 
-
-```{r}
+## table opton 2
+```{r, eval=FALSE}
 # Load libraries
 library(dplyr)
 library(gt)
@@ -276,13 +463,13 @@ mann_whitney_summary %>%
 
 ```
 
-
-```{r}
+## old Mann-Whtiney for rep gest
+```{r, eval=FALSE}
 # Mann-Whitney U Test (nonparametric equivalent to independent-samples t-test)
-wilcox.test(rep_gestures ~ groupstatus, data = completely_merged_data_ALLyears)
+wilcox.test(rep_gestures ~ groupstatus, data = pp_gesture_data_ALLyears)
 
 #report medians (which is preferred for nonparametric tests)
-completely_merged_data_ALLyears %>%
+pp_gesture_data_ALLyears %>%
   group_by(groupstatus) %>%
   summarise(
     Median_RepGestures = median(rep_gestures, na.rm = TRUE),
@@ -290,11 +477,11 @@ completely_merged_data_ALLyears %>%
   )
 
 # Step 2a: Get N
-n1 <- completely_merged_data_ALLyears %>%
+n1 <- pp_gesture_data_ALLyears %>%
   filter(groupstatus == "TD") %>%
   nrow()
 
-n2 <- completely_merged_data_ALLyears %>%
+n2 <- pp_gesture_data_ALLyears %>%
   filter(groupstatus == "PL") %>%
   nrow()
 
@@ -314,10 +501,11 @@ r_effect_size
 
 ```
 
-```{r}
+## boxplot of rep gest
+```{r, eval=FALSE}
 library(ggplot2)
 
-ggplot(completely_merged_data_ALLyears, aes(x = groupstatus, y = rep_gestures)) +
+ggplot(pp_gesture_data_ALLyears, aes(x = groupstatus, y = rep_gestures)) +
   
   # Boxplot
   geom_boxplot(fill = "gray80", color = "black", width = 0.6) +
@@ -346,13 +534,14 @@ ggplot(completely_merged_data_ALLyears, aes(x = groupstatus, y = rep_gestures)) 
 
 ```
 
-```{r}
+## split bar graph
+```{r, eval=FALSE}
 # Create binary variable: 0 = No rep gesture, 1 = At least one rep gesture
-completely_merged_data_ALLyears <- completely_merged_data_ALLyears %>%
+pp_gesture_data_ALLyears <- pp_gesture_data_ALLyears %>%
   mutate(rep_gesture_present = if_else(rep_gestures > 0, 1, 0))
 
 # Bar plot
-ggplot(completely_merged_data_ALLyears, aes(x = groupstatus, fill = factor(rep_gesture_present))) +
+ggplot(pp_gesture_data_ALLyears, aes(x = groupstatus, fill = factor(rep_gesture_present))) +
   geom_bar(position = "fill", color = "black") +
   scale_fill_manual(
     values = c("gray80", "black"),
@@ -376,9 +565,9 @@ ggplot(completely_merged_data_ALLyears, aes(x = groupstatus, fill = factor(rep_g
 #Figure 1. Proportion of children producing representational gestures during pretend play, by group status.```
 ```
 
-# if want figure with individual measures
-```{r}
-ggplot(completely_merged_data_ALLyears, aes(x = groupstatus, y = rep_gestures)) +
+## if want figure with individual measures
+```{r, eval=FALSE}
+ggplot(pp_gesture_data_ALLyears, aes(x = groupstatus, y = rep_gestures)) +
   geom_jitter(width = 0.2, height = 0, alpha = 0.7, size = 2, color = "black") +
   labs(
     title = "Representational Gesture Counts by Group",
@@ -396,29 +585,30 @@ ggplot(completely_merged_data_ALLyears, aes(x = groupstatus, y = rep_gestures)) 
 #Figure 2. Individual participant counts of representational gestures during pretend play, grouped by group status.
 ```
 
-# treat rep gestures as binary
-```{r}
+## treat rep gestures as binary
+```{r, eval=FALSE}
 # Make sure rep_gesture_present is coded 0/1 (binary)
-completely_merged_data_ALLyears <- completely_merged_data_ALLyears %>%
+pp_gesture_data_ALLyears <- pp_gesture_data_ALLyears %>%
   mutate(rep_gesture_present = if_else(rep_gestures > 0, 1, 0))
 
 # Create a table
-table_group_gesture <- table(completely_merged_data_ALLyears$groupstatus, completely_merged_data_ALLyears$rep_gesture_present)
+table_group_gesture <- table(pp_gesture_data_ALLyears$groupstatus, pp_gesture_data_ALLyears$rep_gesture_present)
 
 # Run chi-square test
 chisq.test(table_group_gesture)
 ```
 
-```{r}
+## split bargraph
+```{r, eval=FALSE}
 library(ggplot2)
 library(dplyr)
 
 # Make sure rep_gesture_present is binary (0 = Absent, 1 = Present)
-completely_merged_data_ALLyears <- completely_merged_data_ALLyears %>%
+pp_gesture_data_ALLyears <- pp_gesture_data_ALLyears %>%
   mutate(rep_gesture_present = if_else(rep_gestures > 0, 1, 0))
 
 # Create the bar plot
-ggplot(completely_merged_data_ALLyears, aes(x = groupstatus, fill = factor(rep_gesture_present))) +
+ggplot(pp_gesture_data_ALLyears, aes(x = groupstatus, fill = factor(rep_gesture_present))) +
   
   geom_bar(position = "fill", color = "black") +
   
@@ -448,11 +638,8 @@ ggplot(completely_merged_data_ALLyears, aes(x = groupstatus, fill = factor(rep_g
 
 ```
 
-
-
-
-# 1. Conduct ANOVAs for gestures & summarize results
-```{r}
+## 1. Conduct ANOVAs for gestures & summarize results
+```{r, eval=FALSE}
 # For total gestures
 total_anova <- aov(total_gestures ~ groupstatus, pp_gesture_data_ALLyears)
 cat("\nTotal gestures ANOVA:\n")
@@ -469,8 +656,8 @@ cat("\nProportion of representational gestures ANOVA:\n")
 print(summary(prop_rep_anova))
 ```
 
-# 2. Calculate effect sizes
-```{r}
+## 2. Calculate effect sizes
+```{r, eval=FALSE}
 if(require(effectsize)) {
   cat("\nEffect sizes:\n")
   cat("Total gestures: ")
@@ -489,8 +676,8 @@ if(require(effectsize)) {
 }
 ```
 
-# 3. Descriptive statistics by group
-```{r}
+## 3. Descriptive statistics by group
+```{r, eval=FALSE}
 group_stats <- pp_gesture_data_ALLyears %>%
   group_by(groupstatus) %>%
   summarize(
@@ -507,8 +694,8 @@ print("Descriptive statistics by group:")
 print(group_stats)
 ```
 
-# 4. Visualization of results
-```{r}
+## 4. Visualization of results
+```{r, eval=FALSE}
 if(require(tidyverse)) {
   # Raw counts visualization
   counts_long <- pp_gesture_data_ALLyears %>%
@@ -558,8 +745,8 @@ if(require(tidyverse)) {
 }
 ```
 
-# 5. Statistical tests to directly compare TD and BI groups
-```{r}
+## 5. Statistical tests to directly compare TD and BI groups
+```{r, eval=FALSE}
 # t-tests for each variable (alternative to ANOVA with only two groups)
 t_total <- t.test(total_gestures ~ groupstatus, data = pp_gesture_data_ALLyears)
 t_rep <- t.test(rep_gestures ~ groupstatus, data = pp_gesture_data_ALLyears)
@@ -574,8 +761,8 @@ cat("\nProportion representational:\n")
 print(t_prop_rep)
 ```
 
-# 6. Calculate Cohen's d effect sizes for t-tests with error handling
-```{r}
+## 6. Calculate Cohen's d effect sizes for t-tests with error handling
+```{r, eval=FALSE}
 
 cat("\nCohen's d effect sizes:\n")
 
@@ -610,8 +797,8 @@ cat("\nProportion representational:\n")
 print(safe_cohens_d(prop_rep ~ groupstatus, data = pp_gesture_data_ALLyears))
 ```
 
-# Make APA-formatted data visualizations
-```{r}
+## Make APA-formatted data visualizations
+```{r, eval=FALSE}
 if(require(tidyverse)) {
   # Set APA theme
   apa_theme <- theme_bw() +
@@ -703,20 +890,21 @@ if(require(tidyverse)) {
   ggsave("Figure_2_Gesture_Proportions.tiff", p2, width = 7, height = 5, dpi = 300)
 }
 ```
-# Is rep_gestures positively correlated with total_gestures (overall gestures produced during pretend play)?
-```{r}
-cor.test(completely_merged_data_ALLyears$rep_gestures, completely_merged_data_ALLyears$total_gestures)
+
+## Is rep_gestures positively correlated with total_gestures (overall gestures produced during pretend play)?
+```{r, eval=FALSE}
+cor.test(pp_gesture_data_ALLyears$rep_gestures, pp_gesture_data_ALLyears$total_gestures)
 
 ```
 
-# boxplot of representational gesture presence & narrative score
-```{r}
+## boxplot of representational gesture presence & narrative score
+```{r, eval=FALSE}
 # First: recode rep_gestures as a factor for clean labeling
-completely_merged_data_ALLyears <- completely_merged_data_ALLyears %>%
+pp_gesture_data_ALLyears <- pp_gesture_data_ALLyears %>%
   mutate(rep_gesture_factor = factor(rep_gesture_present, levels = c(0,1), labels = c("Absent", "Present")))
 
 # Plot
-ggplot(completely_merged_data_ALLyears, aes(x = rep_gesture_factor, y = max_avg)) +
+ggplot(pp_gesture_data_ALLyears, aes(x = rep_gesture_factor, y = max_avg)) +
   geom_boxplot(fill = "gray80", color = "black") +
   stat_summary(fun = mean, geom = "point", size = 3, color = "black", position = position_dodge(width=0.75)) +
   labs(
@@ -735,18 +923,17 @@ ggplot(completely_merged_data_ALLyears, aes(x = rep_gesture_factor, y = max_avg)
 
 ```
 
-
-```{r}
+```{r, eval=FALSE}
 library(ggplot2)
 library(dplyr)
 
 # Recode rep_gestures as a factor for clean group labels
-completely_merged_data_ALLyears <- completely_merged_data_ALLyears %>%
+pp_gesture_data_ALLyears <- pp_gesture_data_ALLyears %>%
   mutate(rep_gesture_factor = factor(rep_gesture_present, levels = c(0, 1),
                                      labels = c("Absent", "Present")))
 
 # Bar graph with error bars (mean ± SE)
-ggplot(completely_merged_data_ALLyears, aes(x = rep_gesture_factor, y = max_avg)) +
+ggplot(pp_gesture_data_ALLyears, aes(x = rep_gesture_factor, y = max_avg)) +
   
   # Bar for mean narrative scores
   stat_summary(fun = mean, geom = "bar", fill = "gray80", color = "black", width = 0.6) +
@@ -781,8 +968,8 @@ ggplot(completely_merged_data_ALLyears, aes(x = rep_gesture_factor, y = max_avg)
 
 ```
 
-```{r}
-completely_merged_data_ALLyears %>%
+```{r, eval=FALSE}
+pp_gesture_data_ALLyears %>%
   group_by(rep_gesture_factor) %>%
   summarise(
     Mean_Narrative = mean(max_avg, na.rm = TRUE),
@@ -792,17 +979,17 @@ completely_merged_data_ALLyears %>%
 
 ```
 
-```{r}
+```{r, eval=FALSE}
 # Identify participants with missing rep_gestures
-completely_merged_data_ALLyears %>%
+pp_gesture_data_ALLyears %>%
   filter(is.na(rep_gestures)) %>%
   select(participant_id, total_gestures, rep_gestures, everything())
 
 # List all unique values
-unique(completely_merged_data_ALLyears$rep_gestures)
+unique(pp_gesture_data_ALLyears$rep_gestures)
 
 # Find participants with rep_gestures not equal to 0 or 1
-completely_merged_data_ALLyears %>%
+pp_gesture_data_ALLyears %>%
   filter(!(rep_gestures %in% c(0, 1))) %>%
   select(participant_id, rep_gestures)
 

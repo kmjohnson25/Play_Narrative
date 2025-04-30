@@ -6,9 +6,9 @@ output:
   pdf_document: default
   html_document: default
 ---
-
-# Load in packages
-```{r}
+# Setup
+##Load in packages
+```{r, echo=FALSE}
 # install necessary packages
 #install.packages("DiagrammeR")
 # Install if you don't have these
@@ -36,7 +36,7 @@ library(lmboot)       # optional for robust bootstrapped SEs
 
 ```
 
-# Read in each dataset and add Year column
+## Read in each dataset and add Year column
 ```{r}
 completely_merged_data_H10 <- read_csv(here("PN_DataAnalysis", "PP_Narrative_Analysis", "completely_merged_data_H10.csv"))
 completely_merged_data_H10$Year <- 10
@@ -48,7 +48,7 @@ completely_merged_data_H7 <- read_csv(here("PN_DataAnalysis", "PP_Narrative_Anal
 completely_merged_data_H7$Year <- 7
 ```
 
-# Combine data across ALL THREE YEARS
+## Combine data across ALL THREE YEARS
 ```{r}
 # Combine all datasets into one data frame
 completely_merged_data_ALLyears <- bind_rows(completely_merged_data_H10, completely_merged_data_H8, completely_merged_data_H7)
@@ -59,97 +59,25 @@ head(completely_merged_data_ALLyears)
 # write a csv
 write_csv(completely_merged_data_ALLyears, here("PN_DataAnalysis", "PP_Narrative_Analysis","completely_merged_data_ALLyears.csv"))
 ```
-
-# run linear regression model (mixed effects wouldn't work)- OLS
+#OLS regressions
+## Linear regression Models 1 & 2 (mixed effects wouldn't work)- OLS
 ```{r}
-model1_ols <- lm(max_avg ~ groupstatus + total_gestures + total_pretend_episodes + mlu + groupstatus:total_gestures, 
+model1_ols <- lm(max_avg ~ groupstatus + total_gestures + total_pretend_episodes + mlu + Year + groupstatus:total_gestures, 
              data = completely_merged_data_ALLyears)
 
 # Model 2: Representational gesture presence as predictor
-model2_ols <- lm(max_avg ~ groupstatus + rep_gesture_present + total_pretend_episodes + mlu + groupstatus:rep_gesture_present, 
+model2_ols <- lm(max_avg ~ groupstatus + rep_gesture_present + total_pretend_episodes + mlu + Year + groupstatus:rep_gesture_present, 
              data = completely_merged_data_ALLyears)
 
-summary(model1)
-summary(model2)
+summary(model1_ols)
+summary(model2_ols)
 
 # Calculate effect sizes
-eta_squared(model1)
-eta_squared(model2)
+eta_squared(model1_ols)
+eta_squared(model2_ols)
 ```
 
-# regression table for Model 2:
-```{r}
-# Turn model output into a tidy table
-model2_table <- tidy(model2) %>%
-  select(term, estimate, std.error, statistic, p.value)
-
-# Create a nice regression table
-model2_table %>%
-  gt() %>%
-  fmt_number(columns = vars(estimate, std.error, statistic, p.value), decimals = 3) %>%
-  tab_header(title = "Regression Results for Narrative Structure Model")
-```
-
-#APA style regression table for Model 2:
-```{r}
-# Load libraries
-library(broom)
-library(dplyr)
-library(gt)
-
-# Step 1: Prepare tidy model results
-model2_ols_table <- tidy(model2) %>%
-  select(term, estimate, std.error, statistic, p.value) %>%
-  mutate(
-    p_numeric = p.value,  # Save numeric p-value for internal use
-    p.value = ifelse(p.value < .001, "< .001", sprintf("%.3f", p.value)), # Format p-values for display
-    estimate = sprintf("%.2f", estimate),
-    std.error = sprintf("%.2f", std.error),
-    statistic = sprintf("%.2f", statistic)
-  ) %>%
-  rename(
-    Predictor = term,
-    b = estimate,
-    SE = std.error,
-    t = statistic,
-    p = p.value
-  )
-
-# Step 2: Build APA-style table (p_numeric used but not shown)
-model2_ols_table %>%
-  select(-p_numeric) %>%  # <<< Drop p_numeric here
-  gt() %>%
-  tab_header(
-    title = md("**Table X**"),
-    subtitle = md("**Linear Regression Predicting Narrative Structure Scores**")
-  ) %>%
-  cols_label(
-    Predictor = "Predictor",
-    b = "b",
-    SE = "SE",
-    t = "t",
-    p = "p"
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(
-      columns = everything(),
-      rows = model2_table$p_numeric < 0.05  # still use model2_table$p_numeric for bolding
-    )
-  ) %>%
-  tab_source_note(
-    source_note = "Note. b = unstandardized regression coefficient; SE = standard error; p = significance level. Significant predictors are bolded."
-  ) %>%
-  tab_options(
-    table.font.size = "small",
-    table.align = "center",
-    data_row.padding = px(2)
-  )
-
-
-```
-
-# Combined regression table (OLS)
+## Combined regression table (OLS) of Model 1 and Model 2 
 ```{r}
 library(broom)
 library(dplyr)
@@ -246,283 +174,127 @@ combined_ols_table %>%
 
 ```
 
-interaction plot
+## Reduced Versions of Model 2 (OLS), dropping nonsignificant predictors
 ```{r}
-library(ggplot2)
+# Lean version of Model 2: Representational gesture presence as predictor
+model2_ols_lean <- lm(max_avg ~ groupstatus + rep_gesture_present + mlu + Year + groupstatus:rep_gesture_present, 
+             data = completely_merged_data_ALLyears)
 
-# Create a new variable to label group and rep_gesture_present combinations
-completely_merged_data_ALLyears$group_rep <- interaction(
-  completely_merged_data_ALLyears$groupstatus,
-  completely_merged_data_ALLyears$rep_gesture_present,
-  sep = " - GesturePresent: "
-)
+# Even leaner version of Model 2: dropping Year
+model2_ols_lean_noyear <- lm(max_avg ~ groupstatus + rep_gesture_present + mlu + groupstatus:rep_gesture_present, 
+             data = completely_merged_data_ALLyears)
 
-# Create the plot
-ggplot(completely_merged_data_ALLyears, aes(x = rep_gesture_present, y = max_avg, color = groupstatus)) +
-  stat_summary(fun = mean, geom = "point", position = position_dodge(width = 0.3)) +
-  stat_summary(fun = mean, geom = "line", aes(group = groupstatus), position = position_dodge(width = 0.3)) +
-  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.1, position = position_dodge(width = 0.3)) +
-  labs(
-    title = "Interaction: Group × Representational Gesture Presence",
-    x = "Representational Gesture Present (0 = No, 1 = Yes)",
-    y = "Mean Narrative Structure Score",
-    color = "Group Status"
-  ) +
-  theme_minimal(base_size = 14)
+summary(model2_ols_lean)
+summary(model2_ols_lean_noyear)
 
+# Calculate effect sizes
+eta_squared(model2_ols_lean)
+eta_squared(model2_ols_lean_noyear)
 ```
 
-# scatterplot and facets
+## APA Table of Reduced Model 2
 ```{r}
-library(ggplot2)
-
-ggplot(completely_merged_data_ALLyears, aes(x = rep_gesture_present, y = max_avg, color = groupstatus)) +
-  geom_jitter(width = 0.2, height = 0, size = 2, alpha = 0.8) +
-  facet_wrap(~ groupstatus) +
-  labs(
-    title = "Narrative Structure Scores by Gesture Presence and Group",
-    x = "Representational Gesture Present (0 = No, 1 = Yes)",
-    y = "Narrative Structure Score"
-  ) +
-  theme_minimal(base_size = 14)
-
-```
-
-# APA style plot of group × gesture interaction slopes 
-```{r}
-library(ggplot2)
+# Load necessary libraries
+library(broom)
 library(dplyr)
+library(gt)
 
-# Create a summary dataset first (means and standard errors)
-summary_data <- completely_merged_data_ALLyears %>%
-  group_by(groupstatus, rep_gesture_present) %>%
-  summarize(
-    mean_score = mean(max_avg, na.rm = TRUE),
-    se_score = sd(max_avg, na.rm = TRUE) / sqrt(n())
-  )
+# Assuming your reduced model 2 is stored as 'model2_reduced'
+# Example: 
+# model2_reduced <- lm(max_avg ~ groupstatus + rep_gesture_present + mlu + groupstatus:rep_gesture_present, data = completely_merged_data_ALLyears)
 
-# Plot
-ggplot(summary_data, aes(x = factor(rep_gesture_present), y = mean_score, group = groupstatus, color = groupstatus)) +
-  geom_point(position = position_dodge(width = 0.3), size = 3) +
-  geom_line(position = position_dodge(width = 0.3), aes(linetype = groupstatus)) +
-  geom_errorbar(aes(ymin = mean_score - se_score, ymax = mean_score + se_score), 
-                width = 0.1, position = position_dodge(width = 0.3)) +
-  scale_x_discrete(labels = c("No Gesture", "Gesture Present")) +
-  labs(
-    title = "Interaction Between Group and Representational Gesture Presence",
-    x = "Representational Gesture Presence",
-    y = "Mean Narrative Structure Score",
-    color = "Group Status",
-    linetype = "Group Status"
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    legend.position = "bottom",
-    plot.title = element_text(hjust = 0.5)
-  )
-
-```
-
-#with overlay of individuals
-```{r}
-library(ggplot2)
-library(dplyr)
-
-# Step 1: Summary dataset for group means and SE
-summary_data <- completely_merged_data_ALLyears %>%
-  group_by(groupstatus, rep_gesture_present) %>%
-  summarize(
-    mean_score = mean(max_avg, na.rm = TRUE),
-    se_score = sd(max_avg, na.rm = TRUE) / sqrt(n()),
-    .groups = "drop"
-  )
-
-# Step 2: Plot
-ggplot() +
-  # 2a: Individual participant points (light color)
-  geom_jitter(
-    data = completely_merged_data_ALLyears,
-    aes(x = factor(rep_gesture_present), y = max_avg, color = groupstatus),
-    width = 0.2, height = 0, alpha = 0.4, size = 2
-  ) +
-  
-  # 2b: Group means (strong color)
-  geom_point(
-    data = summary_data,
-    aes(x = factor(rep_gesture_present), y = mean_score, color = groupstatus),
-    position = position_dodge(width = 0.3),
-    size = 4
-  ) +
-  
-  # 2c: Lines connecting group means
-  geom_line(
-    data = summary_data,
-    aes(x = factor(rep_gesture_present), y = mean_score, group = groupstatus, color = groupstatus, linetype = groupstatus),
-    position = position_dodge(width = 0.3)
-  ) +
-  
-  # 2d: Error bars for means
-  geom_errorbar(
-    data = summary_data,
-    aes(x = factor(rep_gesture_present), ymin = mean_score - se_score, ymax = mean_score + se_score, color = groupstatus),
-    width = 0.1,
-    position = position_dodge(width = 0.3)
-  ) +
-  
-  # 2e: Labels and Themes
-  scale_x_discrete(labels = c("No Gesture", "Gesture Present")) +
-  labs(
-    title = "Interaction of Group Status and Representational Gesture Presence",
-    x = "Representational Gesture Presence",
-    y = "Narrative Structure Score",
-    color = "Group Status",
-    linetype = "Group Status"
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    legend.position = "bottom",
-    plot.title = element_text(hjust = 0.5)
-  )
-
-```
-
-# fancy graph
-```{r}
-# Summary dataset again
-summary_data <- completely_merged_data_ALLyears %>%
-  group_by(groupstatus, rep_gesture_present) %>%
-  summarize(
-    mean_score = mean(max_avg, na.rm = TRUE),
-    se_score = sd(max_avg, na.rm = TRUE) / sqrt(n()),
-    .groups = "drop"
-  )
-
-# Full plot with light gray background
-ggplot() +
-  # Individual points (light)
-  geom_jitter(
-    data = completely_merged_data_ALLyears,
-    aes(x = factor(rep_gesture_present), y = max_avg, color = groupstatus),
-    width = 0.2, height = 0, alpha = 0.4, size = 2
-  ) +
-  
-  # Mean points (strong)
-  geom_point(
-    data = summary_data,
-    aes(x = factor(rep_gesture_present), y = mean_score, color = groupstatus),
-    position = position_dodge(width = 0.3),
-    size = 4
-  ) +
-  
-  # Lines between means
-  geom_line(
-    data = summary_data,
-    aes(x = factor(rep_gesture_present), y = mean_score, group = groupstatus, color = groupstatus, linetype = groupstatus),
-    position = position_dodge(width = 0.3)
-  ) +
-  
-  # Error bars
-  geom_errorbar(
-    data = summary_data,
-    aes(x = factor(rep_gesture_present), ymin = mean_score - se_score, ymax = mean_score + se_score, color = groupstatus),
-    width = 0.1,
-    position = position_dodge(width = 0.3)
-  ) +
-  
-  # Labels
-  scale_x_discrete(labels = c("No Gesture", "Gesture Present")) +
-  labs(
-    title = "Interaction of Group Status and Representational Gesture Presence",
-    x = "Representational Gesture Presence",
-    y = "Narrative Structure Score",
-    color = "Group Status",
-    linetype = "Group Status"
-  ) +
-  
-  # Themes
-  theme_minimal(base_size = 14) +
-  theme(
-    panel.background = element_rect(fill = "gray95", color = NA), # Light gray background
-    plot.background = element_rect(fill = "white", color = NA),
-    panel.grid.major = element_line(color = "gray90"),
-    panel.grid.minor = element_blank(),
-    legend.position = "bottom",
-    plot.title = element_text(hjust = 0.5, face = "bold")
-  )
-```
-
-# fancy graph 2" Interaction of Group Status and Representational Gesture Presence"
-```{r}
-# Step 1: Summarize group means and standard errors
-summary_data <- completely_merged_data_ALLyears %>%
-  group_by(groupstatus, rep_gesture_present) %>%
-  summarize(
-    mean_score = mean(max_avg, na.rm = TRUE),
-    se_score = sd(max_avg, na.rm = TRUE) / sqrt(n()),
-    .groups = "drop"
-  )
-
-# Step 2: Plot with ribbons
-ggplot() +
-  # 2a: Individual points (light gray dots)
-  geom_jitter(
-    data = completely_merged_data_ALLyears,
-    aes(x = factor(rep_gesture_present), y = max_avg, color = groupstatus),
-    width = 0.2, height = 0, alpha = 0.4, size = 2
-  ) +
-  
-  # 2b: Ribbons for SE
-  geom_ribbon(
-    data = summary_data,
-    aes(
-      x = as.numeric(factor(rep_gesture_present)),
-      ymin = mean_score - se_score,
-      ymax = mean_score + se_score,
-      fill = groupstatus,
-      group = groupstatus
+# Step 1: Tidy the model output
+model2_reduced_table <- tidy(model2_ols_lean_noyear) %>%
+  mutate(
+    sig = case_when(
+      p.value < 0.001 ~ "***",
+      p.value < 0.01 ~ "**",
+      p.value < 0.05 ~ "*",
+      p.value < 0.10 ~ "†",
+      TRUE ~ ""
     ),
-    inherit.aes = FALSE,
-    alpha = 0.2
-  ) +
-  
-  # 2c: Mean points
-  geom_point(
-    data = summary_data,
-    aes(x = factor(rep_gesture_present), y = mean_score, color = groupstatus),
-    position = position_dodge(width = 0.3),
-    size = 4
-  ) +
-  
-  # 2d: Lines connecting means
-  geom_line(
-    data = summary_data,
-    aes(x = factor(rep_gesture_present), y = mean_score, group = groupstatus, color = groupstatus, linetype = groupstatus),
-    position = position_dodge(width = 0.3)
-  ) +
-  
-  # 2e: Labels and themes
-  scale_x_discrete(labels = c("No Gesture", "Gesture Present")) +
-  labs(
-    title = "Interaction of Group Status and Representational Gesture Presence",
-    x = "Representational Gesture Presence",
-    y = "Narrative Structure Score",
-    color = "Group Status",
-    fill = "Group Status",
-    linetype = "Group Status"
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    panel.background = element_rect(fill = "gray95", color = NA),
-    plot.background = element_rect(fill = "white", color = NA),
-    panel.grid.major = element_line(color = "gray90"),
-    panel.grid.minor = element_blank(),
-    legend.position = "bottom",
-    plot.title = element_text(hjust = 0.5, face = "bold")
+    b_formatted = sprintf("%.2f", estimate),
+    SE_formatted = sprintf("%.2f", std.error),
+    t_formatted = sprintf("%.2f", statistic),
+    p_formatted = ifelse(p.value < .001, "< .001", sprintf("%.3f", p.value))
+  ) %>%
+  rename(
+    Predictor = term
+  ) %>%
+  select(Predictor, b_formatted, SE_formatted, t_formatted, p_formatted, sig)
+
+# Step 2: Create the APA-style gt table
+model2_reduced_table %>%
+  gt() %>%
+  tab_header(
+    title = "Table X",
+    subtitle = "Reduced Linear Regression Predicting Narrative Structure Scores"
+  ) %>%
+  cols_label(
+    Predictor = "Predictor",
+    b_formatted = "b",
+    SE_formatted = "SE",
+    t_formatted = "t",
+    p_formatted = "p",
+    sig = ""
+  ) %>%
+  fmt_markdown(columns = vars(Predictor)) %>% 
+  tab_style(
+    style = list(
+      cell_text(weight = "bold")
+    ),
+    locations = cells_body(
+      rows = sig != ""  # Bold significant rows
+    )
+  ) %>%
+  tab_source_note(
+    source_note = "Note. b = unstandardized regression coefficient; SE = standard error; t = t value; p = significance level. Significance indicated by * p < .05, ** p < .01, *** p < .001, † p < .10."
+  ) %>%
+  tab_options(
+    table.font.size = "small",
+    table.align = "center",
+    data_row.padding = px(2)
   )
 
 ```
 
-# APA final interaction plot
+## Simple Slope of Predicted Outcomes for Model 2 (probs for appendix)
+```{r}
+library(ggeffects)
+
+# Create the predicted data frame
+effect_df <- ggpredict(model2_ols_lean_noyear, terms = c("rep_gesture_present", "groupstatus"))
+
+# install.packages("extrafont")
+library(extrafont)
+
+# APA-style polished plot
+ggplot(effect_df, aes(x = x, y = predicted, color = group)) +
+  geom_point(size = 4) +
+  geom_line(size = 1.5) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2, color = NA) +
+  scale_color_manual(values = c("black", "gray40")) +
+  scale_fill_manual(values = c("black", "gray40")) +
+  labs(
+    title = NULL,
+    x = "Representational Gesture Presence",
+    y = "Predicted Narrative Structure Score",
+    color = "Group",
+    fill = "Group"
+  ) +
+  theme_minimal(base_size = 14, base_family = "Times New Roman") +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    panel.grid.major = element_line(color = "gray85"),
+    panel.grid.minor = element_blank(),
+    legend.title = element_blank()
+  )
+
+```
+
+## APA Interaction Plot: Model 2's observed means and standard errors
 ```{r}
 # Step 1: Summarize group means and standard errors
 summary_data <- completely_merged_data_ALLyears %>%
@@ -605,353 +377,20 @@ ggplot() +
     legend.position = "bottom",
     legend.title = element_text(face = "bold")
   )
-#Figure X. Mean narrative structure scores by group and representational gesture presence. Solid and dashed lines represent typically developing children and children with perinatal lesions, respectively. Circle and triangle points denote mean scores at each level of representational gesture presence. Error bars represent ±1 standard error.
 
-# Figure 2
+# Figure X
+#Observed mean narrative structure scores by group status and representational gesture presence during pretend play. Circles and solid lines represent typically developing (TD) children; triangles and dashed lines represent children with perinatal lesions (PL). Error bars indicate ±1 standard error of the mean. Children with PL demonstrated higher narrative structure scores when representational gestures were present, whereas typically developing children showed no corresponding benefit. This observed pattern parallels model-predicted results controlling for mean length of utterance (MLU).
+
+
+##Figure X. Mean narrative structure scores by group and representational gesture presence. Solid and dashed lines represent typically developing children and children with perinatal lesions, respectively. Circle and triangle points denote mean scores at each level of representational gesture presence. Error bars represent ±1 standard error.
+
+### Figure 2
 # Interaction between group status and representational gesture presence predicting narrative structure scores. Solid and dashed lines represent typically developing children and children with perinatal lesions, respectively. Vertical error bars represent ±1 standard error of the mean.
 
 ```
 
-# APA figure of Simple Slope: Representational Gestures vs. Narrative Score
-```{r}
-# Step 1: Generate predicted values (simple slope for rep_gesture_present)
-simple_slopes_rep_gesture <- ggpredict(
-  model2,
-  terms = c("rep_gesture_present", "groupstatus")  # Gesture presence (0/1) x Group
-)
-
-# Step 2: Build APA-style figure
-ggplot(simple_slopes_rep_gesture, aes(x = x, y = predicted, group = group)) +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = group),
-              alpha = 0.1, color = NA) +
-  geom_line(aes(linetype = group), color = "black", linewidth = 1.2) +
-  geom_point(
-    data = simple_slopes_rep_gesture %>%
-      group_by(group) %>%
-      filter(x == min(x) | x == max(x)),  # Only at 0 (No Gesture) and 1 (Gesture Present)
-    aes(shape = group),
-    size = 3,
-    fill = "black",
-    color = "black"
-  ) +
-  scale_x_continuous(
-    breaks = c(0, 1),
-    labels = c("No Gesture", "Gesture")
-  ) +
-  scale_linetype_manual(
-    values = c("solid", "dashed")
-  ) +
-  scale_shape_manual(
-    values = c(21, 24)  # circle and triangle
-  ) +
-  scale_fill_manual(
-    values = c("gray70", "gray85")
-  ) +
-  labs(
-    title = NULL,
-    x = "Representational Gesture Presence",
-    y = "Predicted Narrative Structure Score",
-    linetype = "Group Status",
-    shape = "Group Status",
-    fill = "Group Status"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.background = element_rect(fill = "white", color = NA),
-    plot.background = element_rect(fill = "white", color = NA),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold"),
-    text = element_text(family = "Times New Roman"),
-    axis.title = element_text(face = "bold"),
-    axis.text = element_text(color = "black")
-  )
-
-#Figure X. Predicted narrative structure scores by group and representational gesture presence. Solid and dashed lines represent children with perinatal lesions and typically developing children, respectively. Circle and triangle points denote predicted narrative scores for absence and presence of representational gestures. Shaded regions represent 95% confidence intervals.
-```
-# APA simple slopes for total gestures & group status
-```{r}
-# Step 1: Generate predictions across a smooth range
-simple_slopes_total_gestures <- ggpredict(
-  model1,
-  terms = c("total_gestures [0:100 by=1]", "groupstatus")
-)
-
-# Step 2: Build APA-Perfect figure
-ggplot(simple_slopes_total_gestures, aes(x = x, y = predicted, group = group)) +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = group), 
-              alpha = 0.1, color = NA) +  # Light ribbons per group
-  geom_line(aes(linetype = group), color = "black", linewidth = 1.2) +  # black solid/dashed
-  geom_point(
-    data = simple_slopes_total_gestures %>% 
-      group_by(group) %>% 
-      filter(x == min(x) | x == max(x)),  # Only mark start and end points
-    aes(shape = group),
-    size = 3,
-    fill = "black",
-    color = "black"
-  ) +
-  scale_linetype_manual(
-    values = c("solid", "dashed")  # PL = solid, TD = dashed
-  ) +
-  scale_shape_manual(
-    values = c(21, 24)  # Circle for one group, triangle for the other
-  ) +
-  scale_fill_manual(
-    values = c("gray70", "gray85")
-  ) +
-  labs(
-    title = NULL,
-    x = "Total Gestures During Pretend Play",
-    y = "Predicted Narrative Structure Score",
-    linetype = "Group Status",
-    shape = "Group Status",
-    fill = "Group Status"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.background = element_rect(fill = "white", color = NA),
-    plot.background = element_rect(fill = "white", color = NA),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold"),
-    text = element_text(family = "Times New Roman"),
-    axis.title = element_text(face = "bold"),
-    axis.text = element_text(color = "black")
-  )
-
-#Figure X. Predicted narrative structure scores by group and total number of gestures during pretend play. Solid and dashed lines represent separate group slopes. Greater gesture use was associated with higher narrative structure scores for children with perinatal lesions, whereas this association was weaker among typically developing children. Shaded regions represent 95% confidence intervals.
-```
-
-# figure of Simple Slope: Representational Gestures vs. Narrative Score
-```{r}
-# Create sequence for representational gestures
-rep_range <- seq(
-  min(completely_merged_data_ALLyears$rep_gestures, na.rm = TRUE),
-  max(completely_merged_data_ALLyears$rep_gestures, na.rm = TRUE),
-  length.out = 100
-)
-
-# Build new prediction dataset
-pred_data_rep <- data.frame(
-  groupstatus = factor("PL", levels = c("PL", "TD")),  # match model factor
-  total_gestures = mean(completely_merged_data_ALLyears$total_gestures, na.rm = TRUE),  # control for total gestures
-  rep_gestures = rep_range,  # vary rep gestures across observed range
-  mlu = mean(completely_merged_data_ALLyears$mlu, na.rm = TRUE),  # control for MLU
-  total_pretend_episodes = mean(completely_merged_data_ALLyears$total_pretend_episodes, na.rm = TRUE),  # control
-  Year = factor("7", levels = c("7", "8", "10"))  # hold year constant
-)
-
-# Predict narrative scores
-pred_data_rep$predicted_narrative <- predict(model_fixed_effects, newdata = pred_data_rep)
-
-# Plot
-ggplot(completely_merged_data_ALLyears, aes(x = rep_gestures, y = max_avg)) +
-  
-  # Raw participant points
-  geom_point(alpha = 0.6, color = "black", size = 2) +
-  
-  # Predicted regression line
-  geom_line(data = pred_data_rep, aes(x = rep_gestures, y = predicted_narrative),
-            color = "black", size = 1.2) +
-  
-  # Labels
-  labs(
-    title = "More representational gestures predict better narrative structure",
-    x = "Number of representational gestures",
-    y = "Narrative structure score"
-  ) +
-  
-  # APA-style theme
-  theme_minimal(base_size = 14, base_family = "Times New Roman") +
-  theme(
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(color = "black", fill = NA, size = 0.8),
-    axis.line = element_line(color = "black"),
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    axis.title = element_text(face = "bold"),
-    legend.position = "none"
-  )
-
-```
-
-```{r}
-library(ggplot2)
-
-ggplot(completely_merged_data_ALLyears, aes(x = rep_gestures, y = max_avg)) +
-  
-  # Raw participant points (still black dots)
-  geom_point(alpha = 0.6, color = "black", size = 2) +
-  
-  # Participant IDs as text labels slightly above the dots
-  geom_text(aes(label = participant_id), 
-            vjust = -1,  # vertical adjustment above the point
-            size = 3,    # size of text (adjustable)
-            family = "Times New Roman") +
-  
-  # Predicted regression line
-  geom_line(data = pred_data_rep, aes(x = rep_gestures, y = predicted_narrative),
-            color = "black", size = 1.2) +
-  
-  # Labels
-  labs(
-    title = "More representational gestures predict better narrative structure",
-    x = "Number of representational gestures",
-    y = "Narrative structure score"
-  ) +
-  
-  # APA-style minimal theme
-  theme_minimal(base_size = 14, base_family = "Times New Roman") +
-  theme(
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(color = "black", fill = NA, size = 0.8),
-    axis.line = element_line(color = "black"),
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    axis.title = element_text(face = "bold"),
-    legend.position = "none"
-  )
-
-```
-
-# simple slope of Total Gestures vs. Narrative Score
-```{r}
-# Create a sequence of total gestures (z-scored)
-gestures_range <- seq(
-  min(completely_merged_data_ALLyears$total_gestures, na.rm = TRUE),
-  max(completely_merged_data_ALLyears$total_gestures, na.rm = TRUE),
-  length.out = 100
-)
-
-# Build prediction data
-pred_data_total <- data.frame(
-  groupstatus = factor("PL", levels = c("PL", "TD")),  # Hold group constant
-  total_gestures = gestures_range,  # Vary total gestures
-  rep_gestures = mean(completely_merged_data_ALLyears$rep_gestures, na.rm = TRUE),  # Hold rep gestures constant
-  mlu_z = mean(completely_merged_data_ALLyears$mlu_z, na.rm = TRUE),  # Hold MLU constant
-  total_pretend_episodes = mean(completely_merged_data_ALLyears$total_pretend_episodes, na.rm = TRUE),  # Hold pretend episodes constant
-  Year = factor("7", levels = c("7", "8", "10"))  # Hold year constant
-)
-
-# Predict narrative scores
-pred_data_total$predicted_narrative <- predict(model_fixed_effects, newdata = pred_data_total)
-
-ggplot(completely_merged_data_ALLyears, aes(x = total_gestures, y = max_avg)) +
-  
-  # Raw participant points
-  geom_point(alpha = 0.6, color = "black", size = 2) +
-  
-  # Predicted regression line
-  geom_line(data = pred_data_total, aes(x = total_gestures, y = predicted_narrative),
-            color = "black", size = 1.2) +
-  
-  # Labels
-  labs(
-    title = "Total gestures show marginal negative trend with narrative structure",
-    x = "Total gestures during pretend play (z-scored)",
-    y = "Narrative structure score"
-  ) +
-  
-  # APA-style minimal theme
-  theme_minimal(base_size = 14, base_family = "Times New Roman") +
-  theme(
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(color = "black", fill = NA, size = 0.8),
-    axis.line = element_line(color = "black"),
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    axis.title = element_text(face = "bold"),
-    legend.position = "none"
-  )
-
-```
-
-# Conceptual diagram of moderation model:
-```{r}
-library(DiagrammeR)
-
-grViz("
-digraph moderation_model {
-  
-  # General node style
-  node [shape = rectangle, fontname = 'Times New Roman', fontsize = 14]
-
-  # Nodes
-  GesturePresence [label = 'Representational Gesture Presence']
-  GroupStatus [label = 'Group Status (PL vs TD)']
-  NarrativePL [label = 'Narrative Structure Score (PL)']
-  NarrativeTD [label = 'Narrative Structure Score (TD)']
-
-  # Solid Arrows (Main Effects)
-  GesturePresence -> NarrativePL [label = 'Stronger Positive Effect', style = solid]
-  GesturePresence -> NarrativeTD [label = 'Weaker Positive Effect', style = solid]
-
-  # Dashed Arrows (Moderation)
-  GroupStatus -> NarrativePL [label = 'Moderates', style = dashed]
-  GroupStatus -> NarrativeTD [label = 'Moderates', style = dashed]
-}
-")
-
-#Figure 3
-#Conceptual model illustrating the moderating effect of group status (PL vs. TD) on the relationship between representational gesture presence and narrative structure outcomes. Solid arrows represent main effects, while dashed arrows represent moderation pathways. Gesture presence was more strongly associated with narrative quality for children with perinatal lesions compared to typically developing children.
-
-```
-
-# BOOTSTRAPPING!!! (...won't work)
-```{r}
-library(boot)          # For bootstrapping
-library(interactions)  # For simple slopes and plotting
-
-simple_slope_function <- function(data, indices) {
-  d <- data[indices, ]  # Resample data
-  tryCatch({
-    # Refit YOUR model structure
-    fit <- lm(max_avg ~ groupstatus + rep_gesture_present + total_pretend_episodes + mlu + groupstatus:rep_gesture_present, 
-              data = d)
-    
-    # Extract coefficients
-    coefs <- coef(fit)
-    
-    # Simple slope for PL (baseline group)
-    slope_PL <- coefs["rep_gesture_present"]
-    
-    # Simple slope for TD (PL slope + interaction)
-    slope_TD <- coefs["rep_gesture_present"] + coefs["groupstatusTD:rep_gesture_present"]
-    
-    return(c(slope_PL, slope_TD))
-  }, error = function(e) {
-    # If the model fails to fit, return NA
-    return(c(NA, NA))
-  })
-}
-
-set.seed(1234)
-
-boot_results <- boot(
-  data = completely_merged_data_ALLyears,
-  statistic = simple_slope_function,
-  R = 1000  # 1000 resamples
-)
-
-any(is.na(boot_results$t))  # TRUE if any NA slopes
-
-# Clean if needed:
-boot_clean <- boot_results
-boot_clean$t <- boot_clean$t[complete.cases(boot_clean$t), ]
-
-# For PL group (baseline)
-boot.ci(boot_clean, type = "perc", index = 1)
-
-# For TD group (interaction-adjusted)
-boot.ci(boot_clean, type = "perc", index = 2)
-
-
-```
-
-# ROBUST regression for model 1
+#ROBUST regressions
+## Robust Regression for Model 1
 ```{r}
 library(robustbase)
 
@@ -963,7 +402,7 @@ summary(model1_robust)
 
 ```
 
-# ROBUST regression table for model 1
+## Table for Model 1 Robust Regression 
 ```{r}
 library(broom)
 library(dplyr)
@@ -1026,7 +465,7 @@ model1_robust_table %>%
 
 ```
 
-# ROBUST regression for model 2
+## Robust Regression for Model 2
 ```{r}
 # Load package
 library(robustbase)
@@ -1037,10 +476,9 @@ model2_robust <- lmrob(max_avg ~ groupstatus * rep_gesture_present + total_prete
 
 # View summary
 summary(model2_robust)
-
 ```
 
-# ROBUST regression table for Model 2
+## Table for Model 2 Robust Regression
 ```{r}
 
 # Assuming the same `model2_table` as above
@@ -1105,7 +543,75 @@ model2_robust_table %>%
 
 ```
 
-# combined table with both ROBUST model regressions
+## Robust Regression for Reduced Model 2 
+```{r}
+# Robust regression for reduced Model 2 (your final one)
+model2_reduced_robust <- lmrob(max_avg ~ groupstatus + rep_gesture_present + mlu + groupstatus:rep_gesture_present, 
+                               data = completely_merged_data_ALLyears)
+summary(model2_reduced_robust)
+```
+
+## Model 2 (reduced) Side by Side Regresssion Table of OLS and Robust 
+```{r}
+# Load libraries
+library(broom)
+library(dplyr)
+
+# Tidy the original OLS model
+ols_table <- tidy(model2_ols_lean_noyear) %>%
+  mutate(
+    Model = "OLS",
+    Estimate = round(estimate, 2),
+    SE = round(std.error, 2),
+    p = ifelse(p.value < .001, "< .001", sprintf("%.3f", p.value))
+  ) %>%
+  select(Model, term, Estimate, SE, p)
+
+# Tidy the robust model
+robust_table <- tidy(model2_reduced_robust) %>%
+  mutate(
+    Model = "Robust",
+    Estimate = round(estimate, 2),
+    SE = round(std.error, 2),
+    p = ifelse(p.value < .001, "< .001", sprintf("%.3f", p.value))
+  ) %>%
+  select(Model, term, Estimate, SE, p)
+
+# Combine
+combined_table <- bind_rows(ols_table, robust_table) %>%
+  arrange(term, Model)  # Keep terms together
+
+# Load gt package
+library(gt)
+
+# Build the table
+combined_table %>%
+  rename(
+    Predictor = term
+  ) %>%
+  gt(groupname_col = "Model") %>%
+  tab_header(
+    title = "Table X",
+    subtitle = "Comparison of OLS and Robust Regression Estimates for Reduced Model 2"
+  ) %>%
+  cols_label(
+    Predictor = "Predictor",
+    Estimate = "b",
+    SE = "SE",
+    p = "p"
+  ) %>%
+  tab_options(
+    table.font.size = "small",
+    data_row.padding = px(2),
+    table.align = "center"
+  ) %>%
+  tab_source_note(
+    source_note = "Note. b = unstandardized regression coefficient; SE = standard error; p = significance level. Robust regression conducted using MM-estimation with bisquare psi function."
+  )
+
+```
+
+## Models 1 & 2(og) Combined Table 
 ```{r}
 library(broom)
 library(dplyr)
@@ -1201,7 +707,7 @@ combined_robust_table %>%
 
 ```
 
-# Effect sizes for Model 1 & Model 2
+## Effect sizes for Robust Models 1 & 2(reduced)
 ```{r}
 # For Model 1: Total Gestures
 model1_reduced <- lmrob(max_avg ~ groupstatus + total_gestures + total_pretend_episodes + mlu, 
@@ -1226,15 +732,730 @@ print(paste("Cohen's f² for Model 2 (Gesture Presence):", round(f2_model2, 3)))
 
 ```
 
+## MLU scatterplot
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+
+# Assume your data is called 'completely_merged_data_ALLyears'
+# and it includes 'mlu', 'max_avg', and 'groupstatus'
+
+# Make sure groupstatus is a factor if needed
+completely_merged_data_ALLyears <- completely_merged_data_ALLyears %>%
+  mutate(groupstatus = factor(groupstatus, levels = c("PL", "TD")))
+
+# Create APA-style scatterplot
+ggplot(completely_merged_data_ALLyears, aes(x = mlu, y = max_avg, group = groupstatus)) +
+  
+  # 1. Individual participant points
+  geom_point(
+    aes(shape = groupstatus),
+    size = 3,
+    color = "black",
+    fill = "white"
+  ) +
+  
+  # 2. Regression lines (separately for each group)
+  geom_smooth(
+    aes(linetype = groupstatus),
+    method = "lm",
+    se = TRUE,
+    color = "black",
+    size = 1
+  ) +
+  
+  # 3. Manual scales for shapes and linetypes to match your other figures
+  scale_shape_manual(values = c("PL" = 24, "TD" = 21)) +  # PL = triangle open, TD = circle open
+  scale_linetype_manual(values = c("PL" = "dashed", "TD" = "solid")) +
+  
+  # 4. Labels
+  labs(
+    title = "Relationship Between MLU and Narrative Structure Score by Group",
+    x = "Mean Length of Utterance (MLU)",
+    y = "Narrative Structure Score",
+    shape = "Group Status",
+    linetype = "Group Status"
+  ) +
+  
+  # 5. APA-style theming
+  theme_minimal(base_size = 14, base_family = "Times New Roman") +
+  theme(
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold")
+  )
+
+# Figure 2
+#Scatterplot of narrative structure scores as a function of mean length of utterance (MLU), separated by group status. Triangles and dashed lines represent children with perinatal lesions (PL); circles and solid lines represent typically developing (TD) children. Shaded areas reflect 95% confidence intervals around regression lines.
+
+```
+
+# Text for Tables & Figures
+
+## Tables' Notes
+
+### For Table 1 (Main OLS Reduced Model):
+Note.
+b = unstandardized regression coefficient; SE = standard error; p = significance level. Partial eta-squared effect sizes are reported in-text.
+p < .05. †p < .10.
+
+### For Table A1 (OLS Model 1: Total Gestures):
+Note.
+b = unstandardized regression coefficient; SE = standard error; p = significance level. No significant predictors emerged.
+p < .05. †p < .10.
+
+### For Table A2 (Robust Model 1: Total Gestures):
+Note.
+Robust regression estimated using M-estimation with bisquare weighting. No significant predictors emerged.
+
+### For Table A3 (Comparison of OLS and Robust for Reduced Model 2):
+Note.
+Comparison of ordinary least squares (OLS) and robust regression estimates for reduced Model 2.
+Robust regression used M-estimation with bisquare weighting.
+b = unstandardized regression coefficient; SE = standard error; p = significance level.
+p < .05. †p < .10.
+
+
+## Figures's Captions
+
+### Figure 1 (Observed Means Plot: Group × Gesture Presence)
+Figure 1
+Observed mean narrative structure scores by group status and representational gesture presence. Triangles and dashed lines represent children with perinatal lesions (PL); circles and solid lines represent typically developing (TD) children. Error bars represent ±1 standard error of the mean.
+
+### Figure 2 (MLU Scatterplot)
+Figure 2
+Scatterplot of narrative structure scores as a function of mean length of utterance (MLU), separated by group status. Triangles and dashed lines represent children with perinatal lesions (PL); circles and solid lines represent typically developing (TD) children. Shaded regions represent 95% confidence intervals around fitted regression lines."
 
 
 
+# OLD CODE
+
+## interaction plot
+```{r, eval=FALSE}
+library(ggplot2)
+
+# Create a new variable to label group and rep_gesture_present combinations
+completely_merged_data_ALLyears$group_rep <- interaction(
+  completely_merged_data_ALLyears$groupstatus,
+  completely_merged_data_ALLyears$rep_gesture_present,
+  sep = " - GesturePresent: "
+)
+
+# Create the plot
+ggplot(completely_merged_data_ALLyears, aes(x = rep_gesture_present, y = max_avg, color = groupstatus)) +
+  stat_summary(fun = mean, geom = "point", position = position_dodge(width = 0.3)) +
+  stat_summary(fun = mean, geom = "line", aes(group = groupstatus), position = position_dodge(width = 0.3)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.1, position = position_dodge(width = 0.3)) +
+  labs(
+    title = "Interaction: Group × Representational Gesture Presence",
+    x = "Representational Gesture Present (0 = No, 1 = Yes)",
+    y = "Mean Narrative Structure Score",
+    color = "Group Status"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
+
+## scatterplot and facets
+```{r, eval=FALSE}
+library(ggplot2)
+
+ggplot(completely_merged_data_ALLyears, aes(x = rep_gesture_present, y = max_avg, color = groupstatus)) +
+  geom_jitter(width = 0.2, height = 0, size = 2, alpha = 0.8) +
+  facet_wrap(~ groupstatus) +
+  labs(
+    title = "Narrative Structure Scores by Gesture Presence and Group",
+    x = "Representational Gesture Present (0 = No, 1 = Yes)",
+    y = "Narrative Structure Score"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
+
+## APA style plot of group × gesture interaction slopes 
+```{r, eval=FALSE}
+library(ggplot2)
+library(dplyr)
+
+# Create a summary dataset first (means and standard errors)
+summary_data <- completely_merged_data_ALLyears %>%
+  group_by(groupstatus, rep_gesture_present) %>%
+  summarize(
+    mean_score = mean(max_avg, na.rm = TRUE),
+    se_score = sd(max_avg, na.rm = TRUE) / sqrt(n())
+  )
+
+# Plot
+ggplot(summary_data, aes(x = factor(rep_gesture_present), y = mean_score, group = groupstatus, color = groupstatus)) +
+  geom_point(position = position_dodge(width = 0.3), size = 3) +
+  geom_line(position = position_dodge(width = 0.3), aes(linetype = groupstatus)) +
+  geom_errorbar(aes(ymin = mean_score - se_score, ymax = mean_score + se_score), 
+                width = 0.1, position = position_dodge(width = 0.3)) +
+  scale_x_discrete(labels = c("No Gesture", "Gesture Present")) +
+  labs(
+    title = "Interaction Between Group and Representational Gesture Presence",
+    x = "Representational Gesture Presence",
+    y = "Mean Narrative Structure Score",
+    color = "Group Status",
+    linetype = "Group Status"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5)
+  )
+
+```
+
+## with overlay of individuals
+```{r, eval=FALSE}
+library(ggplot2)
+library(dplyr)
+
+# Step 1: Summary dataset for group means and SE
+summary_data <- completely_merged_data_ALLyears %>%
+  group_by(groupstatus, rep_gesture_present) %>%
+  summarize(
+    mean_score = mean(max_avg, na.rm = TRUE),
+    se_score = sd(max_avg, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  )
+
+# Step 2: Plot
+ggplot() +
+  # 2a: Individual participant points (light color)
+  geom_jitter(
+    data = completely_merged_data_ALLyears,
+    aes(x = factor(rep_gesture_present), y = max_avg, color = groupstatus),
+    width = 0.2, height = 0, alpha = 0.4, size = 2
+  ) +
+  
+  # 2b: Group means (strong color)
+  geom_point(
+    data = summary_data,
+    aes(x = factor(rep_gesture_present), y = mean_score, color = groupstatus),
+    position = position_dodge(width = 0.3),
+    size = 4
+  ) +
+  
+  # 2c: Lines connecting group means
+  geom_line(
+    data = summary_data,
+    aes(x = factor(rep_gesture_present), y = mean_score, group = groupstatus, color = groupstatus, linetype = groupstatus),
+    position = position_dodge(width = 0.3)
+  ) +
+  
+  # 2d: Error bars for means
+  geom_errorbar(
+    data = summary_data,
+    aes(x = factor(rep_gesture_present), ymin = mean_score - se_score, ymax = mean_score + se_score, color = groupstatus),
+    width = 0.1,
+    position = position_dodge(width = 0.3)
+  ) +
+  
+  # 2e: Labels and Themes
+  scale_x_discrete(labels = c("No Gesture", "Gesture Present")) +
+  labs(
+    title = "Interaction of Group Status and Representational Gesture Presence",
+    x = "Representational Gesture Presence",
+    y = "Narrative Structure Score",
+    color = "Group Status",
+    linetype = "Group Status"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5)
+  )
+
+```
+
+## fancy graph
+```{r, eval=FALSE}
+# Summary dataset again
+summary_data <- completely_merged_data_ALLyears %>%
+  group_by(groupstatus, rep_gesture_present) %>%
+  summarize(
+    mean_score = mean(max_avg, na.rm = TRUE),
+    se_score = sd(max_avg, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  )
+
+# Full plot with light gray background
+ggplot() +
+  # Individual points (light)
+  geom_jitter(
+    data = completely_merged_data_ALLyears,
+    aes(x = factor(rep_gesture_present), y = max_avg, color = groupstatus),
+    width = 0.2, height = 0, alpha = 0.4, size = 2
+  ) +
+  
+  # Mean points (strong)
+  geom_point(
+    data = summary_data,
+    aes(x = factor(rep_gesture_present), y = mean_score, color = groupstatus),
+    position = position_dodge(width = 0.3),
+    size = 4
+  ) +
+  
+  # Lines between means
+  geom_line(
+    data = summary_data,
+    aes(x = factor(rep_gesture_present), y = mean_score, group = groupstatus, color = groupstatus, linetype = groupstatus),
+    position = position_dodge(width = 0.3)
+  ) +
+  
+  # Error bars
+  geom_errorbar(
+    data = summary_data,
+    aes(x = factor(rep_gesture_present), ymin = mean_score - se_score, ymax = mean_score + se_score, color = groupstatus),
+    width = 0.1,
+    position = position_dodge(width = 0.3)
+  ) +
+  
+  # Labels
+  scale_x_discrete(labels = c("No Gesture", "Gesture Present")) +
+  labs(
+    title = "Interaction of Group Status and Representational Gesture Presence",
+    x = "Representational Gesture Presence",
+    y = "Narrative Structure Score",
+    color = "Group Status",
+    linetype = "Group Status"
+  ) +
+  
+  # Themes
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.background = element_rect(fill = "gray95", color = NA), # Light gray background
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.grid.major = element_line(color = "gray90"),
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+```
+
+## fancy graph 2" Interaction of Group Status and Representational Gesture Presence"
+```{r, eval=FALSE}
+# Step 1: Summarize group means and standard errors
+summary_data <- completely_merged_data_ALLyears %>%
+  group_by(groupstatus, rep_gesture_present) %>%
+  summarize(
+    mean_score = mean(max_avg, na.rm = TRUE),
+    se_score = sd(max_avg, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  )
+
+# Step 2: Plot with ribbons
+ggplot() +
+  # 2a: Individual points (light gray dots)
+  geom_jitter(
+    data = completely_merged_data_ALLyears,
+    aes(x = factor(rep_gesture_present), y = max_avg, color = groupstatus),
+    width = 0.2, height = 0, alpha = 0.4, size = 2
+  ) +
+  
+  # 2b: Ribbons for SE
+  geom_ribbon(
+    data = summary_data,
+    aes(
+      x = as.numeric(factor(rep_gesture_present)),
+      ymin = mean_score - se_score,
+      ymax = mean_score + se_score,
+      fill = groupstatus,
+      group = groupstatus
+    ),
+    inherit.aes = FALSE,
+    alpha = 0.2
+  ) +
+  
+  # 2c: Mean points
+  geom_point(
+    data = summary_data,
+    aes(x = factor(rep_gesture_present), y = mean_score, color = groupstatus),
+    position = position_dodge(width = 0.3),
+    size = 4
+  ) +
+  
+  # 2d: Lines connecting means
+  geom_line(
+    data = summary_data,
+    aes(x = factor(rep_gesture_present), y = mean_score, group = groupstatus, color = groupstatus, linetype = groupstatus),
+    position = position_dodge(width = 0.3)
+  ) +
+  
+  # 2e: Labels and themes
+  scale_x_discrete(labels = c("No Gesture", "Gesture Present")) +
+  labs(
+    title = "Interaction of Group Status and Representational Gesture Presence",
+    x = "Representational Gesture Presence",
+    y = "Narrative Structure Score",
+    color = "Group Status",
+    fill = "Group Status",
+    linetype = "Group Status"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.background = element_rect(fill = "gray95", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.grid.major = element_line(color = "gray90"),
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+```
+
+## APA figure of Simple Slope: Representational Gestures vs. Narrative Score
+```{r, eval=FALSE}
+# Step 1: Generate predicted values (simple slope for rep_gesture_present)
+simple_slopes_rep_gesture <- ggpredict(
+  model2,
+  terms = c("rep_gesture_present", "groupstatus")  # Gesture presence (0/1) x Group
+)
+
+# Step 2: Build APA-style figure
+ggplot(simple_slopes_rep_gesture, aes(x = x, y = predicted, group = group)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = group),
+              alpha = 0.1, color = NA) +
+  geom_line(aes(linetype = group), color = "black", linewidth = 1.2) +
+  geom_point(
+    data = simple_slopes_rep_gesture %>%
+      group_by(group) %>%
+      filter(x == min(x) | x == max(x)),  # Only at 0 (No Gesture) and 1 (Gesture Present)
+    aes(shape = group),
+    size = 3,
+    fill = "black",
+    color = "black"
+  ) +
+  scale_x_continuous(
+    breaks = c(0, 1),
+    labels = c("No Gesture", "Gesture")
+  ) +
+  scale_linetype_manual(
+    values = c("solid", "dashed")
+  ) +
+  scale_shape_manual(
+    values = c(21, 24)  # circle and triangle
+  ) +
+  scale_fill_manual(
+    values = c("gray70", "gray85")
+  ) +
+  labs(
+    title = NULL,
+    x = "Representational Gesture Presence",
+    y = "Predicted Narrative Structure Score",
+    linetype = "Group Status",
+    shape = "Group Status",
+    fill = "Group Status"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold"),
+    text = element_text(family = "Times New Roman"),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black")
+  )
+
+#Figure X. Predicted narrative structure scores by group and representational gesture presence. Solid and dashed lines represent children with perinatal lesions and typically developing children, respectively. Circle and triangle points denote predicted narrative scores for absence and presence of representational gestures. Shaded regions represent 95% confidence intervals.
+```
+
+## APA simple slopes for total gestures & group status
+```{r, eval=FALSE}
+# Step 1: Generate predictions across a smooth range
+simple_slopes_total_gestures <- ggpredict(
+  model1,
+  terms = c("total_gestures [0:100 by=1]", "groupstatus")
+)
+
+# Step 2: Build APA-Perfect figure
+ggplot(simple_slopes_total_gestures, aes(x = x, y = predicted, group = group)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = group), 
+              alpha = 0.1, color = NA) +  # Light ribbons per group
+  geom_line(aes(linetype = group), color = "black", linewidth = 1.2) +  # black solid/dashed
+  geom_point(
+    data = simple_slopes_total_gestures %>% 
+      group_by(group) %>% 
+      filter(x == min(x) | x == max(x)),  # Only mark start and end points
+    aes(shape = group),
+    size = 3,
+    fill = "black",
+    color = "black"
+  ) +
+  scale_linetype_manual(
+    values = c("solid", "dashed")  # PL = solid, TD = dashed
+  ) +
+  scale_shape_manual(
+    values = c(21, 24)  # Circle for one group, triangle for the other
+  ) +
+  scale_fill_manual(
+    values = c("gray70", "gray85")
+  ) +
+  labs(
+    title = NULL,
+    x = "Total Gestures During Pretend Play",
+    y = "Predicted Narrative Structure Score",
+    linetype = "Group Status",
+    shape = "Group Status",
+    fill = "Group Status"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold"),
+    text = element_text(family = "Times New Roman"),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black")
+  )
+
+#Figure X. Predicted narrative structure scores by group and total number of gestures during pretend play. Solid and dashed lines represent separate group slopes. Greater gesture use was associated with higher narrative structure scores for children with perinatal lesions, whereas this association was weaker among typically developing children. Shaded regions represent 95% confidence intervals.
+```
+
+## figure of Simple Slope: Representational Gestures vs. Narrative Score
+```{r, eval=FALSE}
+# Create sequence for representational gestures
+rep_range <- seq(
+  min(completely_merged_data_ALLyears$rep_gestures, na.rm = TRUE),
+  max(completely_merged_data_ALLyears$rep_gestures, na.rm = TRUE),
+  length.out = 100
+)
+
+# Build new prediction dataset
+pred_data_rep <- data.frame(
+  groupstatus = factor("PL", levels = c("PL", "TD")),  # match model factor
+  total_gestures = mean(completely_merged_data_ALLyears$total_gestures, na.rm = TRUE),  # control for total gestures
+  rep_gestures = rep_range,  # vary rep gestures across observed range
+  mlu = mean(completely_merged_data_ALLyears$mlu, na.rm = TRUE),  # control for MLU
+  total_pretend_episodes = mean(completely_merged_data_ALLyears$total_pretend_episodes, na.rm = TRUE),  # control
+  Year = factor("7", levels = c("7", "8", "10"))  # hold year constant
+)
+
+# Predict narrative scores
+pred_data_rep$predicted_narrative <- predict(model_fixed_effects, newdata = pred_data_rep)
+
+# Plot
+ggplot(completely_merged_data_ALLyears, aes(x = rep_gestures, y = max_avg)) +
+  
+  # Raw participant points
+  geom_point(alpha = 0.6, color = "black", size = 2) +
+  
+  # Predicted regression line
+  geom_line(data = pred_data_rep, aes(x = rep_gestures, y = predicted_narrative),
+            color = "black", size = 1.2) +
+  
+  # Labels
+  labs(
+    title = "More representational gestures predict better narrative structure",
+    x = "Number of representational gestures",
+    y = "Narrative structure score"
+  ) +
+  
+  # APA-style theme
+  theme_minimal(base_size = 14, base_family = "Times New Roman") +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, size = 0.8),
+    axis.line = element_line(color = "black"),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.title = element_text(face = "bold"),
+    legend.position = "none"
+  )
+
+```
+
+```{r, eval=FALSE}
+library(ggplot2)
+
+ggplot(completely_merged_data_ALLyears, aes(x = rep_gestures, y = max_avg)) +
+  
+  # Raw participant points (still black dots)
+  geom_point(alpha = 0.6, color = "black", size = 2) +
+  
+  # Participant IDs as text labels slightly above the dots
+  geom_text(aes(label = participant_id), 
+            vjust = -1,  # vertical adjustment above the point
+            size = 3,    # size of text (adjustable)
+            family = "Times New Roman") +
+  
+  # Predicted regression line
+  geom_line(data = pred_data_rep, aes(x = rep_gestures, y = predicted_narrative),
+            color = "black", size = 1.2) +
+  
+  # Labels
+  labs(
+    title = "More representational gestures predict better narrative structure",
+    x = "Number of representational gestures",
+    y = "Narrative structure score"
+  ) +
+  
+  # APA-style minimal theme
+  theme_minimal(base_size = 14, base_family = "Times New Roman") +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, size = 0.8),
+    axis.line = element_line(color = "black"),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.title = element_text(face = "bold"),
+    legend.position = "none"
+  )
+
+```
+
+## simple slope of Total Gestures vs. Narrative Score
+```{r, eval=FALSE}
+# Create a sequence of total gestures (z-scored)
+gestures_range <- seq(
+  min(completely_merged_data_ALLyears$total_gestures, na.rm = TRUE),
+  max(completely_merged_data_ALLyears$total_gestures, na.rm = TRUE),
+  length.out = 100
+)
+
+# Build prediction data
+pred_data_total <- data.frame(
+  groupstatus = factor("PL", levels = c("PL", "TD")),  # Hold group constant
+  total_gestures = gestures_range,  # Vary total gestures
+  rep_gestures = mean(completely_merged_data_ALLyears$rep_gestures, na.rm = TRUE),  # Hold rep gestures constant
+  mlu_z = mean(completely_merged_data_ALLyears$mlu_z, na.rm = TRUE),  # Hold MLU constant
+  total_pretend_episodes = mean(completely_merged_data_ALLyears$total_pretend_episodes, na.rm = TRUE),  # Hold pretend episodes constant
+  Year = factor("7", levels = c("7", "8", "10"))  # Hold year constant
+)
+
+# Predict narrative scores
+pred_data_total$predicted_narrative <- predict(model_fixed_effects, newdata = pred_data_total)
+
+ggplot(completely_merged_data_ALLyears, aes(x = total_gestures, y = max_avg)) +
+  
+  # Raw participant points
+  geom_point(alpha = 0.6, color = "black", size = 2) +
+  
+  # Predicted regression line
+  geom_line(data = pred_data_total, aes(x = total_gestures, y = predicted_narrative),
+            color = "black", size = 1.2) +
+  
+  # Labels
+  labs(
+    title = "Total gestures show marginal negative trend with narrative structure",
+    x = "Total gestures during pretend play (z-scored)",
+    y = "Narrative structure score"
+  ) +
+  
+  # APA-style minimal theme
+  theme_minimal(base_size = 14, base_family = "Times New Roman") +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, size = 0.8),
+    axis.line = element_line(color = "black"),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.title = element_text(face = "bold"),
+    legend.position = "none"
+  )
+
+```
+
+## Conceptual diagram of moderation model:
+```{r, eval=FALSE}
+library(DiagrammeR)
+
+grViz("
+digraph moderation_model {
+  
+  # General node style
+  node [shape = rectangle, fontname = 'Times New Roman', fontsize = 14]
+
+  # Nodes
+  GesturePresence [label = 'Representational Gesture Presence']
+  GroupStatus [label = 'Group Status (PL vs TD)']
+  NarrativePL [label = 'Narrative Structure Score (PL)']
+  NarrativeTD [label = 'Narrative Structure Score (TD)']
+
+  # Solid Arrows (Main Effects)
+  GesturePresence -> NarrativePL [label = 'Stronger Positive Effect', style = solid]
+  GesturePresence -> NarrativeTD [label = 'Weaker Positive Effect', style = solid]
+
+  # Dashed Arrows (Moderation)
+  GroupStatus -> NarrativePL [label = 'Moderates', style = dashed]
+  GroupStatus -> NarrativeTD [label = 'Moderates', style = dashed]
+}
+")
+
+#Figure 3
+#Conceptual model illustrating the moderating effect of group status (PL vs. TD) on the relationship between representational gesture presence and narrative structure outcomes. Solid arrows represent main effects, while dashed arrows represent moderation pathways. Gesture presence was more strongly associated with narrative quality for children with perinatal lesions compared to typically developing children.
+
+```
+
+## BOOTSTRAPPING!!! (...won't work)
+```{r, eval=FALSE}
+library(boot)          # For bootstrapping
+library(interactions)  # For simple slopes and plotting
+
+simple_slope_function <- function(data, indices) {
+  d <- data[indices, ]  # Resample data
+  tryCatch({
+    # Refit YOUR model structure
+    fit <- lm(max_avg ~ groupstatus + rep_gesture_present + total_pretend_episodes + mlu + groupstatus:rep_gesture_present, 
+              data = d)
+    
+    # Extract coefficients
+    coefs <- coef(fit)
+    
+    # Simple slope for PL (baseline group)
+    slope_PL <- coefs["rep_gesture_present"]
+    
+    # Simple slope for TD (PL slope + interaction)
+    slope_TD <- coefs["rep_gesture_present"] + coefs["groupstatusTD:rep_gesture_present"]
+    
+    return(c(slope_PL, slope_TD))
+  }, error = function(e) {
+    # If the model fails to fit, return NA
+    return(c(NA, NA))
+  })
+}
+
+set.seed(1234)
+
+boot_results <- boot(
+  data = completely_merged_data_ALLyears,
+  statistic = simple_slope_function,
+  R = 1000  # 1000 resamples
+)
+
+any(is.na(boot_results$t))  # TRUE if any NA slopes
+
+# Clean if needed:
+boot_clean <- boot_results
+boot_clean$t <- boot_clean$t[complete.cases(boot_clean$t), ]
+
+# For PL group (baseline)
+boot.ci(boot_clean, type = "perc", index = 1)
+
+# For TD group (interaction-adjusted)
+boot.ci(boot_clean, type = "perc", index = 2)
 
 
+```
 
 
-
-# (FAILED) MIXED MODEL & TROUBLESHOOTING
+## (FAILED) MIXED MODEL & TROUBLESHOOTING
 ```{r, eval=FALSE}
 # Model 1: Total gestures as predictor
 mixed_model1 <- lmer(max_avg ~ groupstatus + total_gestures + total_pretend_episodes + mlu + groupstatus:total_gestures + (1|participant_id), 
