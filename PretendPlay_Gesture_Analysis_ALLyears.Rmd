@@ -257,6 +257,50 @@ gesture_results %>%
 
 ```
 
+## Convert gt to flextable
+```{r}
+# Load required libraries
+library(dplyr)
+library(flextable)
+library(officer)
+
+# Step 1: Prepare your formatted data (similar to what you used in gt)
+gesture_results_flex <- gesture_results %>%
+  select(Variable, PL_Median, TD_Median, W, p_formatted, r_formatted, sig) %>%
+  rename(
+    `Variable` = Variable,
+    `Median (PL)` = PL_Median,
+    `Median (TD)` = TD_Median,
+    `W` = W,
+    `p` = p_formatted,
+    `r` = r_formatted
+  )
+
+# Step 2: Create flextable
+ft <- flextable(gesture_results_flex) %>%
+  bold(i = ~ sig == TRUE, j = "p", bold = TRUE) %>%   # Bold p-values < .05
+  set_caption("Table X. Mann-Whitney U Tests Comparing Gesture Measures Between Groups") %>%
+  autofit() %>%
+  font(fontname = "Times New Roman", part = "all") %>%
+  fontsize(size = 11, part = "all") %>%
+  align(j = 2:6, align = "center", part = "all") %>%
+  align(j = 1, align = "left", part = "all") %>%
+  padding(padding = 2, part = "all")
+
+# Step 3: Export to Word
+doc <- read_docx() %>%
+  body_add_par("Results Table", style = "heading 1") %>%
+  body_add_flextable(ft) %>%
+  body_add_par("Note. W = Wilcoxon rank sum test statistic. r = effect size (rank biserial correlation). Bolded p-values indicate p < .05.", style = "Normal")
+
+print(doc, target = "Gesture_Results_Table.docx")
+
+browseURL("Gesture_Results_Table.docx")
+
+
+```
+
+
 ## Means & SD's for ALL
 ```{r}
 # Load dplyr
@@ -296,7 +340,8 @@ pp_gesture_data_ALLyears %>%
   geom_jitter(width = 0.2, size = 2, alpha = 0.7) +  # Individual points
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white", color = "black") +  # Mean as white diamond
   labs(
-    title = "Distribution of Representative Gestures During Pretend Play",
+    title = "Figure 1",
+    subtitle = "Distribution of Representative Gestures During Pretend Play",
     x = "Group",
     y = "Number of Representative Gestures"
   ) +
@@ -309,6 +354,41 @@ pp_gesture_data_ALLyears %>%
   )
 
 ```
+
+## improved violin plot as png
+```{r}
+# Violin plot of representative gestures by group
+p_violin <- pp_gesture_data_ALLyears %>%
+  ggplot(aes(x = groupstatus, y = rep_gestures, fill = groupstatus)) +
+  geom_violin(trim = FALSE, alpha = 0.6) +
+  geom_jitter(width = 0.2, size = 2, alpha = 0.7) +
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3,
+               fill = "white", color = "black") +
+  labs(
+    title = "Figure 1",
+    subtitle = "Distribution of Representative Gestures During Pretend Play by Group",
+    x = "Group",
+    y = "Number of Representative Gestures"
+  ) +
+  scale_fill_grey(start = 0.4, end = 0.8) +
+  theme_minimal(base_size = 14, base_family = "Times New Roman") +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  )
+
+# Save as PNG
+ggsave("FigureX_ViolinPlot_RepGestures.png", plot = p_violin,
+       width = 7, height = 6, dpi = 300, units = "in", bg = "white")
+
+#Figure 1. Distribution of representative gestures produced during pretend play by group. Violin plots show the full distribution of values, with individual participant points overlaid. White diamonds indicate group means. Children with perinatal lesions (PL) showed lower central tendency and greater clustering at zero relative to typically developing (TD) peers.
+```
+
 
 ## Box Plot of Representative Gestures X Group Status
 ```{r}
@@ -360,6 +440,77 @@ pp_gesture_data_ALLyears %>%
 
 ```
 
+## fancier version
+```{r}
+# Load libraries
+library(ggplot2)
+library(dplyr)
+
+# Bar graph of proportion of representational gestures
+pp_gesture_data_ALLyears %>%
+  ggplot(aes(x = groupstatus, y = prop_rep, fill = groupstatus)) +
+  stat_summary(fun = mean, geom = "bar", width = 0.6, color = "black", alpha = 0.7) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  labs(
+    title = "Mean Proportion of Representational Gestures During Pretend Play by Group",
+    
+    x = "Group",
+    y = "Proportion of Representational Gestures"
+  ) +
+  scale_fill_grey(start = 0.4, end = 0.8) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  theme_minimal(base_size = 14, base_family = "Times New Roman") +
+  theme(
+    legend.position = "none",
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+
+#Figure X. Mean proportion of representational gestures during pretend play by group. Error bars indicate ±1 standard error of the mean. Medians were used for statistical testing due to skewness, but means are displayed here for interpretability.
+
+# Save the most recent plot as a high-resolution PNG
+ggsave(
+  filename = "FigureX_ProportionRepGesture.png",
+  width = 7,
+  height = 5,
+  dpi = 300,
+  units = "in",
+  device = "png"
+)
+
+```
+
+## second try at fancier version
+```{r}
+# Assign your plot to an object first
+p_prop <- ggplot(pp_gesture_data_ALLyears, aes(x = groupstatus, y = prop_rep, fill = groupstatus)) +
+  stat_summary(fun = mean, geom = "bar", width = 0.6, color = "black", alpha = 0.7) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  labs(
+    title = "Figure 2",
+    subtitle = "Mean Proportion of Representational Gestures During Pretend Play by Group",
+    x = "Group",
+    y = "Proportion of Representative Gestures"
+  ) +
+  scale_fill_grey(start = 0.4, end = 0.8) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  theme_minimal(base_size = 14, base_family = "Times New Roman") +
+  theme(
+    legend.position = "none",
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    plot.subtitle = element_text(hjust = 0.5),
+    plot.background = element_rect(fill = "white", color = NA), # fix gray background
+    panel.background = element_rect(fill = "white", color = NA) # fix panel background
+  )
+
+# Save with extra height to avoid cutting off the subtitle
+ggsave("Figure3_ProportionRepGesture.png", plot = p_prop, width = 7, height = 6, dpi = 300, units = "in", bg = "white")
+
+```
 
 
 # OLD CODE

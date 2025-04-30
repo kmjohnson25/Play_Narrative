@@ -176,6 +176,7 @@ P3_neurological_data_filtered %>%
                 full_width = FALSE) %>%
                 footnote(general = "* Neonatal seizures resolved without medication.")
 
+print()
 ```
 
 ## Procedure

@@ -174,6 +174,44 @@ combined_ols_table %>%
 
 ```
 
+## APA combo table in docx
+```{r}
+library(flextable)
+library(officer)
+library(dplyr)
+library(extrafont)
+
+# Step 1: Identify rows to bold (based on presence of * in b columns)
+bold_rows_model1 <- grep("\\*", combined_ols_table$`b (Model 1)`)
+bold_rows_model2 <- grep("\\*", combined_ols_table$`b (Model 2)`)
+
+# Step 2: Create flextable
+ft <- combined_ols_table %>%
+  select(Predictor, `b (Model 1)`, `SE (Model 1)`, `b (Model 2)`, `SE (Model 2)`) %>%
+  flextable() %>%
+  set_header_labels(
+    Predictor = "Predictor",
+    `b (Model 1)` = "b (Model 1)",
+    `SE (Model 1)` = "SE (Model 1)",
+    `b (Model 2)` = "b (Model 2)",
+    `SE (Model 2)` = "SE (Model 2)"
+  ) %>%
+  fontsize(size = 11, part = "all") %>%
+  font(fontname = "Times New Roman", part = "all") %>%
+  bold(i = bold_rows_model1, j = "b (Model 1)") %>%
+  bold(i = bold_rows_model2, j = "b (Model 2)") %>%
+  autofit() %>%
+  add_footer_lines("Note. b = unstandardized regression coefficient; SE = standard error. *p* < .05, **p** < .01, ***p*** < .001.")
+
+# Step 3: Save to Word document
+read_docx() %>%
+  body_add_par("Table X. OLS Regression Predicting Narrative Structure Scores Across Models", style = "heading 2") %>%
+  body_add_flextable(ft) %>%
+  print(target = "OLS_Regression_Table.docx")
+
+```
+
+
 ## Reduced Versions of Model 2 (OLS), dropping nonsignificant predictors
 ```{r}
 # Lean version of Model 2: Representational gesture presence as predictor
@@ -192,7 +230,7 @@ eta_squared(model2_ols_lean)
 eta_squared(model2_ols_lean_noyear)
 ```
 
-## APA Table of Reduced Model 2
+### APA Table of Reduced Model 2
 ```{r}
 # Load necessary libraries
 library(broom)
@@ -258,6 +296,84 @@ model2_reduced_table %>%
 
 ```
 
+### APA table for docx
+```{r}
+library(flextable)
+library(officer)
+library(dplyr)
+
+# Create flextable
+ft <- model2_reduced_table %>%
+  select(Predictor, b_formatted, SE_formatted, t_formatted, p_formatted, sig) %>%
+  rename(
+    `b` = b_formatted,
+    `SE` = SE_formatted,
+    `t` = t_formatted,
+    `p` = p_formatted
+  ) %>%
+  flextable() %>%
+  bold(i = ~ sig != "", bold = TRUE) %>%  # Bold rows with significance
+  autofit() %>%
+  fontsize(size = 11, part = "all") %>%
+  font(fontname = "Times New Roman", part = "all") %>%
+  set_table_properties(width = .8, layout = "autofit") %>%
+  add_footer_lines(values = "Note. b = unstandardized regression coefficient; SE = standard error; t = t value; p = significance level. Significance indicated by * p < .05, ** p < .01, *** p < .001, † p < .10.")
+
+# Create and save the Word doc
+read_docx() %>%
+  body_add_par("Table X. Reduced Linear Regression Predicting Narrative Structure Scores", style = "heading 2") %>%
+  body_add_flextable(ft) %>%
+  print(target = "Reduced_Model2_Table.docx")
+
+```
+
+### improved APA table for docx
+```{r}
+# Combine stars into the p column
+model2_table_starred <- model2_reduced_table %>%
+  mutate(
+    # Combine p-value text with significance stars
+    p_combined = case_when(
+      p.value < 0.001 ~ "< .001***",
+      p.value < 0.01  ~ paste0(sprintf("%.3f", p.value), "**"),
+      p.value < 0.05  ~ paste0(sprintf("%.3f", p.value), "*"),
+      p.value < 0.10  ~ paste0(sprintf("%.3f", p.value), "†"),
+      TRUE            ~ sprintf("%.3f", p.value)
+    )
+  )
+
+# Create APA-style flextable
+ft <- model2_table_starred %>%
+  select(Predictor, b_formatted, SE_formatted, t_formatted, p_combined) %>%
+  rename(
+    `b` = b_formatted,
+    `SE` = SE_formatted,
+    `t` = t_formatted,
+    `p` = p_combined
+  ) %>%
+  flextable() %>%
+  autofit() %>%
+  fontsize(size = 11, part = "all") %>%
+  font(fontname = "Times New Roman", part = "all") %>%
+  set_table_properties(width = 0.8, layout = "autofit") %>%
+  add_footer_lines(values = "Note. b = unstandardized regression coefficient; SE = standard error; t = t value; p = significance level. Significance indicated by * p < .05, ** p < .01, *** p < .001, † p < .10.")
+
+b_with_stars = case_when(
+  p.value < 0.001 ~ paste0(sprintf("%.2f", estimate), "***"),
+  p.value < 0.01  ~ paste0(sprintf("%.2f", estimate), "**"),
+  p.value < 0.05  ~ paste0(sprintf("%.2f", estimate), "*"),
+  p.value < 0.10  ~ paste0(sprintf("%.2f", estimate), "†"),
+  TRUE            ~ sprintf("%.2f", estimate)
+)
+
+read_docx() %>%
+  body_add_par("Table X. Reduced Linear Regression Predicting Narrative Structure Scores", style = "heading 2") %>%
+  body_add_flextable(ft) %>%
+  print(target = "Reduced_Model2_Table_withStars.docx")
+
+```
+
+
 ## Simple Slope of Predicted Outcomes for Model 2 (probs for appendix)
 ```{r}
 library(ggeffects)
@@ -293,6 +409,43 @@ ggplot(effect_df, aes(x = x, y = predicted, color = group)) +
   )
 
 ```
+### save as png
+```{r}
+p <- ggplot(effect_df, aes(x = x, y = predicted, color = group)) +
+  geom_point(size = 4) +
+  geom_line(size = 1.5) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2, color = NA) +
+  scale_color_manual(values = c("black", "gray40")) +
+  scale_fill_manual(values = c("black", "gray40")) +
+  labs(
+    title = "Figure 4",
+    subtitle = "Predicted Narrative Structure by Representational Gesture and Group",
+    x = "Representational Gesture Presence",
+    y = "Predicted Narrative Structure Score",
+    color = "Group",
+    fill = "Group"
+  ) +
+  theme_classic(base_size = 14, base_family = "Times New Roman") +
+  theme(
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 12),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    axis.title = element_text(face = "bold"),
+    legend.title = element_blank()
+  )
+
+# Save as PNG with white background
+ggsave(
+  filename = "Predicted_Narrative_by_Gesture_Group.png",
+  plot = p,
+  width = 6.5, height = 5, dpi = 300, units = "in", bg = "white"
+)
+
+#Fig. X Model-adjusted means controlling for MLU; shaded areas reflect 95% confidence intervals.
+```
+
 
 ## APA Interaction Plot: Model 2's observed means and standard errors
 ```{r}
@@ -389,6 +542,91 @@ ggplot() +
 
 ```
 
+###save as png
+```{r}
+# Create the plot object
+p <- ggplot() +
+  
+  # Jittered individual points
+  geom_jitter(
+    data = completely_merged_data_ALLyears,
+    aes(x = factor(rep_gesture_present), y = max_avg, shape = groupstatus),
+    width = 0.2, height = 0, alpha = 0.6, size = 2, color = "black"
+  ) +
+  
+  # Error bars
+  geom_errorbar(
+    data = summary_data,
+    aes(
+      x = factor(rep_gesture_present),
+      ymin = mean_score - se_score,
+      ymax = mean_score + se_score,
+      group = groupstatus
+    ),
+    width = 0.1,
+    position = position_dodge(width = 0.3),
+    color = "black",
+    size = 0.8
+  ) +
+  
+  # Mean points
+  geom_point(
+    data = summary_data,
+    aes(x = factor(rep_gesture_present), y = mean_score, shape = groupstatus),
+    position = position_dodge(width = 0.3),
+    size = 3,
+    color = "black",
+    fill = "white"
+  ) +
+  
+  # Connecting lines
+  geom_line(
+    data = summary_data,
+    aes(x = factor(rep_gesture_present), y = mean_score, group = groupstatus, linetype = groupstatus),
+    position = position_dodge(width = 0.3),
+    color = "black",
+    size = 1
+  ) +
+  
+  # Axes and aesthetics
+  scale_x_discrete(labels = c("No Gesture", "Gesture")) +
+  scale_shape_manual(values = c("PL" = 24, "TD" = 21)) +
+  scale_linetype_manual(values = c("PL" = "dashed", "TD" = "solid")) +
+  
+  labs(
+    title = "Figure 3",
+    subtitle = "Interaction of Group Status and Representational Gesture",
+    x = "Representational Gesture Presence",
+    y = "Narrative Structure Score",
+    shape = "Group Status",
+    linetype = "Group Status"
+  ) +
+  
+  theme_minimal(base_size = 14, base_family = "Times New Roman") +
+  theme(
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold")
+  )
+
+
+ggsave(
+  filename = "ObservedMeans_Gesture_Group_Interaction.png",
+  plot = p,
+  width = 6.5, height = 5, dpi = 300, units = "in",
+  bg = "white"  # <- This ensures the PNG background is white
+)
+```
+
+
+
 #ROBUST regressions
 ## Robust Regression for Model 1
 ```{r}
@@ -402,7 +640,7 @@ summary(model1_robust)
 
 ```
 
-## Table for Model 1 Robust Regression 
+### Table for Model 1 Robust Regression 
 ```{r}
 library(broom)
 library(dplyr)
@@ -478,7 +716,7 @@ model2_robust <- lmrob(max_avg ~ groupstatus * rep_gesture_present + total_prete
 summary(model2_robust)
 ```
 
-## Table for Model 2 Robust Regression
+### Table for Model 2 Robust Regression
 ```{r}
 
 # Assuming the same `model2_table` as above
@@ -551,7 +789,7 @@ model2_reduced_robust <- lmrob(max_avg ~ groupstatus + rep_gesture_present + mlu
 summary(model2_reduced_robust)
 ```
 
-## Model 2 (reduced) Side by Side Regresssion Table of OLS and Robust 
+### Comp. Table: OLS and Robust Regression for Model 2 (reduced) 
 ```{r}
 # Load libraries
 library(broom)
@@ -611,7 +849,79 @@ combined_table %>%
 
 ```
 
-## Models 1 & 2(og) Combined Table 
+#### docx apa version
+```{r}
+# Load libraries
+library(broom)
+library(dplyr)
+library(flextable)
+library(officer)
+
+# Tidy the OLS model
+ols_table <- tidy(model2_ols_lean_noyear) %>%
+  mutate(
+    Model = "OLS",
+    Estimate = round(estimate, 2),
+    SE = round(std.error, 2),
+    p_star = case_when(
+      p.value < 0.001 ~ "< .001***",
+      p.value < 0.01  ~ paste0(sprintf("%.3f", p.value), "**"),
+      p.value < 0.05  ~ paste0(sprintf("%.3f", p.value), "*"),
+      p.value < 0.10  ~ paste0(sprintf("%.3f", p.value), "†"),
+      TRUE ~ sprintf("%.3f", p.value)
+    )
+  ) %>%
+  select(Model, term, Estimate, SE = std.error, p = p_star)
+
+# Tidy the Robust model
+robust_table <- tidy(model2_reduced_robust) %>%
+  mutate(
+    Model = "Robust",
+    Estimate = round(estimate, 2),
+    SE = round(std.error, 2),
+    p_star = case_when(
+      p.value < 0.001 ~ "< .001***",
+      p.value < 0.01  ~ paste0(sprintf("%.3f", p.value), "**"),
+      p.value < 0.05  ~ paste0(sprintf("%.3f", p.value), "*"),
+      p.value < 0.10  ~ paste0(sprintf("%.3f", p.value), "†"),
+      TRUE ~ sprintf("%.3f", p.value)
+    )
+  ) %>%
+  select(Model, term, Estimate, SE = std.error, p = p_star)
+
+# Combine and order
+combined_table <- bind_rows(ols_table, robust_table) %>%
+  rename(Predictor = term) %>%
+  mutate(Model = factor(Model, levels = c("OLS", "Robust"))) %>%
+  arrange(Model, Predictor)
+
+# Create flextable
+ft <- combined_table %>%
+  flextable() %>%
+  set_header_labels(
+    Predictor = "Predictor",
+    Estimate = "b",
+    SE = "SE",
+    p = "p"
+  ) %>%
+  fontsize(size = 11, part = "all") %>%
+  font(fontname = "Times New Roman", part = "all") %>%
+  autofit() %>%
+  set_table_properties(width = 0.9, layout = "autofit") %>%
+  add_footer_lines(
+    values = "Note. b = unstandardized regression coefficient; SE = standard error; p = significance level. Significance indicated by *p* < .05 (*), **p** < .01 (**), ***p*** < .001 (***), †p < .10. Robust regression used MM-estimation with bisquare psi function."
+  )
+
+# Save to Word
+read_docx() %>%
+  body_add_par("Table X. Comparison of OLS and Robust Regression Estimates for Reduced Model 2", style = "heading 2") %>%
+  body_add_flextable(ft) %>%
+  print(target = "Comparison_OLS_Robust_Table_withStars.docx")
+
+
+```
+
+### Comb. Table: Models 1 & 2(og) 
 ```{r}
 library(broom)
 library(dplyr)
@@ -704,6 +1014,96 @@ combined_robust_table %>%
   tab_source_note(
     source_note = "Note. b = unstandardized regression coefficient; SE = robust standard error. *p* < .05, **p** < .01, ***p*** < .001."
   )
+
+```
+
+#### docx apa version
+```{r}
+# Load required libraries
+library(broom)
+library(dplyr)
+library(flextable)
+library(officer)
+
+# Step 1: Tidy and label each model
+model1_robust_tidy <- tidy(model1_robust) %>%
+  mutate(
+    Predictor = case_when(
+      term == "(Intercept)" ~ "Intercept",
+      term == "groupstatusPL" ~ "Group Status (PL vs TD)",
+      term == "total_gestures" ~ "Total Gestures",
+      term == "total_pretend_episodes" ~ "Total Pretend Episodes",
+      term == "mlu" ~ "Mean Length of Utterance (MLU)",
+      term == "groupstatusPL:total_gestures" ~ "Group × Total Gestures Interaction",
+      TRUE ~ term
+    )
+  ) %>%
+  mutate(Model = "Model 1") %>%
+  select(Predictor, estimate, std.error, p.value, Model)
+
+model2_robust_tidy <- tidy(model2_robust) %>%
+  mutate(
+    Predictor = case_when(
+      term == "(Intercept)" ~ "Intercept",
+      term == "groupstatusPL" ~ "Group Status (PL vs TD)",
+      term == "rep_gesture_present" ~ "Representative Gesture",
+      term == "total_pretend_episodes" ~ "Total Pretend Episodes",
+      term == "mlu" ~ "Mean Length of Utterance (MLU)",
+      term == "groupstatusPL:rep_gesture_present" ~ "Group × Representative Gesture Interaction",
+      TRUE ~ term
+    )
+  ) %>%
+  mutate(Model = "Model 2") %>%
+  select(Predictor, estimate, std.error, p.value, Model)
+
+# Step 2: Merge models by predictor
+combined_robust_table <- full_join(model1_robust_tidy, model2_robust_tidy, by = "Predictor", suffix = c("_Model1", "_Model2")) %>%
+  mutate(
+    Sig1 = case_when(
+      p.value_Model1 < .001 ~ "***",
+      p.value_Model1 < .01 ~ "**",
+      p.value_Model1 < .05 ~ "*",
+      p.value_Model1 < .10 ~ "†",
+      TRUE ~ ""
+    ),
+    Sig2 = case_when(
+      p.value_Model2 < .001 ~ "***",
+      p.value_Model2 < .01 ~ "**",
+      p.value_Model2 < .05 ~ "*",
+      p.value_Model2 < .10 ~ "†",
+      TRUE ~ ""
+    ),
+    `b (Model 1)` = ifelse(!is.na(estimate_Model1), sprintf("%.2f", estimate_Model1), NA),
+    `SE (Model 1)` = ifelse(!is.na(std.error_Model1), sprintf("%.2f", std.error_Model1), NA),
+    `b (Model 2)` = ifelse(!is.na(estimate_Model2), sprintf("%.2f", estimate_Model2), NA),
+    `SE (Model 2)` = ifelse(!is.na(std.error_Model2), sprintf("%.2f", std.error_Model2), NA),
+    `b (Model 1)` = paste0(`b (Model 1)`, Sig1),
+    `b (Model 2)` = paste0(`b (Model 2)`, Sig2)
+  ) %>%
+  select(Predictor, `b (Model 1)`, `SE (Model 1)`, `b (Model 2)`, `SE (Model 2)`)
+
+# Step 3: Create APA-style flextable
+ft <- flextable(combined_robust_table) %>%
+  set_header_labels(
+    Predictor = "Predictor",
+    `b (Model 1)` = "b (Model 1)",
+    `SE (Model 1)` = "SE (Model 1)",
+    `b (Model 2)` = "b (Model 2)",
+    `SE (Model 2)` = "SE (Model 2)"
+  ) %>%
+  fontsize(size = 11, part = "all") %>%
+  font(fontname = "Times New Roman", part = "all") %>%
+  autofit() %>%
+  set_table_properties(width = 0.95, layout = "autofit") %>%
+  add_footer_lines(
+    values = "Note. b = unstandardized regression coefficient; SE = robust standard error. Significance indicated by *p* < .05 (*), **p** < .01 (**), ***p*** < .001, †p < .10."
+  )
+
+# Step 4: Export to Word
+read_docx() %>%
+  body_add_par("Table X. Robust Regression Predicting Narrative Structure Scores Across Models", style = "heading 2") %>%
+  body_add_flextable(ft) %>%
+  print(target = "Robust_Regression_Table_Model1_Model2.docx")
 
 ```
 
